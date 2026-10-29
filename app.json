@@ -1,0 +1,70 @@
+{
+  "name": "X-BOT-MD",
+  "version": "3.5.5",
+  "description": "X-BOT-MD – A Simple and Powerful WhatsApp Bot",
+  "logo": "https://i.imgur.com/Q2UNwXR.jpg",
+  "repository": "https://github.com/A-S-W-I-N-S-P-A-R-K-Y/X--BOT--MD",
+  "stack": "container",
+  "env": {
+    "SESSION_ID": {
+      "description": "Paste your WhatsApp Session ID here (Required).",
+      "required": true
+    },
+    "HANDLERS": {
+      "description": "Set a prefix for commands (Example: ., !, #). Default is '.'",
+      "required": false,
+      "value": "."
+    },
+    "SUDO": {
+      "description": "Enter owner numbers with country code (without +), separated by commas for multiple owners. Example: 919876543210,917012345678",
+      "required": true,
+      "value": "917012984396"
+    },
+    "HEROKU_APP_NAME": {
+      "description": "Enter the exact name of your Heroku app (must match the app name you created).",
+      "required": true
+    },
+    "HEROKU_API_KEY": {
+      "description": "Paste your Heroku API Key (Get it from https://dashboard.heroku.com/account).",
+      "required": true
+    },
+    "STICKER_DATA": {
+      "description": "Set the Sticker Pack name and Author name (Format: PackName;AuthorName).",
+      "required": false,
+      "value": "X BOT MD;ASWIN SPARKY"
+    },
+    "BOT_INFO": {
+      "description": "Customize bot menu information (Format: BotName;OwnerName;ImageURL).",
+      "required": false,
+      "value": "X-BOT-MD;ASWIN SPARKY;https://url.aswinsparky.qzz.io/sparky.jpg"
+    },
+    "ALWAYS_ONLINE": {
+      "description": "Set to 'true' to keep bot always online, or 'false' to stay offline until a message is received.",
+      "required": false,
+      "value": "false"
+    },
+    "WORK_TYPE": {
+      "description": "Set bot mode: 'public' to allow everyone to use, 'private' to allow only owner/sudo users.",
+      "required": false,
+      "value": "private"
+    },
+    "AUTO_STATUS_VIEW": {
+      "description": "Set to 'true' to auto-view WhatsApp statuses, or 'false' to disable.",
+      "required": false,
+      "value": "false"
+    }
+  },
+  "addons": [
+    {
+      "plan": "heroku-postgresql"
+    }
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    },
+    {
+      "url": "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest.git"
+    }
+  ]
+}
