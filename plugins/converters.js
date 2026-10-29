@@ -15,7 +15,26 @@ Sparky({
     try {
         await m.react('⏫');
       const mediaBuffer = await m.quoted.download();
-      const mediaUrl = await handleMediaUpload(mediaBuffer);
+      
+      const formData = new FormData();
+      formData.append('file', Buffer.from(mediaBuffer), {
+        filename: 'media_file',
+        contentType: m.quoted.mimetype || 'application/octet-stream'
+      });
+
+      const response = await fetch('https://sam-cdn.zone.id/upload', {
+        method: 'POST',
+        body: formData,
+        headers: formData.getHeaders ? formData.getHeaders() : {}
+      });
+
+      const result = await response.json();
+      const mediaUrl = result.url || result.data || result.link;
+
+      if (!mediaUrl) {
+        throw new Error('Upload failed');
+      }
+
       await m.react('✅');
       m.reply(mediaUrl);
     } catch (error) {
