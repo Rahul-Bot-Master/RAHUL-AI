@@ -6,10 +6,9 @@ const lang = getString('converters');
 import axios from 'axios';
 import FormData from 'form-data';
 
-// Function to handle media upload to sam-cdn.zone.id
-async function handleMediaUpload(mediaBuffer) {
+// Function name badlun vegla kela aahe jyamule duplicate declaration error ye naar nahi
+async function uploadToSamCdn(mediaBuffer) {
     const form = new FormData();
-    // 'file' is the standard field name for uploads; change if the API requires a specific field name
     form.append('file', mediaBuffer, { filename: 'media_file' });
 
     const response = await axios.post('https://sam-cdn.zone.id/upload', form, {
@@ -18,7 +17,6 @@ async function handleMediaUpload(mediaBuffer) {
         }
     });
 
-    // Adjust based on the actual JSON response structure of the API (e.g., response.data.url)
     return response.data.url || response.data.result || response.data;
 }
 
@@ -34,7 +32,7 @@ Sparky({
     try {
         await m.react('⏫');
         const mediaBuffer = await m.quoted.download();
-        const mediaUrl = await handleMediaUpload(mediaBuffer);
+        const mediaUrl = await uploadToSamCdn(mediaBuffer);
         await m.react('✅');
         m.reply(mediaUrl);
     } catch (error) {
