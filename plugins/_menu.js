@@ -348,7 +348,7 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                 }, { quoted: m });
             }
             case 'image': {
-                let imageUrl = config.BOT_INFO.split(";")[2] || 'https://i.ibb.co/pnPNhMZ/2843ad26fd25.jpg';
+                let imageUrl = config.BOT_INFO.split(";")[2] || 'https://sam-cdn.zone.id/files/xQer9GrIVT.jpg';
                 return await client.sendMessage(m.jid, {
                     image: { url: imageUrl },
                     caption: style(menu)
@@ -373,7 +373,7 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
             }
             case 'document': {
                 return await client.sendMessage(m.jid, {
-                    document: { url: 'https://i.ibb.co/pnPNhMZ/2843ad26fd25.jpg' },
+                    document: { url: 'https://sam-cdn.zone.id/files/xQer9GrIVT.jpg' },
                     caption: menu,
                     mimetype: 'application/zip',
                     fileName: style(config.BOT_INFO.split(";")[0]),
