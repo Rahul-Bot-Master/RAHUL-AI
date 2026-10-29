@@ -3,26 +3,45 @@ const {getString, appendMp3Data, convertToMp3, addExifToWebP, getBuffer, getJson
 const googleTTS = require('google-tts-api');
 const config = require('../config.js');
 const lang = getString('converters');
+import axios from 'axios';
+import FormData from 'form-data';
+
+// Function to handle media upload to sam-cdn.zone.id
+async function handleMediaUpload(mediaBuffer) {
+    const form = new FormData();
+    // 'file' is the standard field name for uploads; change if the API requires a specific field name
+    form.append('file', mediaBuffer, { filename: 'media_file' });
+
+    const response = await axios.post('https://sam-cdn.zone.id/upload', form, {
+        headers: {
+            ...form.getHeaders()
+        }
+    });
+
+    // Adjust based on the actual JSON response structure of the API (e.g., response.data.url)
+    return response.data.url || response.data.result || response.data;
+}
+
 Sparky({
     name: "url",
     fromMe: true,
-    desc: "",
+    desc: "Uploads quoted media to sam-cdn.zone.id and returns the URL",
     category: "converters",
-  }, async ({ args, m }) => {
+}, async ({ args, m }) => {
     if (!m.quoted) {
-      return m.reply('Reply to an Image/Video/Audio');
+        return m.reply('Reply to an Image/Video/Audio');
     }
     try {
         await m.react('⏫');
-      const mediaBuffer = await m.quoted.download();
-      const mediaUrl = await handleMediaUpload(mediaBuffer);
-      await m.react('✅');
-      m.reply(mediaUrl);
+        const mediaBuffer = await m.quoted.download();
+        const mediaUrl = await handleMediaUpload(mediaBuffer);
+        await m.react('✅');
+        m.reply(mediaUrl);
     } catch (error) {
         await m.react('❌');
-      m.reply('An error occurred while uploading the media.');
+        m.reply(`An error occurred while uploading the media: ${error.message}`);
     }
-  });
+});
 
 Sparky(
     {
