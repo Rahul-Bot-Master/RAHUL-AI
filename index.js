@@ -30,8 +30,6 @@ const { Console } = require('console');
 
     const botConfig = require('./config');
     const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-    const createServer = require('express');
-    const expressLayouts = require('express-async-handler'); // or router handler utils
     const app = express();
     
     const PORT = process.env.PORT || 8080;
@@ -137,7 +135,6 @@ const { Console } = require('console');
         // Update checker interval
         const updateInterval = setInterval(async () => {
             // Placeholder logic for updates
-            // (Axios requests or repository fetching checks can go here)
         }, 60000);
 
         try {
