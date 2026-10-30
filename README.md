@@ -1,10 +1,4 @@
-<div align="center">
-
-<p align="center">
-  <img src="https://n.uguu.se/oRbNlbVf.jpg" width="140" height="140" style="border-radius: 50%; box-shadow: 0 0 45px #00ffff, 0 0 25px #ff0055; border: 3px solid #00ffff; object-fit: cover;" alt="RAHUL-AI Logo">
-</p>
-
-# ⚡ RAHUL-AI MULTIDEVICE ⚡
+# ⚡ RAHUL-AI ⚡
 
 <p align="center">
   <code>[ SYSTEM CORE ACTIVE • V2.0.0 ]</code>
