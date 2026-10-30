@@ -9,6 +9,7 @@ const {
 const plugins = require("../lib");
 const config = require("../config.js");
 const font = require("@viper-x/fancytext");
+const axios = require("axios");
 const menust = config.MENU_FONT;
 const style = font[menust];
 const more = String.fromCharCode(8206);
@@ -29,13 +30,86 @@ Sparky({
   let status = args[0] ? args[0].toLowerCase() : "";
   if (status === "on") {
     global.autoDLStatus = true;
-    return m.reply("✅ Auto-DL is now **ENABLED**!");
+    return m.reply("✅ Auto-DL is now **ENABLED**! (IG, FB, YT auto-download active)");
   } else if (status === "off") {
     global.autoDLStatus = false;
     return m.reply("❌ Auto-DL is now **DISABLED**!");
   } else {
     return m.reply(`ℹ️ Current Auto-DL Status: *${global.autoDLStatus ? "ON ✅" : "OFF ❌"}*\nUse: \`.autodl on\` or \`.autodl off\``);
   }
+});
+
+// --- UNIVERSAL AUTO-DL TEXT LISTENER (Instagram, Facebook, YouTube) ---
+Sparky({
+    name: "autodl_handler",
+    on: "text",
+    fromMe: false
+}, async ({ m, client, text, args }) => {
+    if (!global.autoDLStatus) return;
+    if (m.jid === 'status@broadcast' || (m.key && m.key.remoteJid === 'status@broadcast')) return;
+    if (m.broadcast || m.isStatus) return;
+
+    let fullText = text || m.body || (m.message && m.message.conversation) || (Array.isArray(args) ? args.join(" ") : args) || "";
+    if (typeof fullText !== "string") fullText = "";
+
+    const urlRegex = /(https?:\/\/(?:www\.)?(?:instagram\.com\/(?:reel|p|tv)|facebook\.com\/[^\s]+|fb\.watch\/[^\s]+|youtu\.be\/[^\s]+|youtube\.com\/(?:watch\?v=|shorts\/)[^\s]+))/gi;
+    const matches = fullText.match(urlRegex);
+
+    if (matches && matches.length > 0) {
+        let targetUrl = matches[0];
+        let apiUrl = "";
+
+        if (targetUrl.includes("instagram.com")) {
+            apiUrl = `https://api-aswin-sparky.koyeb.app/api/downloader/igdl?url=${encodeURIComponent(targetUrl)}`;
+        } else if (targetUrl.includes("facebook.com") || targetUrl.includes("fb.watch")) {
+            apiUrl = `https://api-aswin-sparky.koyeb.app/api/downloader/fbdl?url=${encodeURIComponent(targetUrl)}`;
+        } else if (targetUrl.includes("youtu.be") || targetUrl.includes("youtube.com")) {
+            apiUrl = `https://api-aswin-sparky.koyeb.app/api/downloader/ytv?url=${encodeURIComponent(targetUrl)}`;
+        }
+
+        if (!apiUrl) return;
+
+        try {
+            await m.react('⬇️');
+            const res = await axios.get(apiUrl);
+            let response = res.data;
+            let videoUrl = "";
+            let audioUrl = "";
+
+            if (response) {
+                if (response.data) {
+                    if (typeof response.data === 'string') videoUrl = response.data;
+                    else if (response.data.high) videoUrl = response.data.high;
+                    else if (response.data.url) videoUrl = response.data.url;
+                    else if (Array.isArray(response.data)) {
+                        for (let item of response.data) {
+                            if (item.type === 'video' || (item.url && item.url.includes('.mp4'))) videoUrl = item.url;
+                            if (item.type === 'audio' || (item.url && (item.url.includes('.mp3') || item.url.includes('audio')))) audioUrl = item.url;
+                        }
+                        if (!videoUrl && response.data[0]?.url) videoUrl = response.data[0].url;
+                    }
+                }
+                if (!videoUrl && response.url) videoUrl = response.url;
+                if (!videoUrl && response.result) videoUrl = response.result;
+                if (!videoUrl && response.video) videoUrl = response.video;
+                if (!audioUrl && response.audio) audioUrl = response.audio;
+            }
+
+            if (videoUrl) {
+                let finalAudioUrl = audioUrl || videoUrl;
+                await Promise.all([
+                    client.sendMessage(m.chat || m.jid, { video: { url: videoUrl } }, { quoted: m }),
+                    client.sendMessage(m.chat || m.jid, { audio: { url: finalAudioUrl }, mimetype: 'audio/mp4', ptt: false }, { quoted: m })
+                ]);
+                await m.react('✅');
+            } else {
+                await m.react('❌');
+            }
+        } catch (e) {
+            console.error("Auto-DL Error:", e);
+            await m.react('❌');
+        }
+    }
 });
 
 // --- AUTO-ROTATING & MENU 1 TO 10 ENGINE ---
@@ -79,7 +153,6 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
         const generate10MenuStyles = () => {
             let stylesArray = [];
 
-            // MENU 1
             stylesArray.push((prefixVal) => {
                 let header = `┏━━━✦ ⟨ *RAHUL AI : MENU 1* ⟩ ✦━━━┓\n` +
                              `┃ 👑 *Owner*  : ${ownerName}\n` +
@@ -103,7 +176,6 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                 return header + body;
             });
 
-            // MENU 2
             stylesArray.push((prefixVal) => {
                 let header = `╔═🔴═🟠═🟡═🟢═🔵═🟣══╗\n` +
                              `║🔥║ 👑 *Owner*  : ${ownerName}\n` +
@@ -127,7 +199,6 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                 return header + body;
             });
 
-            // MENU 3
             stylesArray.push((prefixVal) => {
                 let header = `╭──⚡ [ 🌟 RAHUL AI : MENU 3 🌟 ] ⚡──╮\n` +
                              `│⚡│ 👑 *Owner*  : ${ownerName}\n` +
@@ -151,7 +222,6 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                 return header + body;
             });
 
-            // MENU 4
             stylesArray.push((prefixVal) => {
                 let header = `┏━━🔴━━━━━━━━━━━━━━━━━━━━🔴┓\n` +
                              `┃✨┃ 👑 *Owner*  : ${ownerName}\n` +
@@ -175,7 +245,6 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                 return header + body;
             });
 
-            // MENU 5
             stylesArray.push((prefixVal) => {
                 let header = `⚡ ── [ 🔥 RAHUL AI: MENU 5 🔥 ] ── ⚡\n` +
                              `║💎║ 👑 *Owner*  : ${ownerName}\n` +
@@ -199,7 +268,6 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                 return header + body;
             });
 
-            // MENU 6
             stylesArray.push((prefixVal) => {
                 let header = `┌──────────────────────────┐\n` +
                              `│ 💎 *RAHUL AI: MENU 6*     │\n` +
@@ -225,7 +293,6 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                 return header + body;
             });
 
-            // MENU 7
             stylesArray.push((prefixVal) => {
                 let header = `🔮 ═════ [ RAHUL AI: MENU 7 ] ═════ 🔮\n` +
                              `🔮 👑 *Owner*  : ${ownerName}\n` +
@@ -249,7 +316,6 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                 return header + body;
             });
 
-            // MENU 8
             stylesArray.push((prefixVal) => {
                 let header = `╔══════════════════════════╗\n` +
                              `║   🛡️ RAHUL AI: MENU 8 🛡️  ║\n` +
@@ -275,7 +341,6 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                 return header + body;
             });
 
-            // MENU 9
             stylesArray.push((prefixVal) => {
                 let header = `🌟 ━━━━━━━━━━━━━━━━━━━━━━━━ 🌟\n` +
                              `✨ *RAHUL AI : MENU 9* ✨\n` +
@@ -301,7 +366,6 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                 return header + body;
             });
 
-            // MENU 10
             stylesArray.push((prefixVal) => {
                 let header = `╔══════════════════════════╗\n` +
                              `║     👑 RAHUL AI : MENU 10 👑    ║\n` +
