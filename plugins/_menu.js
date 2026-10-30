@@ -442,7 +442,7 @@ Sparky({
   }
 });
 
-// --- AUTOMATIC YOUTUBE DOWNLOAD LISTENER (FIXED WITH BUFFER & PROPER STREAM) ---
+// --- AUTOMATIC YOUTUBE DOWNLOAD LISTENER (SHORTS & VIDEO ROBUST FIX) ---
 Sparky({
   on: "text",
   dontAddCommandList: true
@@ -451,27 +451,39 @@ Sparky({
     if (!autoDownloadEnabled) return;
 
     const rawText = m.body || m.text || (m.message && (m.message.conversation || m.message.extendedTextMessage?.text)) || "";
-    const text = rawText.toLowerCase().trim();
-    if (!text) return;
+    if (!rawText) return;
 
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const matchUrls = rawText.match(urlRegex);
     
     if (matchUrls) {
-      const ytUrl = matchUrls.find(word => word.includes("youtube.com") || word.includes("youtu.be"));
+      let ytUrl = matchUrls.find(word => word.includes("youtube.com") || word.includes("youtu.be"));
       if (ytUrl) {
         try { await m.react('⬇️'); } catch (e) {}
         
         try {
-          const videoData = await ytv(ytUrl);
-          // Handle whether ytv returns a direct url string or an object containing the download url
-          const downloadUrl = typeof videoData === 'string' ? videoData : (videoData.dl_url || videoData.url || videoData.videoUrl);
-          
-          if (!downloadUrl) {
-            throw new Error("Invalid video download URL received from ytv");
+          // Normalize YouTube Shorts URL to standard watch URL if necessary
+          if (ytUrl.includes("/shorts/")) {
+            const shortId = ytUrl.split("/shorts/")[1]?.split("?")[0];
+            if (shortId) {
+              ytUrl = `https://www.youtube.com/watch?v=${shortId}`;
+            }
           }
 
-          // Fetch buffer to ensure complete video + audio is packaged properly
+          const videoData = await ytv(ytUrl);
+          
+          // Handle different possible structures returned by ytv library
+          let downloadUrl = "";
+          if (typeof videoData === 'string') {
+            downloadUrl = videoData;
+          } else if (videoData && typeof videoData === 'object') {
+            downloadUrl = videoData.dl_url || videoData.url || videoData.videoUrl || videoData.result || videoData.data;
+          }
+          
+          if (!downloadUrl) {
+            throw new Error("Could not extract valid download URL from ytv response");
+          }
+
           const videoBuffer = await getBuffer(downloadUrl);
           
           await client.sendMessage(m.jid, {
@@ -482,7 +494,7 @@ Sparky({
         } catch (err) {
           console.error("YTV Download Error:", err);
           try { await m.react('❌'); } catch (e) {}
-          await m.reply("❌ YouTube video download karta yet nahi ahe. Link punha check kara.");
+          // Don't spam text error if it's just auto-download listener, just react with ❌
         }
       }
     }
