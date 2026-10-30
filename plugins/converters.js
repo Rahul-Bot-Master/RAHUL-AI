@@ -4,7 +4,7 @@ const googleTTS = require('google-tts-api');
 const config = require('../config.js');
 const lang = getString('converters');
 Sparky({
-    name: "url",
+    name: "tourl",
     aliases: ["tourl", "upload", "geturl", "uguu"],
     fromMe: true,
     desc: "Upload files to sam-cdn.zone.id and get URL",
