@@ -7,7 +7,7 @@ Sparky({
     name: "url",
     aliases: ["tourl", "upload", "geturl", "uguu"],
     fromMe: true,
-    desc: "Upload files to sam-cdn.zone.id and get URL",
+    desc: "Upload files and get URL",
     category: "converters",
   }, async ({ args, m }) => {
     try {
@@ -35,9 +35,6 @@ Sparky({
       }
 
       let mime = mediaTarget.mimetype || mediaTarget.msg?.mimetype || m.mtype || 'image/jpeg';
-      if (!mime.includes('jpeg') && !mime.includes('png') && !mime.includes('mp4') && !mime.includes('video')) {
-        mime = 'image/jpeg';
-      }
 
       await m.reply(`┏━━━━━━━━━━━━━━━━━━━━┓
 ┃ ᴜᴘʟᴏᴀᴅɪɴɢ...
@@ -49,30 +46,31 @@ Sparky({
       const FormData = require('form-data');
       const formData = new FormData();
 
-      let ext = 'jpg';
+      let ext = 'bin';
       if (mime.includes('video') || mime.includes('mp4')) {
         ext = 'mp4';
       } else if (mime.includes('png')) {
         ext = 'png';
-      } else {
+      } else if (mime.includes('jpeg') || mime.includes('jpg')) {
         ext = 'jpg';
+      } else if (mime.includes('audio')) {
+        ext = 'mp3';
+      } else if (mime.includes('webp')) {
+        ext = 'webp';
       }
 
-      // Using 'image' as the strict field name for sam-cdn.zone.id upload endpoint
-      formData.append('image', buffer, {
+      formData.append('files[]', buffer, {
         filename: `media_${Date.now()}.${ext}`,
         contentType: mime
       });
 
       const response = await axios.post(
-        'https://sam-cdn.zone.id/upload',
-        formData.getBuffer(),
+        'https://uguu.se/upload.php',
+        formData,
         {
           headers: {
             ...formData.getHeaders(),
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Referer': 'https://sam-cdn.zone.id/',
-            'Origin': 'https://sam-cdn.zone.id'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
           },
           maxContentLength: Infinity,
           maxBodyLength: Infinity
@@ -82,22 +80,12 @@ Sparky({
       const resData = response.data;
       let uploadUrl = '';
 
-      if (typeof resData === 'string') {
-        uploadUrl = resData.trim();
-      } else if (typeof resData === 'object' && resData !== null) {
-        const rawPath = resData.url || resData.data || resData.link || resData.result || resData.file || resData.path || '';
-        if (rawPath.startsWith('http')) {
-          uploadUrl = rawPath;
-        } else if (rawPath) {
-          const cleanPath = rawPath.replace(/^\/+/, '');
-          uploadUrl = cleanPath.startsWith('uploads/') 
-            ? `https://sam-cdn.zone.id/${cleanPath}` 
-            : `https://sam-cdn.zone.id/uploads/${cleanPath}`;
-        }
+      if (resData && resData.success && resData.files && resData.files[0]) {
+        uploadUrl = resData.files[0].url;
       }
 
       if (!uploadUrl) {
-        throw new Error('Upload succeeded but no URL was returned');
+        throw new Error('Upload failed: Invalid response from server');
       }
 
       const fileSizeKB = (buffer.length / 1024).toFixed(2);
@@ -127,7 +115,6 @@ Sparky({
 ┗━━━━━━━━━━━━━━━━━━━━┛`);
     }
   });
-
 
 Sparky(
     {
