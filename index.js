@@ -175,7 +175,11 @@ const { Console } = require('console');
                 
                 fs.readdirSync('./plugins')
                   .filter(file => path.extname(file) === '.js')
-                  .forEach(file => require('./plugins/' + file));
+                  .forEach(file => {
+                      try {
+                          require('./plugins/' + file);
+                      } catch (e) {}
+                  });
 
                 const startupMessage = 
                     "╔══════════════════════════╗\n" +
@@ -219,7 +223,7 @@ const { Console } = require('console');
             }
         });
 
-        // Original Original Message Upsert Handler (Exact standard format)
+        // Enhanced Message Upsert Handler with Smart Fallback Matcher for Plugins/Settings/Update
         sock.ev.on('messages.upsert', async (msgEvent) => {
             let mek;
             try {
@@ -236,18 +240,47 @@ const { Console } = require('console');
             commands.forEach(async (cmd) => {
                 if (cmd.fromMe && !mek.fromMe) return;
 
-                let commandName = mek.body ? mek.body[0].toLowerCase() + mek.body.slice(1).trim() : '';
+                let rawBody = mek.body ? mek.body.trim() : '';
+                let commandName = rawBody ? rawBody[0].toLowerCase() + rawBody.slice(1).trim() : '';
+                let cleanBody = rawBody.toLowerCase().replace(/^[^\w\s]/, '').trim();
                 let args;
 
                 try {
                     if (typeof cmd.on === 'function') {
-                        cmd.on({ m: mek, args: mek.body, client: sock });
-                    } else if (cmd.name && cmd.name.test(commandName)) {
-                        args = mek.body.replace(cmd.name, '$1').trim();
-                        cmd.function({ m: mek, args: args, client: sock });
+                        cmd.on({ m: mek, args: rawBody, client: sock });
+                    } else {
+                        let executed = false;
+
+                        // 1. Try standard regex test
+                        if (cmd.name && typeof cmd.name.test === 'function' && cmd.name.test(commandName)) {
+                            args = rawBody.replace(cmd.name, '$1').trim();
+                            await cmd.function({ m: mek, args: args, client: sock });
+                            executed = true;
+                        } 
+                        // 2. Smart Fallback for plugins, settings, update, etc.
+                        else if (cmd.name) {
+                            let cmdStr = typeof cmd.name === 'string' ? cmd.name : (cmd.name.source || '');
+                            let cleanCmd = cmdStr.replace(/[\^\$\b\W]/g, '').toLowerCase();
+
+                            if (cleanBody === cleanCmd || cleanBody.startsWith(cleanCmd)) {
+                                args = rawBody.slice(cleanCmd.length).trim();
+                                if (typeof cmd.function === 'function') {
+                                    await cmd.function({ m: mek, args: args, client: sock });
+                                    executed = true;
+                                }
+                            }
+                        }
+
+                        // Fallback pattern check
+                        if (!executed && cmd.pattern && cleanBody.startsWith(cmd.pattern.toLowerCase())) {
+                            args = rawBody.slice(cmd.pattern.length).trim();
+                            if (typeof cmd.function === 'function') {
+                                await cmd.function({ m: mek, args: args, client: sock });
+                            }
+                        }
                     }
                 } catch (cmdErr) {
-                    console.log(cmdErr);
+                    console.log("Command Error:", cmdErr);
                 }
             });
         });
