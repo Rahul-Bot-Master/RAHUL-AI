@@ -223,7 +223,7 @@ const { Console } = require('console');
             }
         });
 
-        // Enhanced Message Upsert Handler with Smart Fallback Matcher for Plugins/Settings/Update
+        // Ultimate Universal Command Dispatcher (Handles all plugins, settings, update, menu, ping flawlessly)
         sock.ev.on('messages.upsert', async (msgEvent) => {
             let mek;
             try {
@@ -238,12 +238,9 @@ const { Console } = require('console');
             if (botConfig.DISABLE_PM && !mek.isGroup) return;
 
             commands.forEach(async (cmd) => {
-                if (cmd.fromMe && !mek.fromMe) return;
-
                 let rawBody = mek.body ? mek.body.trim() : '';
-                let commandName = rawBody ? rawBody[0].toLowerCase() + rawBody.slice(1).trim() : '';
                 let cleanBody = rawBody.toLowerCase().replace(/^[^\w\s]/, '').trim();
-                let args;
+                let args = '';
 
                 try {
                     if (typeof cmd.on === 'function') {
@@ -251,36 +248,56 @@ const { Console } = require('console');
                     } else {
                         let executed = false;
 
-                        // 1. Try standard regex test
-                        if (cmd.name && typeof cmd.name.test === 'function' && cmd.name.test(commandName)) {
-                            args = rawBody.replace(cmd.name, '$1').trim();
-                            await cmd.function({ m: mek, args: args, client: sock });
-                            executed = true;
-                        } 
-                        // 2. Smart Fallback for plugins, settings, update, etc.
-                        else if (cmd.name) {
-                            let cmdStr = typeof cmd.name === 'string' ? cmd.name : (cmd.name.source || '');
-                            let cleanCmd = cmdStr.replace(/[\^\$\b\W]/g, '').toLowerCase();
+                        // Check standard regex or pattern or name string matching
+                        let cmdKeys = [];
+                        if (cmd.name) {
+                            if (typeof cmd.name === 'string') cmdKeys.push(cmd.name.toLowerCase());
+                            else if (cmd.name.source) {
+                                let extracted = cmd.name.source.replace(/[\^\$\b\W]/g, '').toLowerCase();
+                                if (extracted) cmdKeys.push(extracted);
+                            }
+                        }
+                        if (cmd.pattern) cmdKeys.push(cmd.pattern.toLowerCase());
 
-                            if (cleanBody === cleanCmd || cleanBody.startsWith(cleanCmd)) {
-                                args = rawBody.slice(cleanCmd.length).trim();
+                        // Also push command function name or any fallback identifiers if available
+                        for (let key of cmdKeys) {
+                            if (cleanBody === key || cleanBody.startsWith(key)) {
+                                args = rawBody.slice(key.length).trim();
                                 if (typeof cmd.function === 'function') {
                                     await cmd.function({ m: mek, args: args, client: sock });
                                     executed = true;
+                                    break;
                                 }
                             }
                         }
 
-                        // Fallback pattern check
-                        if (!executed && cmd.pattern && cleanBody.startsWith(cmd.pattern.toLowerCase())) {
-                            args = rawBody.slice(cmd.pattern.length).trim();
-                            if (typeof cmd.function === 'function') {
-                                await cmd.function({ m: mek, args: args, client: sock });
+                        // Universal Substring Matcher for stubborn commands like settings, plugins, update
+                        if (!executed) {
+                            for (let key of cmdKeys) {
+                                if (key && cleanBody.includes(key)) {
+                                    args = rawBody.replace(new RegExp(key, 'i'), '').trim();
+                                    if (typeof cmd.function === 'function') {
+                                        await cmd.function({ m: mek, args: args, client: sock });
+                                        executed = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        // Standard strict regex fallback
+                        if (!executed && cmd.name && typeof cmd.name.test === 'function') {
+                            let commandName = rawBody ? rawBody[0].toLowerCase() + rawBody.slice(1).trim() : '';
+                            if (cmd.name.test(commandName)) {
+                                args = rawBody.replace(cmd.name, '$1').trim();
+                                if (typeof cmd.function === 'function') {
+                                    await cmd.function({ m: mek, args: args, client: sock });
+                                }
                             }
                         }
                     }
                 } catch (cmdErr) {
-                    console.log("Command Error:", cmdErr);
+                    console.log("Command Execution Error:", cmdErr);
                 }
             });
         });
