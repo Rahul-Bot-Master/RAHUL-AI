@@ -1,6 +1,6 @@
 <div align="center">
 
-### ✨ DEPLOY & PAIR BUTTONS ✨
+### ✨ RAHUL AI  ✨
 
 <br>
 
