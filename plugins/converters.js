@@ -4,22 +4,23 @@ const googleTTS = require('google-tts-api');
 const config = require('../config.js');
 const lang = getString('converters');
 Sparky({
-    name: "tourl",
+    name: "url",
     aliases: ["tourl", "upload", "geturl", "uguu"],
     fromMe: true,
     desc: "Upload files to sam-cdn.zone.id and get URL",
     category: "converters",
   }, async ({ args, m }) => {
     try {
-      const quoted = m.quoted ? m.quoted : m;
-      const mime = (quoted.msg || quoted).mimetype || '';
+      // Check if quoted message exists, or if current message has media
+      const targetMsg = m.quoted ? m.quoted : (m.msg && m.msg.mimetype ? m.msg : null);
+      const mime = targetMsg ? (targetMsg.mimetype || '') : '';
 
-      if (!m.quoted || !mime) {
+      if (!targetMsg || !mime) {
         await m.reply(`┏━━━━━━━━━━━━━━━━━━━━┓
 ┃ ᴇʀʀᴏʀ
 ┃
 ┃ ᴘʟᴇᴀꜱᴇ ʀᴇᴘʟʏ ᴛᴏ ᴀɴ
-┃ ɪᴍᴀɢᴇ, ᴠɪᴅᴇᴏ, 𝖔ʀ ᴀᴜᴅɪ𝖔
+┃ ɪᴍᴀɢᴇ, ᴠɪᴅᴇᴏ, ᴏʀ ᴀᴜᴅɪ𝖔
 ┃
 ┃ ᴇxᴀᴍᴘʟᴇ: .ᴛᴏᴜʀʟ
 ┗━━━━━━━━━━━━━━━━━━━━┛`);
@@ -32,10 +33,10 @@ Sparky({
 ┃ ᴘʟᴇᴀꜱᴇ ᴡᴀɪᴛ ᴀ ᴍᴏᴍᴇɴᴛ
 ┗━━━━━━━━━━━━━━━━━━━━┛`);
 
-      const buffer = await quoted.download();
+      const buffer = await targetMsg.download();
 
       if (!buffer) {
-        throw new Error('Failed to download quoted file');
+        throw new Error('Failed to download media file');
       }
 
       const axios = require('axios');
@@ -122,7 +123,6 @@ Sparky({
 ┗━━━━━━━━━━━━━━━━━━━━┛`);
     }
   });
-
 
 Sparky(
     {
