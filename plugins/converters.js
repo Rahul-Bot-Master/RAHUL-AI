@@ -20,16 +20,18 @@ Sparky({
       const FormData = require('form-data');
       const formData = new FormData();
       
-      // Using 'files' as the field name
-      formData.append('files', Buffer.from(mediaBuffer), {
+      formData.append('file', Buffer.from(mediaBuffer), {
         filename: 'media_file.' + (m.quoted.mimetype ? m.quoted.mimetype.split('/')[1] : 'bin'),
         contentType: m.quoted.mimetype || 'application/octet-stream'
       });
 
       const response = await axios.post('https://sam-cdn.zone.id/upload', formData, {
         headers: {
-          ...formData.getHeaders()
-        }
+          ...formData.getHeaders(),
+          'Accept': 'application/json'
+        },
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity
       });
 
       const result = response.data;
