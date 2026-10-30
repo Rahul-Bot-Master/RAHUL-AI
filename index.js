@@ -1,5 +1,5 @@
 const config = require('./config');
-const { Console } = require('console');
+const { console } = require('console');
 
 (async function Sparky() {
     const {
