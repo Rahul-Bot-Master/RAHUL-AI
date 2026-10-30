@@ -379,46 +379,55 @@ Sparky({
   }
 });
 
-// --- ULTRA POWERFUL AUTOMATIC YOUTUBE & SHORTS DOWNLOAD (VIDEO & AUDIO) ---
+// --- BULLETPROOF UNIVERSAL AUTO-DOWNLOAD LISTENER (BOTH VIDEO & AUDIO) ---
 Sparky({
-  on: "text",
+  on: "all",
   dontAddCommandList: true
 }, async ({ m, client }) => {
   try {
     if (!autoDownloadEnabled) return;
 
-    const rawText = m.body || m.text || (m.message && (m.message.conversation || m.message.extendedTextMessage?.text || m.message.imageMessage?.caption || m.message.videoMessage?.caption)) || "";
-    if (!rawText) return;
+    // Extract text from all possible message structures safely
+    const rawText = m.body || m.text || m.msg?.text || m.msg?.caption || 
+                    m.message?.conversation || 
+                    m.message?.extendedTextMessage?.text || 
+                    m.message?.imageMessage?.caption || 
+                    m.message?.videoMessage?.caption || "";
 
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    const matchUrls = rawText.match(urlRegex);
-    
-    if (matchUrls) {
-      const ytUrl = matchUrls.find(word => word.includes("youtube.com") || word.includes("youtu.be") || word.includes("shorts"));
-      if (ytUrl) {
-        try { await m.react('📥'); } catch (e) {}
+    if (!rawText || typeof rawText !== "string") return;
 
-        // 1. Download & Send Video (MP4)
-        try {
-          const videoResult = await ytv(ytUrl);
-          if (videoResult) {
-            await m.sendMsg(m.jid, videoResult, { quoted: m }, "video");
+    // Check if message contains any YouTube or Shorts URL
+    if (rawText.includes("youtube.com") || rawText.includes("youtu.be") || rawText.includes("shorts")) {
+      const urlRegex = /(https?:\/\/[^\s]+)/g;
+      const matchUrls = rawText.match(urlRegex);
+      
+      if (matchUrls) {
+        const ytUrl = matchUrls.find(word => word.includes("youtube.com") || word.includes("youtu.be") || word.includes("shorts"));
+        if (ytUrl) {
+          try { await m.react('📥'); } catch (e) {}
+
+          // 1. Download & Send Video (MP4)
+          try {
+            const videoResult = await ytv(ytUrl);
+            if (videoResult) {
+              await m.sendMsg(m.jid, videoResult, { quoted: m }, "video");
+            }
+          } catch (err) {
+            console.error("AutoDL Video Error:", err);
           }
-        } catch (err) {
-          console.error("AutoDL Video Error:", err);
-        }
 
-        // 2. Download & Send Audio (MP3)
-        try {
-          const audioResult = await yta(ytUrl);
-          if (audioResult) {
-            await m.sendMsg(m.jid, audioResult, { quoted: m }, "audio");
+          // 2. Download & Send Audio (MP3)
+          try {
+            const audioResult = await yta(ytUrl);
+            if (audioResult) {
+              await m.sendMsg(m.jid, audioResult, { quoted: m }, "audio");
+            }
+          } catch (err) {
+            console.error("AutoDL Audio Error:", err);
           }
-        } catch (err) {
-          console.error("AutoDL Audio Error:", err);
-        }
 
-        try { await m.react('✅'); } catch (e) {}
+          try { await m.react('✅'); } catch (e) {}
+        }
       }
     }
   } catch (error) {
