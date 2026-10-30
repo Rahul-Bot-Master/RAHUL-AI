@@ -358,7 +358,7 @@ Sparky({ name: "menu6", category: "misc", fromMe: isPublic, desc: "Menu Style 6"
 Sparky({ name: "menu7", category: "misc", fromMe: isPublic, desc: "Menu Style 7" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 6); });
 Sparky({ name: "menu8", category: "misc", fromMe: isPublic, desc: "Menu Style 8" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 7); });
 Sparky({ name: "menu9", category: "misc", fromMe: isPublic, desc: "Menu Style 9" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 8); });
-Sparky({ name: "menu10", category: &quot;misc&quot;, fromMe: isPublic, desc: &quot;Menu Style 10&quot; }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 9); });
+Sparky({ name: "menu10", category: "misc", fromMe: isPublic, desc: "Menu Style 10" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 9); });
 
 // --- AUTODL ON/OFF COMMAND ---
 Sparky({
