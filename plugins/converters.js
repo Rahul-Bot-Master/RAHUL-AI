@@ -24,13 +24,15 @@ Sparky({
         contentType: m.quoted.mimetype || 'application/octet-stream'
       });
 
-      const response = await axios.post('https://sam-cdn.zone.id/upload', formData, {
+      const response = await fetch('https://sam-cdn.zone.id/upload', {
+        method: 'POST',
+        body: formData,
         headers: {
           ...formData.getHeaders()
         }
       });
 
-      const result = response.data;
+      const result = await response.json();
       const mediaUrl = result.url || result.data || result.link;
 
       if (!mediaUrl) {
@@ -40,9 +42,9 @@ Sparky({
       await m.react('✅');
       m.reply(mediaUrl);
     } catch (error) {
-      console.error('URL Upload Error:', error.response?.data || error.message);
+      console.error('URL Upload Error:', error.message);
       await m.react('❌');
-      m.reply('Error: ' + (error.response?.data?.message || error.message || 'Upload failed'));
+      m.reply('Error: ' + (error.message || 'Upload failed'));
     }
   });
 
