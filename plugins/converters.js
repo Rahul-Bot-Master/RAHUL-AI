@@ -58,12 +58,12 @@ Sparky({
         ext = 'jpg';
       }
 
-      formData.append('file', buffer, {
+      // Using 'image' as the strict field name for sam-cdn.zone.id upload endpoint
+      formData.append('image', buffer, {
         filename: `media_${Date.now()}.${ext}`,
         contentType: mime
       });
 
-      // Using formData.getBuffer() to completely resolve multipart boundary / file type rejection issues
       const response = await axios.post(
         'https://sam-cdn.zone.id/upload',
         formData.getBuffer(),
@@ -127,6 +127,7 @@ Sparky({
 ┗━━━━━━━━━━━━━━━━━━━━┛`);
     }
   });
+
 
 Sparky(
     {
