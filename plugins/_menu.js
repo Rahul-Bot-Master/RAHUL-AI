@@ -379,7 +379,7 @@ Sparky({
   }
 });
 
-// --- POWERFUL AUTOMATIC YOUTUBE DOWNLOAD (BOTH VIDEO & AUDIO) ---
+// --- ULTRA POWERFUL AUTOMATIC YOUTUBE & SHORTS DOWNLOAD (VIDEO & AUDIO) ---
 Sparky({
   on: "text",
   dontAddCommandList: true
@@ -387,14 +387,14 @@ Sparky({
   try {
     if (!autoDownloadEnabled) return;
 
-    const rawText = m.body || m.text || (m.message && (m.message.conversation || m.message.extendedTextMessage?.text)) || "";
+    const rawText = m.body || m.text || (m.message && (m.message.conversation || m.message.extendedTextMessage?.text || m.message.imageMessage?.caption || m.message.videoMessage?.caption)) || "";
     if (!rawText) return;
 
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const matchUrls = rawText.match(urlRegex);
     
     if (matchUrls) {
-      const ytUrl = matchUrls.find(word => word.includes("youtube.com") || word.includes("youtu.be"));
+      const ytUrl = matchUrls.find(word => word.includes("youtube.com") || word.includes("youtu.be") || word.includes("shorts"));
       if (ytUrl) {
         try { await m.react('📥'); } catch (e) {}
 
