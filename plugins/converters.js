@@ -11,7 +11,6 @@ Sparky({
     category: "converters",
   }, async ({ args, m }) => {
     try {
-      // Smart fallback: check quoted message first, otherwise use current message
       const mediaTarget = m.quoted ? m.quoted : m;
       let buffer = null;
 
@@ -28,14 +27,17 @@ Sparky({
 ┃ ᴇʀʀᴏʀ
 ┃
 ┃ ᴘʟᴇᴀꜱᴇ ʀᴇᴘʟʏ ᴛᴏ ᴏʀ ꜱᴇɴᴅ
-┃ ᴀɴ ɪᴍᴀɢᴇ, ᴠɪᴅᴇ🇴, ᴏʀ 🇦ᴜᴅɪᴏ
+┃ ᴀɴ ɪᴍᴀɢᴇ, ᴠɪᴅᴇ🇴, ᴏʀ 🇦ᴜᴅɪｵ
 ┃
 ┃ ᴇxᴀᴍᴘʟᴇ: .ᴛᴏᴜʀʟ
 ┗━━━━━━━━━━━━━━━━━━━━┛`);
         return;
       }
 
-      const mime = mediaTarget.mimetype || mediaTarget.msg?.mimetype || m.mtype || 'image/jpeg';
+      let mime = mediaTarget.mimetype || mediaTarget.msg?.mimetype || m.mtype || 'image/jpeg';
+      if (mime === 'document' || !mime.includes('/')) {
+        mime = 'image/jpeg';
+      }
 
       await m.reply(`┏━━━━━━━━━━━━━━━━━━━━┓
 ┃ ᴜᴘʟᴏᴀᴅɪɴɢ...
@@ -55,9 +57,10 @@ Sparky({
         }
       }
 
-      formData.append('image', buffer, {
+      // Using 'file' as the field name because server accepts only images/videos via 'file' field
+      formData.append('file', buffer, {
         filename: `media_${Date.now()}.${ext}`,
-        contentType: mime || 'application/octet-stream'
+        contentType: mime
       });
 
       const response = await axios.post(
@@ -117,9 +120,7 @@ Sparky({
       await m.reply(`┏━━━━━━━━━━━━━━━━━━━━┓
 ┃ ᴜᴘʟᴏᴀᴅ ꜰᴀɪʟᴇᴅ
 ┃
-┃ ᴇʀʀᴏʀ: ${err.response?.data?.message ||
-                err.response?.data?.error ||
-                err.message}
+┃ ᴇʀʀᴏʀ: ${typeof err.response?.data === 'string' ? err.response.data : (err.response?.data?.message || err.response?.data?.error || err.message)}
 ┃
 ┃ ᴘʟᴇᴀꜱᴇ ᴛʀʏ ᴀɢᴀɪɴ
 ┗━━━━━━━━━━━━━━━━━━━━┛`);
