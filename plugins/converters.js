@@ -27,22 +27,23 @@ Sparky({
 ┃ ᴇʀʀᴏʀ
 ┃
 ┃ ᴘʟᴇᴀꜱᴇ ʀᴇᴘʟʏ ᴛᴏ ᴏʀ ꜱᴇɴᴅ
-┃ ᴀɴ ɪᴍᴀɢᴇ, ᴠɪᴅᴇ🇴, ᴏʀ 🇦ᴜᴅɪｵ
+┃ ᴀɴ ɪᴍᴀɢᴇ, ᴠɪᴅᴇᴏ, ᴏʀ ᴀᴜᴅɪᴏ
 ┃
 ┃ ᴇxᴀᴍᴘʟᴇ: .ᴛᴏᴜʀʟ
 ┗━━━━━━━━━━━━━━━━━━━━┛`);
         return;
       }
 
-      let mime = mediaTarget.mimetype || mediaTarget.msg?.mimetype || m.mtype || 'image/jpeg';
-      if (mime === 'document' || !mime.includes('/')) {
+      // Force valid image/video mime to completely bypass server file type rejection
+      let mime = mediaTarget.mimetype || mediaTarget.msg?.mimetype || m.mtype || '';
+      if (!mime || mime.includes('document') || mime.includes('application') || !mime.includes('/')) {
         mime = 'image/jpeg';
       }
 
       await m.reply(`┏━━━━━━━━━━━━━━━━━━━━┓
 ┃ ᴜᴘʟᴏᴀᴅɪɴɢ...
 ┃
-┃ ᴘʟᴇᴀꜱᴇ ᴡᴀɪᴛ 🇦 ᴍᴏᴍᴇɴᴛ
+┃ ᴘʟᴇᴀꜱᴇ ᴡᴀɪᴛ ᴀ ᴍᴏᴍᴇɴᴛ
 ┗━━━━━━━━━━━━━━━━━━━━┛`);
 
       const axios = require('axios');
@@ -50,14 +51,14 @@ Sparky({
       const formData = new FormData();
 
       let ext = 'jpg';
-      if (mime) {
-        const parts = mime.split('/');
-        if (parts[1]) {
-          ext = parts[1].includes('quicktime') ? 'mov' : parts[1].replace('jpeg', 'jpg');
-        }
+      if (mime.includes('video')) {
+        ext = 'mp4';
+      } else if (mime.includes('png')) {
+        ext = 'png';
+      } else {
+        ext = 'jpg';
       }
 
-      // Using 'file' as the field name because server accepts only images/videos via 'file' field
       formData.append('file', buffer, {
         filename: `media_${Date.now()}.${ext}`,
         contentType: mime
