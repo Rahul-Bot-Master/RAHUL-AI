@@ -28,9 +28,10 @@ Sparky({
         }
       }
 
-      formData.append('file', Buffer.from(mediaBuffer), {
+      // Using 'image' as field name instead of 'file' to prevent 400 Bad Request
+      formData.append('image', Buffer.from(mediaBuffer), {
         filename: `media_${Date.now()}.${ext}`,
-        contentType: m.quoted.mimetype || 'application/octet-stream'
+        contentType: m.quoted.mimetype || 'image/jpeg'
       });
 
       const response = await axios.post('https://sam-cdn.zone.id/upload', formData, {
@@ -56,20 +57,19 @@ Sparky({
       if (!mediaUrl) {
         throw new Error('Upload failed: ' + JSON.stringify(resData));
       }
-
+		
       if (!mediaUrl.startsWith('http')) {
         const cleanPath = mediaUrl.replace(/^\/+/, '');
         mediaUrl = cleanPath.startsWith('uploads/') 
           ? `https://sam-cdn.zone.id/${cleanPath}` 
           : `https://sam-cdn.zone.id/uploads/${cleanPath}`;
       }
-
       await m.react('✅');
       m.reply(mediaUrl);
     } catch (error) {
       console.error('URL Upload Error:', error.response?.data || error.message);
       await m.react('❌');
-      m.reply('Error: ' + (error.response?.data?.message || error.message || 'Upload failed'));
+      m.reply('Error: ' + (typeof error.response?.data === 'string' ? error.response.data : (error.response?.data?.message || error.message || 'Upload failed')));
     }
   });
 
