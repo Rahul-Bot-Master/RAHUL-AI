@@ -13,22 +13,24 @@ Sparky({
       return m.reply('Reply to an Image/Video/Audio');
     }
     try {
-        await m.react('⏫');
+      await m.react('⏫');
       const mediaBuffer = await m.quoted.download();
       
+      const FormData = require('form-data');
       const formData = new FormData();
+      
       formData.append('file', Buffer.from(mediaBuffer), {
-        filename: 'media_file',
+        filename: 'media_file.' + (m.quoted.mimetype ? m.quoted.mimetype.split('/')[1] : 'bin'),
         contentType: m.quoted.mimetype || 'application/octet-stream'
       });
 
-      const response = await fetch('https://sam-cdn.zone.id/upload', {
-        method: 'POST',
-        body: formData,
-        headers: formData.getHeaders ? formData.getHeaders() : {}
+      const response = await axios.post('https://sam-cdn.zone.id/upload', formData, {
+        headers: {
+          ...formData.getHeaders()
+        }
       });
 
-      const result = await response.json();
+      const result = response.data;
       const mediaUrl = result.url || result.data || result.link;
 
       if (!mediaUrl) {
@@ -38,7 +40,8 @@ Sparky({
       await m.react('✅');
       m.reply(mediaUrl);
     } catch (error) {
-        await m.react('❌');
+      console.error('URL Upload Error:', error);
+      await m.react('❌');
       m.reply('An error occurred while uploading the media.');
     }
   });
