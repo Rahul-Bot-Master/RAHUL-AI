@@ -173,9 +173,18 @@ const { Console } = require('console');
                 await loadExternalPlugins();
                 console.log('Connected.');
                 
-                fs.readdirSync('./plugins')
-                  .filter(file => path.extname(file) === '.js')
-                  .forEach(file => require('./plugins/' + file));
+                // Load all local plugins safely
+                if (fs.existsSync('./plugins')) {
+                    fs.readdirSync('./plugins')
+                      .filter(file => path.extname(file) === '.js')
+                      .forEach(file => {
+                          try {
+                              require('./plugins/' + file);
+                          } catch (plugErr) {
+                              console.log('Error loading plugin ' + file + ':', plugErr);
+                          }
+                      });
+                }
 
                 const startupMessage = 
                     "╔══════════════════════════╗\n" +
@@ -219,7 +228,7 @@ const { Console } = require('console');
             }
         });
 
-        // Message upsert handler (Robust command & plugin matcher)
+        // Message upsert handler (Ultimate Bulletproof Command Dispatcher)
         sock.ev.on('messages.upsert', async (msgEvent) => {
             let mek;
             try {
@@ -233,9 +242,9 @@ const { Console } = require('console');
 
             if (botConfig.DISABLE_PM && !mek.isGroup) return;
 
-            commands.forEach(async (cmd) => {
-                if (cmd.fromMe && !mek.fromMe) return;
+            if (!commands || commands.length === 0) return;
 
+            commands.forEach(async (cmd) => {
                 let rawBody = mek.body ? mek.body.trim() : '';
                 let commandName = rawBody ? rawBody.toLowerCase() : '';
                 let args = '';
@@ -261,10 +270,15 @@ const { Console } = require('console');
                             }
                         }
 
-                        // Fallback check for exact command string matching
-                        if (!isMatched && cmd.name && typeof cmd.name === 'string' && commandName.includes(cmd.name.toLowerCase())) {
-                            isMatched = true;
-                            args = rawBody.replace(new RegExp(cmd.name, 'i'), '').trim();
+                        // Universal Fallback for exact command matching (like 'plugins', 'menu', 'ping')
+                        if (!isMatched && cmd.name) {
+                            let cmdStr = typeof cmd.name === 'string' ? cmd.name : (cmd.name.source || '');
+                            let cleanCmdStr = cmdStr.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+                            let cleanBody = commandName.replace(/[^a-zA-Z0-9]/g, '');
+                            if (cleanBody === cleanCmdStr || cleanBody.includes(cleanCmdStr)) {
+                                isMatched = true;
+                                args = rawBody.replace(new RegExp(cmdStr, 'i'), '').trim();
+                            }
                         }
 
                         if (isMatched && typeof cmd.function === 'function') {
