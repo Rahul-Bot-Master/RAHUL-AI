@@ -1,4 +1,4 @@
-<div align="center">
+<div align="center" style="background: linear-gradient(135deg, #030712, #0d001a, #030712); padding: 30px; border-radius: 20px; border: 3px solid #00ffff; box-shadow: 0 0 40px #00ffff, inset 0 0 25px #ff0055;">
 
 <!-- Glowing Cyber Profile Avatar -->
 <img src="https://n.uguu.se/oRbNlbVf.jpg" width="140" height="140" style="border-radius: 50%; box-shadow: 0 0 40px #00ffff, 0 0 20px #ff0055; border: 3px solid #00ffff; object-fit: cover; margin-bottom: 15px;" alt="RAHUL-AI Logo">
@@ -24,7 +24,7 @@
 
 <br><br>
 
----
+<hr style="border: 0; height: 2px; background: linear-gradient(90deg, transparent, #00ffff, #ff0055, transparent); box-shadow: 0 0 15px #00ffff; margin: 20px 0;">
 
 <br>
 
@@ -45,7 +45,7 @@
 
 <br>
 
----
+<hr style="border: 0; height: 2px; background: linear-gradient(90deg, transparent, #ff0055, #00ffff, transparent); box-shadow: 0 0 15px #ff0055; margin: 20px 0;">
 
 <br>
 
@@ -66,7 +66,7 @@
 
 <br>
 
----
+<hr style="border: 0; height: 1px; background: #00ffff; box-shadow: 0 0 10px #00ffff; margin: 20px 0;">
 
 <br>
 
