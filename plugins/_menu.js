@@ -461,9 +461,16 @@ Sparky({
       const ytUrl = matchUrls.find(word => word.includes("youtube.com") || word.includes("youtu.be"));
       if (ytUrl) {
         try { await m.react('⬇️'); } catch (e) {}
-        const url = await ytv(ytUrl);
-        await m.sendMsg(m.jid, url, { quoted: m }, "video");
-        try { await m.react('✅'); } catch (e) {}
+        
+        try {
+          const mediaUrl = await ytv(ytUrl);
+          await m.sendMsg(m.jid, mediaUrl, { quoted: m }, "video");
+          try { await m.react('✅'); } catch (e) {}
+        } catch (err) {
+          console.error("YTV Download Error:", err);
+          try { await m.react('❌'); } catch (e) {}
+          await m.reply("❌ YouTube video download karta yet nahi ahe. Link punha check kara.");
+        }
       }
     }
   } catch (error) {
