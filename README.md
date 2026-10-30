@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://i.ibb.co/3s6n015/21560.png" width="220" height="220" alt="RAHUL-AI Logo" style="border-radius: 50%; box-shadow: 0 0 20px #00f, 0 0 40px #00f, 0 0 60px #00f; animation: glowing 2s infinite;" />
+<img src="https://sam-cdn.zone.id/files/NhuTElf9uE.png" width="220" height="220" alt="RAHUL-AI Logo" style="border-radius: 50%; box-shadow: 0 0 20px #00f, 0 0 40px #00f, 0 0 60px #00f; animation: glowing 2s infinite;" />
 
 # 👑 RAHUL-AI WHATSAPP BOT 👑
 
