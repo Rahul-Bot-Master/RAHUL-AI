@@ -40,9 +40,9 @@ Sparky({
       await m.react('✅');
       m.reply(mediaUrl);
     } catch (error) {
-      console.error('URL Upload Error:', error);
+      console.error('URL Upload Error:', error.response?.data || error.message);
       await m.react('❌');
-      m.reply('An error occurred while uploading the media.');
+      m.reply('Error: ' + (error.response?.data?.message || error.message || 'Upload failed'));
     }
   });
 
