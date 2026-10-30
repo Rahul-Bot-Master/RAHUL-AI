@@ -173,18 +173,9 @@ const { Console } = require('console');
                 await loadExternalPlugins();
                 console.log('Connected.');
                 
-                // Load all local plugins safely
-                if (fs.existsSync('./plugins')) {
-                    fs.readdirSync('./plugins')
-                      .filter(file => path.extname(file) === '.js')
-                      .forEach(file => {
-                          try {
-                              require('./plugins/' + file);
-                          } catch (plugErr) {
-                              console.log('Error loading plugin ' + file + ':', plugErr);
-                          }
-                      });
-                }
+                fs.readdirSync('./plugins')
+                  .filter(file => path.extname(file) === '.js')
+                  .forEach(file => require('./plugins/' + file));
 
                 const startupMessage = 
                     "╔══════════════════════════╗\n" +
@@ -228,7 +219,7 @@ const { Console } = require('console');
             }
         });
 
-        // Message upsert handler (Fixed for Self-Chat & Direct Matching)
+        // Original Original Message Upsert Handler (Exact standard format)
         sock.ev.on('messages.upsert', async (msgEvent) => {
             let mek;
             try {
@@ -242,45 +233,21 @@ const { Console } = require('console');
 
             if (botConfig.DISABLE_PM && !mek.isGroup) return;
 
-            if (!commands || commands.length === 0) return;
-
             commands.forEach(async (cmd) => {
-                let rawBody = mek.body ? mek.body.trim() : '';
-                let commandName = rawBody ? rawBody.toLowerCase().replace(/^[^\w\s]/, '') : ''; // Remove prefix symbols if any
-                let args = '';
+                if (cmd.fromMe && !mek.fromMe) return;
+
+                let commandName = mek.body ? mek.body[0].toLowerCase() + mek.body.slice(1).trim() : '';
+                let args;
 
                 try {
                     if (typeof cmd.on === 'function') {
-                        cmd.on({ m: mek, args: rawBody, client: sock });
-                    } else if (cmd.name || cmd.pattern) {
-                        let isMatched = false;
-                        let cmdString = '';
-
-                        if (typeof cmd.name === 'string') {
-                            cmdString = cmd.name.toLowerCase();
-                        } else if (cmd.name && cmd.name.source) {
-                            cmdString = cmd.name.source.replace(/[\^\$\b\W]/g, '').toLowerCase();
-                        } else if (cmd.pattern) {
-                            cmdString = cmd.pattern.toLowerCase();
-                        }
-
-                        if (commandName === cmdString || commandName.startsWith(cmdString)) {
-                            isMatched = true;
-                            args = rawBody.slice(cmdString.length).trim();
-                        }
-
-                        // Fallback check
-                        if (!isMatched && cmdString && commandName.includes(cmdString)) {
-                            isMatched = true;
-                            args = rawBody.replace(new RegExp(cmdString, 'i'), '').trim();
-                        }
-
-                        if (isMatched && typeof cmd.function === 'function') {
-                            await cmd.function({ m: mek, args: args || '', client: sock });
-                        }
+                        cmd.on({ m: mek, args: mek.body, client: sock });
+                    } else if (cmd.name && cmd.name.test(commandName)) {
+                        args = mek.body.replace(cmd.name, '$1').trim();
+                        cmd.function({ m: mek, args: args, client: sock });
                     }
                 } catch (cmdErr) {
-                    console.log("Command Execution Error:", cmdErr);
+                    console.log(cmdErr);
                 }
             });
         });
