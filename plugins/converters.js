@@ -28,13 +28,13 @@ Sparky({
         }
       }
 
-      // Using 'image' as field name instead of 'file' to prevent 400 Bad Request
-      formData.append('image', Buffer.from(mediaBuffer), {
+      formData.append('file', mediaBuffer, {
         filename: `media_${Date.now()}.${ext}`,
-        contentType: m.quoted.mimetype || 'image/jpeg'
+        contentType: m.quoted.mimetype || 'application/octet-stream'
       });
 
-      const response = await axios.post('https://sam-cdn.zone.id/upload', formData, {
+      // Using formData.getBuffer() to completely fix 400 Bad Request boundary issues
+      const response = await axios.post('https://sam-cdn.zone.id/upload', formData.getBuffer(), {
         headers: {
           ...formData.getHeaders(),
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -57,13 +57,14 @@ Sparky({
       if (!mediaUrl) {
         throw new Error('Upload failed: ' + JSON.stringify(resData));
       }
-		
+
       if (!mediaUrl.startsWith('http')) {
         const cleanPath = mediaUrl.replace(/^\/+/, '');
         mediaUrl = cleanPath.startsWith('uploads/') 
           ? `https://sam-cdn.zone.id/${cleanPath}` 
           : `https://sam-cdn.zone.id/uploads/${cleanPath}`;
       }
+
       await m.react('✅');
       m.reply(mediaUrl);
     } catch (error) {
