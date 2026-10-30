@@ -5,74 +5,124 @@ const config = require('../config.js');
 const lang = getString('converters');
 Sparky({
     name: "url",
+    aliases: ["tourl", "upload", "geturl", "uguu"],
     fromMe: true,
-    desc: "",
+    desc: "Upload files to sam-cdn.zone.id and get URL",
     category: "converters",
   }, async ({ args, m }) => {
-    if (!m.quoted) {
-      return m.reply('Reply to an Image/Video/Audio');
-    }
     try {
-      await m.react('⏫');
-      const mediaBuffer = await m.quoted.download();
-      
+      const quoted = m.quoted ? m.quoted : m;
+      const mime = (quoted.msg || quoted).mimetype || '';
+
+      if (!m.quoted || !mime) {
+        await m.reply(`┏━━━━━━━━━━━━━━━━━━━━┓
+┃ ᴇʀʀᴏʀ
+┃
+┃ ᴘʟᴇᴀꜱᴇ ʀᴇᴘʟʏ ᴛᴏ ᴀɴ
+┃ ɪᴍᴀɢᴇ, ᴠɪᴅᴇᴏ, 𝖔ʀ ᴀᴜᴅɪ𝖔
+┃
+┃ ᴇxᴀᴍᴘʟᴇ: .ᴛᴏᴜʀʟ
+┗━━━━━━━━━━━━━━━━━━━━┛`);
+        return;
+      }
+
+      await m.reply(`┏━━━━━━━━━━━━━━━━━━━━┓
+┃ ᴜᴘʟᴏᴀᴅɪɴɢ...
+┃
+┃ ᴘʟᴇᴀꜱᴇ ᴡᴀɪᴛ ᴀ ᴍᴏᴍᴇɴᴛ
+┗━━━━━━━━━━━━━━━━━━━━┛`);
+
+      const buffer = await quoted.download();
+
+      if (!buffer) {
+        throw new Error('Failed to download quoted file');
+      }
+
       const axios = require('axios');
       const FormData = require('form-data');
       const formData = new FormData();
-      
+
       let ext = 'jpg';
-      if (m.quoted.mimetype) {
-        const parts = m.quoted.mimetype.split('/');
+      if (mime) {
+        const parts = mime.split('/');
         if (parts[1]) {
           ext = parts[1].includes('quicktime') ? 'mov' : parts[1].replace('jpeg', 'jpg');
         }
       }
 
-      formData.append('file', mediaBuffer, {
+      formData.append('image', buffer, {
         filename: `media_${Date.now()}.${ext}`,
-        contentType: m.quoted.mimetype || 'application/octet-stream'
+        contentType: mime || 'application/octet-stream'
       });
 
-      // Using formData.getBuffer() to completely fix 400 Bad Request boundary issues
-      const response = await axios.post('https://sam-cdn.zone.id/upload', formData.getBuffer(), {
-        headers: {
-          ...formData.getHeaders(),
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-          'Referer': 'https://sam-cdn.zone.id/',
-          'Origin': 'https://sam-cdn.zone.id'
-        },
-        maxContentLength: Infinity,
-        maxBodyLength: Infinity
-      });
+      const response = await axios.post(
+        'https://sam-cdn.zone.id/upload',
+        formData.getBuffer(),
+        {
+          headers: {
+            ...formData.getHeaders(),
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Referer': 'https://sam-cdn.zone.id/',
+            'Origin': 'https://sam-cdn.zone.id'
+          },
+          maxContentLength: Infinity,
+          maxBodyLength: Infinity
+        }
+      );
 
       const resData = response.data;
-      let mediaUrl = '';
+      let uploadUrl = '';
 
       if (typeof resData === 'string') {
-        mediaUrl = resData.trim();
+        uploadUrl = resData.trim();
       } else if (typeof resData === 'object' && resData !== null) {
-        mediaUrl = resData.url || resData.data || resData.link || resData.result || resData.file || resData.path || '';
+        const rawPath = resData.url || resData.data || resData.link || resData.result || resData.file || resData.path || '';
+        if (rawPath.startsWith('http')) {
+          uploadUrl = rawPath;
+        } else if (rawPath) {
+          const cleanPath = rawPath.replace(/^\/+/, '');
+          uploadUrl = cleanPath.startsWith('uploads/') 
+            ? `https://sam-cdn.zone.id/${cleanPath}` 
+            : `https://sam-cdn.zone.id/uploads/${cleanPath}`;
+        }
       }
 
-      if (!mediaUrl) {
-        throw new Error('Upload failed: ' + JSON.stringify(resData));
+      if (!uploadUrl) {
+        throw new Error(
+          'Upload succeeded but no URL was returned'
+        );
       }
 
-      if (!mediaUrl.startsWith('http')) {
-        const cleanPath = mediaUrl.replace(/^\/+/, '');
-        mediaUrl = cleanPath.startsWith('uploads/') 
-          ? `https://sam-cdn.zone.id/${cleanPath}` 
-          : `https://sam-cdn.zone.id/uploads/${cleanPath}`;
-      }
+      const fileSizeKB = (buffer.length / 1024).toFixed(2);
+      const fileSizeMB = (buffer.length / (1024 * 1024)).toFixed(2);
 
-      await m.react('✅');
-      m.reply(mediaUrl);
-    } catch (error) {
-      console.error('URL Upload Error:', error.response?.data || error.message);
-      await m.react('❌');
-      m.reply('Error: ' + (typeof error.response?.data === 'string' ? error.response.data : (error.response?.data?.message || error.message || 'Upload failed')));
+      const result = `┏━━━━━━━━━━━━━━━━━━━━┓
+┃ ᴜᴘʟᴏᴀᴅ ꜱᴜᴄᴄᴇꜱꜱꜰᴜ𝚕
+┃
+┃ ᴛʏᴘᴇ: ${mime.split('/')[0].toUpperCase()}
+┃ ꜱɪᴢᴇ: ${fileSizeKB} ᴋʙ (${fileSizeMB} ᴍʙ)
+┃ ᴜʀʟ: ${uploadUrl}
+┃
+┃ ᴜᴘʟᴏᴀᴅᴇᴅ
+┗━━━━━━━━━━━━━━━━━━━━┛`;
+
+      await m.reply(result);
+
+    } catch (err) {
+      console.error('Tourl Error:', err.response?.data || err.message);
+
+      await m.reply(`┏━━━━━━━━━━━━━━━━━━━━┓
+┃ ᴜᴘʟᴏᴀᴅ ꜰᴀɪʟᴇᴅ
+┃
+┃ ᴇʀʀᴏʀ: ${err.response?.data?.message ||
+                err.response?.data?.error ||
+                err.message}
+┃
+┃ ᴘʟᴇᴀꜱᴇ ᴛʀʏ ᴀɢᴀɪɴ
+┗━━━━━━━━━━━━━━━━━━━━┛`);
     }
   });
+
 
 Sparky(
     {
