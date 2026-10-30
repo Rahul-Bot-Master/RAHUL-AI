@@ -442,7 +442,7 @@ Sparky({
   }
 });
 
-// --- AUTOMATIC YOUTUBE DOWNLOAD LISTENER (SHORTS & VIDEO ROBUST FIX) ---
+// --- AUTOMATIC YOUTUBE DOWNLOAD LISTENER (ULTIMATE FALLBACK API FIX) ---
 Sparky({
   on: "text",
   dontAddCommandList: true
@@ -461,40 +461,41 @@ Sparky({
       if (ytUrl) {
         try { await m.react('⬇️'); } catch (e) {}
         
+        let downloadUrl = "";
+        
+        // Method 1: Try library ytv function safely
         try {
-          // Normalize YouTube Shorts URL to standard watch URL if necessary
           if (ytUrl.includes("/shorts/")) {
             const shortId = ytUrl.split("/shorts/")[1]?.split("?")[0];
-            if (shortId) {
-              ytUrl = `https://www.youtube.com/watch?v=${shortId}`;
+            if (shortId) ytUrl = `https://www.youtube.com/watch?v=${shortId}`;
+          }
+          const res = await ytv(ytUrl);
+          if (typeof res === 'string') downloadUrl = res;
+          else if (res && typeof res === 'object') downloadUrl = res.dl_url || res.url || res.videoUrl || res.result || res.data;
+        } catch (e) {
+          console.log("ytv lib failed, trying public API fallback...");
+        }
+
+        // Method 2: Fallback public API if ytv lib failed or returned nothing
+        if (!downloadUrl) {
+          try {
+            const fetch = (await import('node-fetch')).default;
+            const apiRes = await fetch(`https://api.siputzx.my.id/api/d/ytmp4?url=${encodeURIComponent(ytUrl)}`);
+            const json = await apiRes.json();
+            if (json && json.status && json.data && json.data.dl) {
+              downloadUrl = json.data.dl;
             }
+          } catch (apiErr) {
+            console.log("API Fallback Error:", apiErr);
           }
+        }
 
-          const videoData = await ytv(ytUrl);
-          
-          // Handle different possible structures returned by ytv library
-          let downloadUrl = "";
-          if (typeof videoData === 'string') {
-            downloadUrl = videoData;
-          } else if (videoData && typeof videoData === 'object') {
-            downloadUrl = videoData.dl_url || videoData.url || videoData.videoUrl || videoData.result || videoData.data;
-          }
-          
-          if (!downloadUrl) {
-            throw new Error("Could not extract valid download URL from ytv response");
-          }
-
+        if (downloadUrl) {
           const videoBuffer = await getBuffer(downloadUrl);
-          
-          await client.sendMessage(m.jid, {
-            video: videoBuffer
-          }, { quoted: m });
-          
+          await client.sendMessage(m.jid, { video: videoBuffer }, { quoted: m });
           try { await m.react('✅'); } catch (e) {}
-        } catch (err) {
-          console.error("YTV Download Error:", err);
+        } else {
           try { await m.react('❌'); } catch (e) {}
-          // Don't spam text error if it's just auto-download listener, just react with ❌
         }
       }
     }
