@@ -37,15 +37,25 @@ Sparky({
 
       let mediaUrl = '';
       const resData = response.data;
+      console.log('CDN Response Data:', resData);
 
       if (typeof resData === 'string') {
         mediaUrl = resData.trim();
       } else if (typeof resData === 'object' && resData !== null) {
-        mediaUrl = resData.url || resData.data || resData.link || resData.result || resData.file || Object.values(resData).find(v => typeof v === 'string' && v.startsWith('http'));
+        mediaUrl = resData.url || resData.data || resData.link || resData.result || resData.file || resData.path || resData.src || Object.values(resData).find(v => typeof v === 'string' && (v.startsWith('http') || v.includes('/')));
+        
+        if (!mediaUrl) {
+          for (let key in resData) {
+            if (typeof resData[key] === 'string' && resData[key].length > 3) {
+              mediaUrl = resData[key].startsWith('http') ? resData[key] : `https://sam-cdn.zone.id${resData[key].startsWith('/') ? '' : '/'}${resData[key]}`;
+              break;
+            }
+          }
+        }
       }
 
       if (!mediaUrl) {
-        throw new Error('Invalid server response');
+        return m.reply('Raw Res: ' + JSON.stringify(resData));
       }
 
       await m.react('✅');
