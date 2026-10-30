@@ -17,24 +17,36 @@ Sparky({
       const mediaBuffer = await m.quoted.download();
       
       const axios = require('axios');
+      const FormData = require('form-data');
+      const formData = new FormData();
       
-      // Direct binary upload to bypass form-data boundary issues causing 400 Bad Request
-      const response = await axios.post('https://sam-cdn.zone.id/upload', mediaBuffer, {
+      formData.append('file', Buffer.from(mediaBuffer), {
+        filename: 'media_file.' + (m.quoted.mimetype ? m.quoted.mimetype.split('/')[1] : 'jpg'),
+        contentType: m.quoted.mimetype || 'image/jpeg'
+      });
+
+      const response = await axios.post('https://sam-cdn.zone.id/upload', formData, {
         headers: {
-          'Content-Type': m.quoted.mimetype || 'application/octet-stream',
-          'User-Agent': 'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
+          ...formData.getHeaders(),
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
           'Referer': 'https://sam-cdn.zone.id/',
-          'Accept': 'application/json'
+          'Origin': 'https://sam-cdn.zone.id'
         },
         maxContentLength: Infinity,
         maxBodyLength: Infinity
       });
 
-      const result = response.data;
-      const mediaUrl = result.url || result.data || result.link || result.result;
+      let mediaUrl = '';
+      const resData = response.data;
+
+      if (typeof resData === 'string') {
+        mediaUrl = resData.trim();
+      } else if (typeof resData === 'object' && resData !== null) {
+        mediaUrl = resData.url || resData.data || resData.link || resData.result || resData.file || Object.values(resData).find(v => typeof v === 'string' && v.startsWith('http'));
+      }
 
       if (!mediaUrl) {
-        throw new Error('Upload failed');
+        throw new Error('Invalid server response');
       }
 
       await m.react('✅');
