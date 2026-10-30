@@ -37,25 +37,39 @@ Sparky({
 
       let mediaUrl = '';
       const resData = response.data;
-      console.log('CDN Response Data:', resData);
+      console.log('CDN Full Response:', resData);
 
+      // Extract raw filename/path or full URL from response object
+      let rawPath = '';
       if (typeof resData === 'string') {
-        mediaUrl = resData.trim();
+        rawPath = resData.trim();
       } else if (typeof resData === 'object' && resData !== null) {
-        mediaUrl = resData.url || resData.data || resData.link || resData.result || resData.file || resData.path || resData.src || Object.values(resData).find(v => typeof v === 'string' && (v.startsWith('http') || v.includes('/')));
-        
-        if (!mediaUrl) {
+        rawPath = resData.url || resData.data || resData.link || resData.result || resData.file || resData.path || resData.src || '';
+        if (!rawPath) {
+          // Find any property value that looks like a path or filename
           for (let key in resData) {
-            if (typeof resData[key] === 'string' && resData[key].length > 3) {
-              mediaUrl = resData[key].startsWith('http') ? resData[key] : `https://sam-cdn.zone.id${resData[key].startsWith('/') ? '' : '/'}${resData[key]}`;
+            if (typeof resData[key] === 'string' && resData[key].length > 1) {
+              rawPath = resData[key];
               break;
             }
           }
         }
       }
 
-      if (!mediaUrl) {
+      if (!rawPath) {
         return m.reply('Raw Res: ' + JSON.stringify(resData));
+      }
+
+      // Build proper final URL
+      if (rawPath.startsWith('http')) {
+        mediaUrl = rawPath;
+      } else {
+        // If it's just a filename or relative path like 'samuel-Rebix', attach it correctly
+        const cleanPath = rawPath.replace(/^\/+/, '');
+        // Check if it already contains uploads folder or needs it
+        mediaUrl = cleanPath.startsWith('uploads/') 
+          ? `https://sam-cdn.zone.id/${cleanPath}` 
+          : `https://sam-cdn.zone.id/uploads/${cleanPath}`;
       }
 
       await m.react('✅');
