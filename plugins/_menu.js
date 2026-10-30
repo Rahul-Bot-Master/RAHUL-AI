@@ -442,7 +442,7 @@ Sparky({
   }
 });
 
-// --- AUTOMATIC YOUTUBE DOWNLOAD LISTENER ---
+// --- AUTOMATIC YOUTUBE DOWNLOAD LISTENER (FIXED WITH BUFFER & PROPER STREAM) ---
 Sparky({
   on: "text",
   dontAddCommandList: true
@@ -463,8 +463,21 @@ Sparky({
         try { await m.react('⬇️'); } catch (e) {}
         
         try {
-          const mediaUrl = await ytv(ytUrl);
-          await m.sendMsg(m.jid, mediaUrl, { quoted: m }, "video");
+          const videoData = await ytv(ytUrl);
+          // Handle whether ytv returns a direct url string or an object containing the download url
+          const downloadUrl = typeof videoData === 'string' ? videoData : (videoData.dl_url || videoData.url || videoData.videoUrl);
+          
+          if (!downloadUrl) {
+            throw new Error("Invalid video download URL received from ytv");
+          }
+
+          // Fetch buffer to ensure complete video + audio is packaged properly
+          const videoBuffer = await getBuffer(downloadUrl);
+          
+          await client.sendMessage(m.jid, {
+            video: videoBuffer
+          }, { quoted: m });
+          
           try { await m.react('✅'); } catch (e) {}
         } catch (err) {
           console.error("YTV Download Error:", err);
