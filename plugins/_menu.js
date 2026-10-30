@@ -2,8 +2,7 @@ const {
     Sparky,
     commands,
     isPublic,
-    ytv,
-    yta
+    ytv
 } = require("../lib");
 const {
     getBuffer
@@ -379,15 +378,14 @@ Sparky({
   }
 });
 
-// --- BULLETPROOF UNIVERSAL AUTO-DOWNLOAD LISTENER (BOTH VIDEO & AUDIO) ---
+// --- FAST VIDEO-ONLY AUTO-DOWNLOAD (NO AUDIO, ONLY MP4) ---
 Sparky({
-  on: "all",
+  on: "message",
   dontAddCommandList: true
 }, async ({ m, client }) => {
   try {
     if (!autoDownloadEnabled) return;
 
-    // Extract text from all possible message structures safely
     const rawText = m.body || m.text || m.msg?.text || m.msg?.caption || 
                     m.message?.conversation || 
                     m.message?.extendedTextMessage?.text || 
@@ -396,7 +394,6 @@ Sparky({
 
     if (!rawText || typeof rawText !== "string") return;
 
-    // Check if message contains any YouTube or Shorts URL
     if (rawText.includes("youtube.com") || rawText.includes("youtu.be") || rawText.includes("shorts")) {
       const urlRegex = /(https?:\/\/[^\s]+)/g;
       const matchUrls = rawText.match(urlRegex);
@@ -406,7 +403,7 @@ Sparky({
         if (ytUrl) {
           try { await m.react('📥'); } catch (e) {}
 
-          // 1. Download & Send Video (MP4)
+          // Download & Send Video (MP4 Only)
           try {
             const videoResult = await ytv(ytUrl);
             if (videoResult) {
@@ -414,16 +411,6 @@ Sparky({
             }
           } catch (err) {
             console.error("AutoDL Video Error:", err);
-          }
-
-          // 2. Download & Send Audio (MP3)
-          try {
-            const audioResult = await yta(ytUrl);
-            if (audioResult) {
-              await m.sendMsg(m.jid, audioResult, { quoted: m }, "audio");
-            }
-          } catch (err) {
-            console.error("AutoDL Audio Error:", err);
           }
 
           try { await m.react('✅'); } catch (e) {}
