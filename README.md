@@ -1,7 +1,6 @@
 <div align="center">
 
 <h1>⚡ RAHUL-AI ⚡</h1>
-<code>[ SYSTEM CORE ACTIVE • V2.0.0 ]</code>
 
 <br><br>
 
