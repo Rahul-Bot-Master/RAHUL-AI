@@ -236,15 +236,32 @@ const { Console } = require('console');
             commands.forEach(async (cmd) => {
                 if (cmd.fromMe && !mek.fromMe) return;
 
-                let commandName = mek.body ? mek.body[0].toLowerCase() + mek.body.slice(1).trim() : '';
+                let rawBody = mek.body ? mek.body.trim() : '';
+                let commandName = rawBody ? rawBody[0].toLowerCase() + rawBody.slice(1) : '';
                 let args;
 
                 try {
                     if (typeof cmd.on === 'function') {
-                        cmd.on({ m: mek, args: mek.body, client: sock });
-                    } else if (cmd.name && cmd.name.test(commandName)) {
-                        args = mek.body.replace(cmd.name, '$1').trim();
-                        cmd.function({ m: mek, args: args, client: sock });
+                        cmd.on({ m: mek, args: rawBody, client: sock });
+                    } else if (cmd.name) {
+                        // Check normal regex match or direct text fallback (handles both with or without prefix)
+                        let isMatched = false;
+                        let cleanCmdName = '';
+
+                        if (typeof cmd.name.test === 'function' && cmd.name.test(commandName)) {
+                            isMatched = true;
+                            args = rawBody.replace(cmd.name, '$1').trim();
+                        } else if (cmd.pattern && rawBody.toLowerCase().includes(cmd.pattern.toLowerCase())) {
+                            isMatched = true;
+                            args = rawBody.toLowerCase().replace(cmd.pattern.toLowerCase(), '').trim();
+                        } else if (cmd.name.source && rawBody.toLowerCase().replace(/[^a-z0-9]/g, '').includes(cmd.name.source.toLowerCase().replace(/[^a-z0-9]/g, ''))) {
+                            isMatched = true;
+                            args = '';
+                        }
+
+                        if (isMatched && typeof cmd.function === 'function') {
+                            await cmd.function({ m: mek, args: args || '', client: sock });
+                        }
                     }
                 } catch (cmdErr) {
                     console.log(cmdErr);
