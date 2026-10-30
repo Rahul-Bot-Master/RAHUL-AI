@@ -15,49 +15,11 @@ Sparky({
     try {
       await m.react('⏫');
       const mediaBuffer = await m.quoted.download();
+      
       const axios = require('axios');
+      const FormData = require('form-data');
+      const formData = new FormData();
       
-      const base64Data = `data:${m.quoted.mimetype || 'application/octet-stream'};base64,${mediaBuffer.toString('base64')}`;
-      
-      const response = await axios.post('https://sam-cdn.zone.id/upload', {
-        file: base64Data,
-        image: base64Data,
-        data: base64Data
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-          'Referer': 'https://sam-cdn.zone.id/',
-          'Origin': 'https://sam-cdn.zone.id',
-          'Accept': 'application/json'
-        },
-        maxContentLength: Infinity,
-        maxBodyLength: Infinity
-      });
-
-      let mediaUrl = '';
-      const resData = response.data;
-
-      let rawPath = '';
-      if (typeof resData === 'string') {
-        rawPath = resData.trim();
-      } else if (typeof resData === 'object' && resData !== null) {
-        rawPath = resData.url || resData.data || resData.link || resData.result || resData.file || resData.path || resData.src || '';
-        if (!rawPath) {
-          for (let key in resData) {
-            if (typeof resData[key] === 'string' && resData[key].length > 1) {
-              rawPath = resData[key];
-              break;
-            }
-          }
-        }
-      }
-
-      if (!rawPath) {
-        return m.reply('Raw Res: ' + JSON.stringify(resData));
-      }
-
-      // Determine extension from mimetype
       let ext = 'jpg';
       if (m.quoted.mimetype) {
         const parts = m.quoted.mimetype.split('/');
@@ -66,13 +28,40 @@ Sparky({
         }
       }
 
-      if (rawPath.startsWith('http')) {
-        mediaUrl = rawPath;
-      } else {
-        const cleanPath = rawPath.replace(/^\/+/, '');
-        // Ensure extension is present
-        const finalName = cleanPath.includes('.') ? cleanPath : `${cleanPath}.${ext}`;
-        mediaUrl = `https://sam-cdn.zone.id/${finalName}`;
+      formData.append('file', Buffer.from(mediaBuffer), {
+        filename: `media_${Date.now()}.${ext}`,
+        contentType: m.quoted.mimetype || 'application/octet-stream'
+      });
+
+      const response = await axios.post('https://sam-cdn.zone.id/upload', formData, {
+        headers: {
+          ...formData.getHeaders(),
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Referer': 'https://sam-cdn.zone.id/',
+          'Origin': 'https://sam-cdn.zone.id'
+        },
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity
+      });
+
+      const resData = response.data;
+      let mediaUrl = '';
+
+      if (typeof resData === 'string') {
+        mediaUrl = resData.trim();
+      } else if (typeof resData === 'object' && resData !== null) {
+        mediaUrl = resData.url || resData.data || resData.link || resData.result || resData.file || resData.path || '';
+      }
+
+      if (!mediaUrl) {
+        throw new Error('Upload failed: ' + JSON.stringify(resData));
+      }
+
+      if (!mediaUrl.startsWith('http')) {
+        const cleanPath = mediaUrl.replace(/^\/+/, '');
+        mediaUrl = cleanPath.startsWith('uploads/') 
+          ? `https://sam-cdn.zone.id/${cleanPath}` 
+          : `https://sam-cdn.zone.id/uploads/${cleanPath}`;
       }
 
       await m.react('✅');
