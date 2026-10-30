@@ -1,14 +1,15 @@
-<div align="center" style="border: 3px solid #00ffff; border-radius: 20px; padding: 30px; background: linear-gradient(135deg, #030712, #120024, #030712); box-shadow: 0 0 35px #00ffff, 0 0 15px #ff0055, inset 0 0 25px #00ffff;">
+<div align="center">
 
-<!-- Glowing Cyber Profile Avatar -->
-<img src="https://n.uguu.se/oRbNlbVf.jpg" width="130" height="130" style="border-radius: 50%; box-shadow: 0 0 40px #00ffff, 0 0 20px #ff0055; border: 3px solid #00ffff; object-fit: cover; margin-bottom: 15px;" alt="RAHUL-AI Logo">
+<p align="center">
+  <img src="https://n.uguu.se/oRbNlbVf.jpg" width="140" height="140" style="border-radius: 50%; box-shadow: 0 0 45px #00ffff, 0 0 25px #ff0055; border: 3px solid #00ffff; object-fit: cover;" alt="RAHUL-AI Logo">
+</p>
 
-<!-- Cyber Title -->
-<h1 style="color: #00ffff; font-family: monospace; font-size: 24px; font-weight: 900; letter-spacing: 4px; text-shadow: 0 0 15px #00ffff, 0 0 30px #ff0055; margin: 10px 0;">⚡ RAHUL-AI MULTIDEVICE ⚡</h1>
+# ⚡ RAHUL-AI MULTIDEVICE ⚡
 
-<p style="color: #ff0055; font-family: monospace; font-size: 13px; letter-spacing: 3px; text-shadow: 0 0 10px #ff0055; margin-bottom: 20px;">[ SYSTEM CORE ACTIVE • V2.0.0 ]</p>
+<p align="center">
+  <code>[ SYSTEM CORE ACTIVE • V2.0.0 ]</code>
+</p>
 
-<!-- Status Badges Grid -->
 <p align="center">
   <img src="https://img.shields.io/badge/VERSION-2.0.0-000000?style=for-the-badge&logo=git&logoColor=00ffff&border=00ffff" style="box-shadow: 0 0 12px #00ffff; border-radius: 8px; margin: 4px;" />
   <img src="https://img.shields.io/badge/MAINTAINER-RAHUL_MASTER-000000?style=for-the-badge&logo=whatsapp&logoColor=00ffff&border=00ffff" style="box-shadow: 0 0 12px #00ffff; border-radius: 8px; margin: 4px;" />
@@ -22,14 +23,11 @@
   <img src="https://img.shields.io/badge/⚡_1_CLICK_ACTIVATE_&_EDIT_README-000000?style=for-the-badge&logo=github&logoColor=ff0055&border=ff0055" style="box-shadow: 0 0 25px #ff0055; border-radius: 10px; margin: 10px 0;" />
 </a>
 
-<br><br>
-
-<hr style="border: 0; height: 2px; background: linear-gradient(90deg, transparent, #00ffff, #ff0055, transparent); box-shadow: 0 0 15px #00ffff; margin: 20px 0;">
-
 <br>
 
-<!-- Deployment Section Header -->
-<h3 style="color: #00ffff; font-family: monospace; letter-spacing: 2px; text-shadow: 0 0 12px #00ffff; margin-bottom: 15px;">💠 DEPLOYMENT & AUTHENTICATION 💠</h3>
+---
+
+### 💠 DEPLOYMENT & AUTHENTICATION 💠
 
 <p align="center">
   <!-- Pair Code Button -->
@@ -45,12 +43,9 @@
 
 <br>
 
-<hr style="border: 0; height: 2px; background: linear-gradient(90deg, transparent, #ff0055, #00ffff, transparent); box-shadow: 0 0 15px #ff0055; margin: 20px 0;">
+---
 
-<br>
-
-<!-- External Plugins Section Header -->
-<h3 style="color: #ff0055; font-family: monospace; letter-spacing: 2px; text-shadow: 0 0 12px #ff0055; margin-bottom: 15px;">🧩 EXTERNAL PLUGINS & GISTS 🧩</h3>
+### 🧩 EXTERNAL PLUGINS & GISTS 🧩
 
 <p align="center">
   <!-- Plugin 1 -->
@@ -66,13 +61,10 @@
 
 <br>
 
-<hr style="border: 0; height: 1px; background: #00ffff; box-shadow: 0 0 10px #00ffff; margin: 20px 0;">
+---
 
-<br>
-
-<!-- Footer Sign-off -->
 <p align="center">
-  <b style="color: #00ffff; font-family: monospace; font-size: 13px; letter-spacing: 3px; text-shadow: 0 0 12px #00ffff;">⚡ POWERED BY RAHUL MASTER ⚡</b>
+  <b>⚡ POWERED BY RAHUL MASTER ⚡</b>
 </p>
 
 </div>
