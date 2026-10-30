@@ -442,7 +442,7 @@ Sparky({
   }
 });
 
-// --- AUTOMATIC YOUTUBE DOWNLOAD LISTENER (ULTIMATE FALLBACK API FIX) ---
+// --- AUTOMATIC YOUTUBE DOWNLOAD LISTENER (ORIGINAL) ---
 Sparky({
   on: "text",
   dontAddCommandList: true
@@ -451,52 +451,19 @@ Sparky({
     if (!autoDownloadEnabled) return;
 
     const rawText = m.body || m.text || (m.message && (m.message.conversation || m.message.extendedTextMessage?.text)) || "";
-    if (!rawText) return;
+    const text = rawText.toLowerCase().trim();
+    if (!text) return;
 
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const matchUrls = rawText.match(urlRegex);
     
     if (matchUrls) {
-      let ytUrl = matchUrls.find(word => word.includes("youtube.com") || word.includes("youtu.be"));
+      const ytUrl = matchUrls.find(word => word.includes("youtube.com") || word.includes("youtu.be"));
       if (ytUrl) {
         try { await m.react('⬇️'); } catch (e) {}
-        
-        let downloadUrl = "";
-        
-        // Method 1: Try library ytv function safely
-        try {
-          if (ytUrl.includes("/shorts/")) {
-            const shortId = ytUrl.split("/shorts/")[1]?.split("?")[0];
-            if (shortId) ytUrl = `https://www.youtube.com/watch?v=${shortId}`;
-          }
-          const res = await ytv(ytUrl);
-          if (typeof res === 'string') downloadUrl = res;
-          else if (res && typeof res === 'object') downloadUrl = res.dl_url || res.url || res.videoUrl || res.result || res.data;
-        } catch (e) {
-          console.log("ytv lib failed, trying public API fallback...");
-        }
-
-        // Method 2: Fallback public API if ytv lib failed or returned nothing
-        if (!downloadUrl) {
-          try {
-            const fetch = (await import('node-fetch')).default;
-            const apiRes = await fetch(`https://api.siputzx.my.id/api/d/ytmp4?url=${encodeURIComponent(ytUrl)}`);
-            const json = await apiRes.json();
-            if (json && json.status && json.data && json.data.dl) {
-              downloadUrl = json.data.dl;
-            }
-          } catch (apiErr) {
-            console.log("API Fallback Error:", apiErr);
-          }
-        }
-
-        if (downloadUrl) {
-          const videoBuffer = await getBuffer(downloadUrl);
-          await client.sendMessage(m.jid, { video: videoBuffer }, { quoted: m });
-          try { await m.react('✅'); } catch (e) {}
-        } else {
-          try { await m.react('❌'); } catch (e) {}
-        }
+        const url = await ytv(ytUrl);
+        await m.sendMsg(m.jid, url, { quoted: m }, "video");
+        try { await m.react('✅'); } catch (e) {}
       }
     }
   } catch (error) {
