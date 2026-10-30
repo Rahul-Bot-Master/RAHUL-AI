@@ -20,7 +20,8 @@ Sparky({
       const FormData = require('form-data');
       const formData = new FormData();
       
-      formData.append('file', Buffer.from(mediaBuffer), {
+      // Using 'upload' as the exact field name for the CDN server
+      formData.append('upload', Buffer.from(mediaBuffer), {
         filename: 'media_file.' + (m.quoted.mimetype ? m.quoted.mimetype.split('/')[1] : 'bin'),
         contentType: m.quoted.mimetype || 'application/octet-stream'
       });
@@ -52,7 +53,6 @@ Sparky({
       m.reply('Error: ' + (error.response?.data?.message || error.message || 'Upload failed'));
     }
   });
-
 
 Sparky(
     {
