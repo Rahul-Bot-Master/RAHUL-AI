@@ -58,7 +58,8 @@ const { Console } = require('console');
                    process.env.CF_PAGES ? 'CLOUDFLARE' :
                    process.env.AWS_REGION ? 'AWS' : 'VPS';
 
-    if (platform === 'RENDER' || platform === 'VERCEL') {
+    // Enable Express server for Koyeb, Render, and Vercel so health checks pass successfully
+    if (platform === 'RENDER' || platform === 'VERCEL' || platform === 'KOYEB') {
         let deployedUrl = '';
         app.get('/', (req, res) => {
             if (!deployedUrl) {
