@@ -16,8 +16,8 @@
 
 <br>
 
-<!-- External Plugins Folder Button -->
-<a href="https://github.com/ESWIN-SPERKY/rahul-ai/tree/main/plugins">
+<!-- External Plugins Gist Button -->
+<a href="https://gist.github.com/Rahul-Bot-Master/006a539c2881d556e03fa5ad53a8c7db">
   <img src="https://img.shields.io/badge/🧩_EXTERNAL_PLUGINS-000000?style=for-the-badge&logo=github&logoColor=00ffff&border=00ffff" style="box-shadow: 0 0 10px #00ffff; border-radius: 8px; margin: 5px;" />
 </a>
 
