@@ -378,20 +378,15 @@ Sparky({
   }
 });
 
-// --- FAST VIDEO-ONLY AUTO-DOWNLOAD (NO AUDIO, ONLY MP4) ---
+// --- STANDARD TEXT-BASED AUTO-DOWNLOAD FOR YOUTUBE & SHORTS (VIDEO ONLY) ---
 Sparky({
-  on: "message",
+  on: "text",
   dontAddCommandList: true
 }, async ({ m, client }) => {
   try {
     if (!autoDownloadEnabled) return;
 
-    const rawText = m.body || m.text || m.msg?.text || m.msg?.caption || 
-                    m.message?.conversation || 
-                    m.message?.extendedTextMessage?.text || 
-                    m.message?.imageMessage?.caption || 
-                    m.message?.videoMessage?.caption || "";
-
+    const rawText = m.body || m.text || m.msg?.text || "";
     if (!rawText || typeof rawText !== "string") return;
 
     if (rawText.includes("youtube.com") || rawText.includes("youtu.be") || rawText.includes("shorts")) {
@@ -403,7 +398,7 @@ Sparky({
         if (ytUrl) {
           try { await m.react('📥'); } catch (e) {}
 
-          // Download & Send Video (MP4 Only)
+          // Download & Send Video Only
           try {
             const videoResult = await ytv(ytUrl);
             if (videoResult) {
