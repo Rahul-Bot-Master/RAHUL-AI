@@ -20,8 +20,8 @@ Sparky({
       const FormData = require('form-data');
       const formData = new FormData();
       
-      // Try 'image' field name instead of 'file' because 400 Bad Request usually means wrong field name
-      formData.append('image', Buffer.from(mediaBuffer), {
+      // Using 'files' as the field name
+      formData.append('files', Buffer.from(mediaBuffer), {
         filename: 'media_file.' + (m.quoted.mimetype ? m.quoted.mimetype.split('/')[1] : 'bin'),
         contentType: m.quoted.mimetype || 'application/octet-stream'
       });
