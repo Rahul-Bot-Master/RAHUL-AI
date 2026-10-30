@@ -11,33 +11,37 @@ Sparky({
     category: "converters",
   }, async ({ args, m }) => {
     try {
-      // Check if quoted message exists, or if current message has media
-      const targetMsg = m.quoted ? m.quoted : (m.msg && m.msg.mimetype ? m.msg : null);
-      const mime = targetMsg ? (targetMsg.mimetype || '') : '';
+      // Smart fallback: check quoted message first, otherwise use current message
+      const mediaTarget = m.quoted ? m.quoted : m;
+      let buffer = null;
 
-      if (!targetMsg || !mime) {
+      try {
+        buffer = await mediaTarget.download();
+      } catch (e) {
+        if (m.quoted) {
+          buffer = await m.download().catch(() => null);
+        }
+      }
+
+      if (!buffer) {
         await m.reply(`┏━━━━━━━━━━━━━━━━━━━━┓
 ┃ ᴇʀʀᴏʀ
 ┃
-┃ ᴘʟᴇᴀꜱᴇ ʀᴇᴘʟʏ ᴛᴏ ᴀɴ
-┃ ɪᴍᴀɢᴇ, ᴠɪᴅᴇᴏ, ᴏʀ ᴀᴜᴅɪ𝖔
+┃ ᴘʟᴇᴀꜱᴇ ʀᴇᴘʟʏ ᴛᴏ ᴏʀ ꜱᴇɴᴅ
+┃ ᴀɴ ɪᴍᴀɢᴇ, ᴠɪᴅᴇ🇴, ᴏʀ 🇦ᴜᴅɪᴏ
 ┃
 ┃ ᴇxᴀᴍᴘʟᴇ: .ᴛᴏᴜʀʟ
 ┗━━━━━━━━━━━━━━━━━━━━┛`);
         return;
       }
 
+      const mime = mediaTarget.mimetype || mediaTarget.msg?.mimetype || m.mtype || 'image/jpeg';
+
       await m.reply(`┏━━━━━━━━━━━━━━━━━━━━┓
 ┃ ᴜᴘʟᴏᴀᴅɪɴɢ...
 ┃
-┃ ᴘʟᴇᴀꜱᴇ ᴡᴀɪᴛ ᴀ ᴍᴏᴍᴇɴᴛ
+┃ ᴘʟᴇᴀꜱᴇ ᴡᴀɪᴛ 🇦 ᴍᴏᴍᴇɴᴛ
 ┗━━━━━━━━━━━━━━━━━━━━┛`);
-
-      const buffer = await targetMsg.download();
-
-      if (!buffer) {
-        throw new Error('Failed to download media file');
-      }
 
       const axios = require('axios');
       const FormData = require('form-data');
@@ -89,9 +93,7 @@ Sparky({
       }
 
       if (!uploadUrl) {
-        throw new Error(
-          'Upload succeeded but no URL was returned'
-        );
+        throw new Error('Upload succeeded but no URL was returned');
       }
 
       const fileSizeKB = (buffer.length / 1024).toFixed(2);
