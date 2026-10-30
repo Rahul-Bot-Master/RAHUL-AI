@@ -228,7 +228,7 @@ const { Console } = require('console');
             }
         });
 
-        // Message upsert handler (Ultimate Bulletproof Command Dispatcher)
+        // Message upsert handler (Fixed for Self-Chat & Direct Matching)
         sock.ev.on('messages.upsert', async (msgEvent) => {
             let mek;
             try {
@@ -246,7 +246,7 @@ const { Console } = require('console');
 
             commands.forEach(async (cmd) => {
                 let rawBody = mek.body ? mek.body.trim() : '';
-                let commandName = rawBody ? rawBody.toLowerCase() : '';
+                let commandName = rawBody ? rawBody.toLowerCase().replace(/^[^\w\s]/, '') : ''; // Remove prefix symbols if any
                 let args = '';
 
                 try {
@@ -254,31 +254,25 @@ const { Console } = require('console');
                         cmd.on({ m: mek, args: rawBody, client: sock });
                     } else if (cmd.name || cmd.pattern) {
                         let isMatched = false;
-                        let targetPattern = cmd.pattern || (cmd.name && cmd.name.source ? cmd.name.source : cmd.name);
+                        let cmdString = '';
 
-                        if (typeof targetPattern === 'object' && typeof targetPattern.test === 'function') {
-                            if (targetPattern.test(rawBody) || targetPattern.test(commandName)) {
-                                isMatched = true;
-                                args = rawBody.replace(targetPattern, '').trim();
-                            }
-                        } else if (typeof targetPattern === 'string') {
-                            let cleanPattern = targetPattern.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
-                            let cleanBody = commandName.replace(/[^a-zA-Z0-9]/g, '');
-                            if (cleanBody === cleanPattern || cleanBody.startsWith(cleanPattern)) {
-                                isMatched = true;
-                                args = rawBody.slice(targetPattern.length).trim();
-                            }
+                        if (typeof cmd.name === 'string') {
+                            cmdString = cmd.name.toLowerCase();
+                        } else if (cmd.name && cmd.name.source) {
+                            cmdString = cmd.name.source.replace(/[\^\$\b\W]/g, '').toLowerCase();
+                        } else if (cmd.pattern) {
+                            cmdString = cmd.pattern.toLowerCase();
                         }
 
-                        // Universal Fallback for exact command matching (like 'plugins', 'menu', 'ping')
-                        if (!isMatched && cmd.name) {
-                            let cmdStr = typeof cmd.name === 'string' ? cmd.name : (cmd.name.source || '');
-                            let cleanCmdStr = cmdStr.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
-                            let cleanBody = commandName.replace(/[^a-zA-Z0-9]/g, '');
-                            if (cleanBody === cleanCmdStr || cleanBody.includes(cleanCmdStr)) {
-                                isMatched = true;
-                                args = rawBody.replace(new RegExp(cmdStr, 'i'), '').trim();
-                            }
+                        if (commandName === cmdString || commandName.startsWith(cmdString)) {
+                            isMatched = true;
+                            args = rawBody.slice(cmdString.length).trim();
+                        }
+
+                        // Fallback check
+                        if (!isMatched && cmdString && commandName.includes(cmdString)) {
+                            isMatched = true;
+                            args = rawBody.replace(new RegExp(cmdString, 'i'), '').trim();
                         }
 
                         if (isMatched && typeof cmd.function === 'function') {
