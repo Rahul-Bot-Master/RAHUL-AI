@@ -1,5 +1,5 @@
 const config = require('./config');
-const { console } = require('console');
+const { Console } = require('console');
 
 (async function Sparky() {
     const {
@@ -44,9 +44,9 @@ const { console } = require('console');
     
     const logger = require('pino')({ level: 'silent' });
 
-    // Platform detection
+    // Platform detection (Safely handled)
     let platform = process.env.RENDER ? 'RENDER' :
-                   process.env.PITCHER_API_BASE_URL?.includes('codesandbox') ? 'CODESANDBOX' :
+                   (process.env.PITCHER_API_BASE_URL && process.env.PITCHER_API_BASE_URL.includes('codesandbox')) ? 'CODESANDBOX' :
                    process.env.VERCEL ? 'VERCEL' :
                    process.env.KOYEB || process.env.KOYEB_APP_ID ? 'KOYEB' :
                    process.env.TERMUX_VERSION ? 'TERMUX' :
@@ -219,7 +219,7 @@ const { console } = require('console');
             }
         });
 
-        // Message upsert handler
+        // Message upsert handler (Robust command & plugin matcher)
         sock.ev.on('messages.upsert', async (msgEvent) => {
             let mek;
             try {
@@ -237,26 +237,34 @@ const { console } = require('console');
                 if (cmd.fromMe && !mek.fromMe) return;
 
                 let rawBody = mek.body ? mek.body.trim() : '';
-                let commandName = rawBody ? rawBody[0].toLowerCase() + rawBody.slice(1) : '';
-                let args;
+                let commandName = rawBody ? rawBody.toLowerCase() : '';
+                let args = '';
 
                 try {
                     if (typeof cmd.on === 'function') {
                         cmd.on({ m: mek, args: rawBody, client: sock });
-                    } else if (cmd.name) {
-                        // Check normal regex match or direct text fallback (handles both with or without prefix)
+                    } else if (cmd.name || cmd.pattern) {
                         let isMatched = false;
-                        let cleanCmdName = '';
+                        let targetPattern = cmd.pattern || (cmd.name && cmd.name.source ? cmd.name.source : cmd.name);
 
-                        if (typeof cmd.name.test === 'function' && cmd.name.test(commandName)) {
+                        if (typeof targetPattern === 'object' && typeof targetPattern.test === 'function') {
+                            if (targetPattern.test(rawBody) || targetPattern.test(commandName)) {
+                                isMatched = true;
+                                args = rawBody.replace(targetPattern, '').trim();
+                            }
+                        } else if (typeof targetPattern === 'string') {
+                            let cleanPattern = targetPattern.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+                            let cleanBody = commandName.replace(/[^a-zA-Z0-9]/g, '');
+                            if (cleanBody === cleanPattern || cleanBody.startsWith(cleanPattern)) {
+                                isMatched = true;
+                                args = rawBody.slice(targetPattern.length).trim();
+                            }
+                        }
+
+                        // Fallback check for exact command string matching
+                        if (!isMatched && cmd.name && typeof cmd.name === 'string' && commandName.includes(cmd.name.toLowerCase())) {
                             isMatched = true;
-                            args = rawBody.replace(cmd.name, '$1').trim();
-                        } else if (cmd.pattern && rawBody.toLowerCase().includes(cmd.pattern.toLowerCase())) {
-                            isMatched = true;
-                            args = rawBody.toLowerCase().replace(cmd.pattern.toLowerCase(), '').trim();
-                        } else if (cmd.name.source && rawBody.toLowerCase().replace(/[^a-z0-9]/g, '').includes(cmd.name.source.toLowerCase().replace(/[^a-z0-9]/g, ''))) {
-                            isMatched = true;
-                            args = '';
+                            args = rawBody.replace(new RegExp(cmd.name, 'i'), '').trim();
                         }
 
                         if (isMatched && typeof cmd.function === 'function') {
@@ -264,7 +272,7 @@ const { console } = require('console');
                         }
                     }
                 } catch (cmdErr) {
-                    console.log(cmdErr);
+                    console.log("Command Execution Error:", cmdErr);
                 }
             });
         });
