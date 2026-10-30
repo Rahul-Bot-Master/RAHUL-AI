@@ -15,22 +15,21 @@ Sparky({
     try {
       await m.react('⏫');
       const mediaBuffer = await m.quoted.download();
-      
       const axios = require('axios');
-      const FormData = require('form-data');
-      const formData = new FormData();
       
-      formData.append('file', Buffer.from(mediaBuffer), {
-        filename: 'media_file.' + (m.quoted.mimetype ? m.quoted.mimetype.split('/')[1] : 'jpg'),
-        contentType: m.quoted.mimetype || 'image/jpeg'
-      });
-
-      const response = await axios.post('https://sam-cdn.zone.id/upload', formData, {
+      const base64Data = `data:${m.quoted.mimetype || 'application/octet-stream'};base64,${mediaBuffer.toString('base64')}`;
+      
+      const response = await axios.post('https://sam-cdn.zone.id/upload', {
+        file: base64Data,
+        image: base64Data,
+        data: base64Data
+      }, {
         headers: {
-          ...formData.getHeaders(),
+          'Content-Type': 'application/json',
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
           'Referer': 'https://sam-cdn.zone.id/',
-          'Origin': 'https://sam-cdn.zone.id'
+          'Origin': 'https://sam-cdn.zone.id',
+          'Accept': 'application/json'
         },
         maxContentLength: Infinity,
         maxBodyLength: Infinity
