@@ -1,5 +1,10 @@
 <div align="center">
 
+<h1>⚡ RAHUL-AI ⚡</h1>
+<code>[ SYSTEM CORE ACTIVE • V2.0.0 ]</code>
+
+<br><br>
+
 <p align="center">
   <img src="https://img.shields.io/badge/VERSION-2.0.0-000000?style=for-the-badge&logo=git&logoColor=00ffff&border=00ffff" />&nbsp;
   <img src="https://img.shields.io/badge/MAINTAINER-RAHUL_MASTER-000000?style=for-the-badge&logo=whatsapp&logoColor=00ffff&border=00ffff" />&nbsp;
@@ -25,6 +30,7 @@
 </p>
 
 <br>
-<b>⚡ POWERED BY RAHUL MASTER ⚡</b>
+
+<img src="https://capsule-render.vercel.app/api?type=waving&color=00ffff&height=90&section=footer&text=POWERED%20BY%20RAHUL%20MASTER&fontSize=20&fontColor=ff0055&animation=fadeIn" width="100%" />
 
 </div>
