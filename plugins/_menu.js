@@ -38,7 +38,6 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
             timeZone: "Asia/Kolkata"
         }).split(",");
         
-        let botName = config.BOT_INFO.split(";")[0].toUpperCase();
         let ownerName = config.BOT_INFO.split(";")[1].toLowerCase();
         let workType = config.WORK_TYPE.toLowerCase();
         let uptimeVal = await m.uptime();
@@ -63,7 +62,7 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
         const generate10MenuStyles = () => {
             let stylesArray = [];
 
-            // MENU 1: ⚡ NEW NEON CYBERPUNK BOX
+            // MENU 1
             stylesArray.push((prefixVal) => {
                 let header = `┏━━━✦ ⟨ *RAHUL AI : MENU 1* ⟩ ✦━━━┓\n` +
                              `┃ 👑 *Owner*  : ${ownerName}\n` +
@@ -86,7 +85,7 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                 return header + body;
             });
 
-            // MENU 2: 🔥 Neon Fire Animation Style
+            // MENU 2
             stylesArray.push((prefixVal) => {
                 let header = `╔═🔴═🟠═🟡═🟢═🔵═🟣══╗\n` +
                              `║🔥║ 👑 *Owner*  : ${ownerName}\n` +
@@ -109,7 +108,7 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                 return header + body;
             });
 
-            // MENU 3: 💎 Diamond Glow Style
+            // MENU 3
             stylesArray.push((prefixVal) => {
                 let header = `╭──⚡ [ 🌟 RAHUL AI : MENU 3 🌟 ] ⚡──╮\n` +
                              `│⚡│ 👑 *Owner*  : ${ownerName}\n` +
@@ -132,7 +131,7 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                 return header + body;
             });
 
-            // MENU 4: 🚀 Rocket Speed Style
+            // MENU 4
             stylesArray.push((prefixVal) => {
                 let header = `┏━━🔴━━━━━━━━━━━━━━━━━━━━🔴┓\n` +
                              `┃✨┃ 👑 *Owner*  : ${ownerName}\n` +
@@ -155,7 +154,7 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                 return header + body;
             });
 
-            // MENU 5: 👑 Royal Crown Style
+            // MENU 5
             stylesArray.push((prefixVal) => {
                 let header = `⚡ ── [ 🔥 RAHUL AI: MENU 5 🔥 ] ── ⚡\n` +
                              `║💎║ 👑 *Owner*  : ${ownerName}\n` +
@@ -178,7 +177,7 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                 return header + body;
             });
 
-            // MENU 6: 💎 Crystal Grid Style
+            // MENU 6
             stylesArray.push((prefixVal) => {
                 let header = `┌──────────────────────────┐\n` +
                              `│ 💎 *RAHUL AI: MENU 6*     │\n` +
@@ -203,7 +202,7 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                 return header + body;
             });
 
-            // MENU 7: 🔮 Neon Magic Style
+            // MENU 7
             stylesArray.push((prefixVal) => {
                 let header = `🔮 ═════ [ RAHUL AI: MENU 7 ] ═════ 🔮\n` +
                              `🔮 👑 *Owner*  : ${ownerName}\n` +
@@ -226,7 +225,7 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                 return header + body;
             });
 
-            // MENU 8: 🌀 HACKER MATRIX CORE
+            // MENU 8
             stylesArray.push((prefixVal) => {
                 let header = `╔══════════════════════════╗\n` +
                              `║   🛡️ RAHUL AI: MENU 8 🛡️  ║\n` +
@@ -251,7 +250,7 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                 return header + body;
             });
 
-            // MENU 9: 🌟 Super Nova Style
+            // MENU 9
             stylesArray.push((prefixVal) => {
                 let header = `🌟 ━━━━━━━━━━━━━━━━━━━━━━━━ 🌟\n` +
                              `✨ *RAHUL AI : MENU 9* ✨\n` +
@@ -276,7 +275,7 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                 return header + body;
             });
 
-            // MENU 10: 💎 Ultimate Matrix Gold Style
+            // MENU 10
             stylesArray.push((prefixVal) => {
                 let header = `╔══════════════════════════╗\n` +
                              `║     👑 RAHUL AI : MENU 10 👑    ║\n` +
@@ -305,7 +304,6 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
         };
 
         const autoStyles = generate10MenuStyles();
-        
         let targetIndex = forcedIndex !== null ? forcedIndex : menuStyleIndex;
         let selectedMenuStyle = autoStyles[targetIndex](m.prefix);
         
@@ -314,7 +312,6 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
         }
 
         let menu = selectedMenuStyle;
-
         let sperky = {
             "key": {
                 "participants": "0@s.s.whatsapp.net",
@@ -329,81 +326,21 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                 }
             },
             "participant": "0@s.whatsapp.net"
-        }
+        };
 
         switch (config.MENU_TYPE.toLowerCase()) {
-            case 'big': {
-                return await client.sendMessage(m.jid, {
-                    text: style(menu),
-                    contextInfo: {
-                        externalAdReply: {
-                            title: style(`Hey ${m.pushName}!`),
-                            body: style(`${config.BOT_INFO.split(";")[0]}`),
-                            mediaType: 1,
-                            showAdAttribution: true,
-                            renderLargerThumbnail: true,
-                            thumbnailUrl: `${config.BOT_INFO.split(";")[2]}`
-                        }
-                    }
-                }, { quoted: m });
-            }
-            case 'image': {
-                let imageUrl = config.BOT_INFO.split(";")[2] || 'https://sam-cdn.zone.id/files/xQer9GrIVT.jpg';
-                return await client.sendMessage(m.jid, {
-                    image: { url: imageUrl },
-                    caption: style(menu)
-                }, { quoted: sperky });
-            }
-            case 'small': {
-                return await client.sendMessage(m.jid, {
-                    text: style(menu),
-                    contextInfo: {
-                        externalAdReply: {
-                            title: style(`Hey ${m.pushName}!`),
-                            body: style(`${config.BOT_INFO.split(";")[0]}`),
-                            sourceUrl: "",
-                            mediaUrl: "",
-                            mediaType: 1,
-                            showAdAttribution: true,
-                            renderLargerThumbnail: false,
-                            thumbnailUrl: `${config.BOT_INFO.split(";")[2]}`
-                        }
-                    }
-                }, { quoted: sperky });
-            }
-            case 'document': {
-                return await client.sendMessage(m.jid, {
-                    document: { url: 'https://sam-cdn.zone.id/files/xQer9GrIVT.jpg' },
-                    caption: menu,
-                    mimetype: 'application/zip',
-                    fileName: style(config.BOT_INFO.split(";")[0]),
-                    fileLength: "99999999999",
-                    contextInfo: {
-                        externalAdReply: {
-                            title: style(`Hey ${m.pushName}!`),
-                            body: style(`${config.BOT_INFO.split(";")[0]}`),
-                            sourceUrl: "",
-                            mediaType: 1,
-                            showAdAttribution: true,
-                            renderLargerThumbnail: true,
-                            thumbnailUrl: `${config.BOT_INFO.split(";")[2]}`
-                        }
-                    }
-                }, { quoted: sperky });
-            }
-            case 'text': {
+            case 'big':
+                return await client.sendMessage(m.jid, { text: style(menu), contextInfo: { externalAdReply: { title: style(`Hey ${m.pushName}!`), body: style(`${config.BOT_INFO.split(";")[0]}`), mediaType: 1, showAdAttribution: true, renderLargerThumbnail: true, thumbnailUrl: `${config.BOT_INFO.split(";")[2]}` } } }, { quoted: m });
+            case 'image':
+                return await client.sendMessage(m.jid, { image: { url: config.BOT_INFO.split(";")[2] || 'https://sam-cdn.zone.id/files/xQer9GrIVT.jpg' }, caption: style(menu) }, { quoted: sperky });
+            case 'small':
+                return await client.sendMessage(m.jid, { text: style(menu), contextInfo: { externalAdReply: { title: style(`Hey ${m.pushName}!`), body: style(`${config.BOT_INFO.split(";")[0]}`), mediaType: 1, showAdAttribution: true, renderLargerThumbnail: false, thumbnailUrl: `${config.BOT_INFO.split(";")[2]}` } } }, { quoted: sperky });
+            case 'document':
+                return await client.sendMessage(m.jid, { document: { url: 'https://sam-cdn.zone.id/files/xQer9GrIVT.jpg' }, caption: menu, mimetype: 'application/zip', fileName: style(config.BOT_INFO.split(";")[0]), fileLength: "99999999999", contextInfo: { externalAdReply: { title: style(`Hey ${m.pushName}!`), body: style(`${config.BOT_INFO.split(";")[0]}`), mediaType: 1, showAdAttribution: true, renderLargerThumbnail: true, thumbnailUrl: `${config.BOT_INFO.split(";")[2]}` } } }, { quoted: sperky });
+            case 'video':
+                return await client.sendMessage(m.jid, { video: { url: config.BOT_INFO.split(";")[2] }, caption: style(menu), gifPlayback: true }, { quoted: sperky });
+            default:
                 return await client.sendMessage(m.jid, { text: style(menu) }, { quoted: sperky });
-            }
-            case 'video': {
-                return await client.sendMessage(m.jid, {
-                    video: { url: config.BOT_INFO.split(";")[2] },
-                    caption: style(menu),
-                    gifPlayback: true
-                }, { quoted: sperky });
-            }
-            default: {
-                return await client.sendMessage(m.jid, { text: style(menu) }, { quoted: sperky });
-            }
         }
     } catch (e) {
         console.log("Menu Error:", e);
@@ -421,7 +358,7 @@ Sparky({ name: "menu6", category: "misc", fromMe: isPublic, desc: "Menu Style 6"
 Sparky({ name: "menu7", category: "misc", fromMe: isPublic, desc: "Menu Style 7" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 6); });
 Sparky({ name: "menu8", category: "misc", fromMe: isPublic, desc: "Menu Style 8" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 7); });
 Sparky({ name: "menu9", category: "misc", fromMe: isPublic, desc: "Menu Style 9" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 8); });
-Sparky({ name: "menu10", category: "misc", fromMe: isPublic, desc: "Menu Style 10" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 9); });
+Sparky({ name: "menu10", category: &quot;misc&quot;, fromMe: isPublic, desc: &quot;Menu Style 10&quot; }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 9); });
 
 // --- AUTODL ON/OFF COMMAND ---
 Sparky({
@@ -442,7 +379,7 @@ Sparky({
   }
 });
 
-// --- AUTOMATIC YOUTUBE DOWNLOAD LISTENER (ORIGINAL) ---
+// --- POWERFUL AUTOMATIC YOUTUBE DOWNLOAD (BOTH VIDEO & AUDIO) ---
 Sparky({
   on: "text",
   dontAddCommandList: true
@@ -451,8 +388,7 @@ Sparky({
     if (!autoDownloadEnabled) return;
 
     const rawText = m.body || m.text || (m.message && (m.message.conversation || m.message.extendedTextMessage?.text)) || "";
-    const text = rawText.toLowerCase().trim();
-    if (!text) return;
+    if (!rawText) return;
 
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const matchUrls = rawText.match(urlRegex);
@@ -460,9 +396,28 @@ Sparky({
     if (matchUrls) {
       const ytUrl = matchUrls.find(word => word.includes("youtube.com") || word.includes("youtu.be"));
       if (ytUrl) {
-        try { await m.react('⬇️'); } catch (e) {}
-        const url = await ytv(ytUrl);
-        await m.sendMsg(m.jid, url, { quoted: m }, "video");
+        try { await m.react('📥'); } catch (e) {}
+
+        // 1. Download & Send Video (MP4)
+        try {
+          const videoResult = await ytv(ytUrl);
+          if (videoResult) {
+            await m.sendMsg(m.jid, videoResult, { quoted: m }, "video");
+          }
+        } catch (err) {
+          console.error("AutoDL Video Error:", err);
+        }
+
+        // 2. Download & Send Audio (MP3)
+        try {
+          const audioResult = await yta(ytUrl);
+          if (audioResult) {
+            await m.sendMsg(m.jid, audioResult, { quoted: m }, "audio");
+          }
+        } catch (err) {
+          console.error("AutoDL Audio Error:", err);
+        }
+
         try { await m.react('✅'); } catch (e) {}
       }
     }
