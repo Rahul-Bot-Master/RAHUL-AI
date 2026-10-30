@@ -17,21 +17,13 @@ Sparky({
       const mediaBuffer = await m.quoted.download();
       
       const axios = require('axios');
-      const FormData = require('form-data');
-      const formData = new FormData();
       
-      // Using 'upload' as the exact field name for the CDN server
-      formData.append('upload', Buffer.from(mediaBuffer), {
-        filename: 'media_file.' + (m.quoted.mimetype ? m.quoted.mimetype.split('/')[1] : 'bin'),
-        contentType: m.quoted.mimetype || 'application/octet-stream'
-      });
-
-      const response = await axios.post('https://sam-cdn.zone.id/upload', formData, {
+      // Direct binary upload to bypass form-data boundary issues causing 400 Bad Request
+      const response = await axios.post('https://sam-cdn.zone.id/upload', mediaBuffer, {
         headers: {
-          ...formData.getHeaders(),
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Content-Type': m.quoted.mimetype || 'application/octet-stream',
+          'User-Agent': 'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
           'Referer': 'https://sam-cdn.zone.id/',
-          'Origin': 'https://sam-cdn.zone.id',
           'Accept': 'application/json'
         },
         maxContentLength: Infinity,
