@@ -238,26 +238,6 @@ const { Console } = require('console');
                 let commandName = mek.body ? mek.body[0].toLowerCase() + mek.body.slice(1).trim() : '';
                 let args;
 
-                        // Message upsert handler
-        sock.ev.on('messages.upsert', async (msgEvent) => {
-            let mek;
-            try {
-                mek = await serialize(JSON.parse(JSON.stringify(msgEvent.messages[0])), sock);
-            } catch (err) {
-                console.error('Error serializing message:', err);
-                return;
-            }
-
-            await whatsappAutomation(sock, mek, msgEvent);
-
-            if (botConfig.DISABLE_PM && !mek.isGroup) return;
-
-            commands.forEach(async (cmd) => {
-                if (cmd.fromMe && !mek.fromMe) return;
-
-                let commandName = mek.body ? mek.body[0].toLowerCase() + mek.body.slice(1).trim() : '';
-                let args;
-
                 try {
                     if (typeof cmd.on === 'function') {
                         cmd.on({ m: mek, args: mek.body, client: sock });
