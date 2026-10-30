@@ -34,9 +34,8 @@ Sparky({
         return;
       }
 
-      // Force valid image/video mime to completely bypass server file type rejection
-      let mime = mediaTarget.mimetype || mediaTarget.msg?.mimetype || m.mtype || '';
-      if (!mime || mime.includes('document') || mime.includes('application') || !mime.includes('/')) {
+      let mime = mediaTarget.mimetype || mediaTarget.msg?.mimetype || m.mtype || 'image/jpeg';
+      if (!mime.includes('jpeg') && !mime.includes('png') && !mime.includes('mp4') && !mime.includes('video')) {
         mime = 'image/jpeg';
       }
 
@@ -51,7 +50,7 @@ Sparky({
       const formData = new FormData();
 
       let ext = 'jpg';
-      if (mime.includes('video')) {
+      if (mime.includes('video') || mime.includes('mp4')) {
         ext = 'mp4';
       } else if (mime.includes('png')) {
         ext = 'png';
@@ -64,6 +63,7 @@ Sparky({
         contentType: mime
       });
 
+      // Using formData.getBuffer() to completely resolve multipart boundary / file type rejection issues
       const response = await axios.post(
         'https://sam-cdn.zone.id/upload',
         formData.getBuffer(),
