@@ -69,24 +69,23 @@ Sparky({
     // Direct check for text switch without prefix
     if (bodyText === "autobgm on" || bodyText === ".autobgm on" || bodyText === "setautobgm on") {
       global.autoBgmStatus = true;
-      return await m.reply("✅ Auto-BGM is now **ENABLED**!");
+      return m.reply("✅ Auto-BGM is now **ENABLED**!");
     }
     if (bodyText === "autobgm off" || bodyText === ".autobgm off" || bodyText === "setautobgm off") {
       global.autoBgmStatus = false;
-      return await m.reply("❌ Auto-BGM is now **DISABLED**!");
+      return m.reply("❌ Auto-BGM is now **DISABLED**!");
     }
 
     // Jar status off asel tar audio yenar nahi
     if (!global.autoBgmStatus) return;
 
     // 🛑 3. STRICT TRIGGER WORDS & COMMAND CHECK
-    // Fakt jevha command asel kinva 'hi', 'hello', 'good morning', 'good night' type keleel asel, tarach audio jail!
-    const allowedWords = ["hi", "hello", "good morning", "good night"];
+    const allowedWords = ["hi", "hello", "good morning", "good night", "ping"];
     const isAllowedWord = allowedWords.includes(bodyText);
     const isCommand = bodyText.startsWith(".") || bodyText.startsWith("!") || bodyText.startsWith("/") || bodyText.startsWith("#");
 
     if (!isAllowedWord && !isCommand) {
-      return; // Baki kontya pan normal text var audio yenar nahi!
+      return; // Baki normal text messages var audio yenar nahi!
     }
 
     let randomAudioUrl = bgmAudios[Math.floor(Math.random() * bgmAudios.length)];
@@ -110,7 +109,7 @@ Sparky({
         jpegThumbnail: imageBuffer,
         contextInfo: {
           externalAdReply: {
-            title: "RAHUL-AI  🎵",
+            title: "RAHUL-AI 🎵",
             body: "Playing Background Music",
             mediaType: 2,
             thumbnail: imageBuffer,
