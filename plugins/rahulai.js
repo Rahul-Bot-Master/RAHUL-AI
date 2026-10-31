@@ -35,12 +35,15 @@ Sparky({
     answer = response.data.choices[0].message.content;
 
   } catch (err) {
-    // Grok fail zalyavar silent thevun direct free fallback API vapru
+    console.error("Grok API Error:", err.response?.data || err.message);
+    
+    // Grok fail zalyavar fallback API vapru
     try {
       let res2 = await axios.get(`https://api.siputzx.my.id/api/ai/chatgpt?prompt=${encodeURIComponent(query)}`);
       answer = res2.data.data || res2.data.result;
     } catch (e) {
-      answer = `Hello Rahul! Mi RAHUL-AI ahe. Tuzha message "${query}" mala milalay. 🚀`;
+      console.error("Fallback API Error:", e.message);
+      answer = `Kahi tari samasya nimanali ahe. Punha prayatna kara!`;
     }
   }
 
