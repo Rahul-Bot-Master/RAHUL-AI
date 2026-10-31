@@ -24,7 +24,7 @@ Sparky({
   desc: "Turn Auto-BGM ON or OFF"
 }, async ({ m, args, text }) => {
   let safeArgs = Array.isArray(args) ? args.join(" ") : (typeof args === "string" ? args : "");
-  let fullQuery = (text || safeArgs || m.body || "").toLowerCase();
+  let fullQuery = (text || safeArgs || m.body || m.text || "").toLowerCase();
   
   if (fullQuery.includes("on")) {
     global.autoBgmStatus = true;
@@ -37,7 +37,7 @@ Sparky({
   }
 });
 
-// --- AUTO-BGM HANDLER (ANTI-FLOOD & SMOOTH CHAT TRIGGER) ---
+// --- AUTO-BGM HANDLER (FIXED FOR BOTH SIDES & ANTI-FLOOD) ---
 Sparky({
   name: "autobgm_handler",
   on: "text",
@@ -68,7 +68,9 @@ Sparky({
       return; 
     }
 
-    let bodyText = (m.body || m.text || "").trim().toLowerCase();
+    // ✨ Robust text extraction for both incoming and outgoing messages
+    let rawText = m.body || m.text || (m.message && (m.message.conversation || m.message.extendedTextMessage?.text)) || "";
+    let bodyText = rawText.trim().toLowerCase();
 
     // Direct check for text switch without prefix
     if (bodyText === "autobgm on" || bodyText === ".autobgm on" || bodyText === "setautobgm on") {
@@ -92,12 +94,12 @@ Sparky({
       return; 
     }
 
-    // 🛑 4. ANTI-FLOOD COOLDOWN (Prevents "Waiting for this message" error on fast typing)
+    // 🛑 4. ANTI-FLOOD COOLDOWN (Prevents duplication & overlap)
     let senderKey = chatJid;
     let now = Date.now();
     if (userCooldowns.has(senderKey)) {
       let lastTime = userCooldowns.get(senderKey);
-      if (now - lastTime < 3000) { // 3 seconds gap between audio replies
+      if (now - lastTime < 2500) { // 2.5 seconds gap between audio replies
         return; 
       }
     }
@@ -133,7 +135,7 @@ Sparky({
           }
         }
       }, { quoted: m }).catch(err => console.log("Audio Send Inner Error:", err));
-    }, 600);
+    }, 400);
 
   } catch (e) {
     console.log("Auto-BGM Error:", e);
