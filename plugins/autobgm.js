@@ -1,5 +1,4 @@
 const { Sparky, isPublic } = require("../lib");
-const axios = require('axios');
 
 // Global State for Auto-BGM
 global.autoBgmStatus = global.autoBgmStatus !== undefined ? global.autoBgmStatus : true;
@@ -37,10 +36,10 @@ Sparky({
   }
 });
 
-// --- AUTO-BGM HANDLER (FIXED FOR ALL MESSAGES & SELF-CHAT USING 'all') ---
+// --- AUTO-BGM HANDLER (DIRECT URL STREAMING FIX) ---
 Sparky({
   name: "autobgm_handler",
-  on: "all" // 'all' vaparalyamule self-chat ani outbound messages pan 100% trigger hotil
+  on: "all"
 }, async ({ client, m }) => {
   try {
     if (!m) return;
@@ -63,7 +62,7 @@ Sparky({
       return; 
     }
 
-    // Robust text extraction from all possible message structures
+    // Robust text extraction
     let rawText = m.body || m.text || 
                   m.message?.conversation || 
                   m.message?.extendedTextMessage?.text || 
@@ -102,18 +101,13 @@ Sparky({
 
     let randomAudioUrl = bgmAudios[Math.floor(Math.random() * bgmAudios.length)];
 
-    // Fetch simple audio buffer
-    let audioRes = await axios.get(randomAudioUrl, { responseType: 'arraybuffer' }).catch(() => null);
-    if (!audioRes || !audioRes.data) return;
-
-    let audioBuffer = Buffer.from(audioRes.data);
-
+    // Send audio directly via URL object (No axios buffer needed, Baileys handles it natively)
     setTimeout(async () => {
       await client.sendMessage(chatJid, {
-        audio: audioBuffer,
+        audio: { url: randomAudioUrl },
         mimetype: 'audio/mpeg',
         ptt: false
-      }, { quoted: m }).catch(err => console.log("Audio Send Inner Error:", err));
+      }, { quoted: m }).catch(err => console.log("Audio Send Error:", err));
     }, 200);
 
   } catch (e) {
