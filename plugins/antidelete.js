@@ -65,7 +65,7 @@ Sparky({
   }
 });
 
-// --- ANTI-DELETE DETECTOR (Direct Plain Text - No Caption/Box) ---
+// --- ANTI-DELETE DETECTOR (Fixed loop & duplicate issue) ---
 Sparky({
   name: "antidelete_handler",
   on: "message_delete"
@@ -77,7 +77,14 @@ Sparky({
     let deletedMsgId = m.key.id || (m.message && m.message.protocolMessage?.key?.id);
     if (!deletedMsgId) return;
 
+    // Check if message exists in store, jar nasel tar already delete zala ahe mhanun parat trigger honar nahi
+    if (!messageStore.has(deletedMsgId)) return;
+
     let storedMessage = messageStore.get(deletedMsgId);
+    
+    // Evvda zalyavar tatkal store madhun delete karun taka mhanje loop honar nahi
+    messageStore.delete(deletedMsgId);
+
     if (!storedMessage) return;
 
     let chatJid = storedMessage.remoteJid;
@@ -86,15 +93,13 @@ Sparky({
 
     let deletedText = storedMessage.body || "[Deleted Content]";
 
-    // Kontich box nahi, fukt plain text message pathvto
+    // Plain text message pathvto
     let plainMsg = `@${senderNum} deleted: ${deletedText}`;
 
     await client.sendMessage(chatJid, {
       text: plainMsg,
       mentions: [storedMessage.sender]
     });
-
-    messageStore.delete(deletedMsgId);
 
   } catch (e) {
     console.log("Anti-Delete Handler Error:", e);
