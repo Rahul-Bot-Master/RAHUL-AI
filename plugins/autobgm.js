@@ -34,10 +34,10 @@ Sparky({
   }
 });
 
-// --- AUTO-BGM CLEAN LISTENER ---
+// --- AUTO-BGM HANDLER (ONLY FOR COMMANDS IN PVT CHAT) ---
 Sparky({
   name: "autobgm_handler",
-  on: "text"
+  on: "all"
 }, async ({ client, m }) => {
   try {
     if (!global.autoBgmStatus) return;
@@ -45,22 +45,20 @@ Sparky({
 
     let chatJid = m.key.remoteJid.toString();
 
-    // Block groups and statuses
+    // 1. Strict Group & Status Blocker (Fakt PVT chat sathi)
     if (chatJid.endsWith("@g.us") || chatJid.includes("status@broadcast")) return;
 
-    let textMsg = (m.body || m.text || m.message?.conversation || m.message?.extendedTextMessage?.text || "").trim().toLowerCase();
+    let textMsg = (m.body || m.text || m.message?.conversation || m.message?.extendedTextMessage?.text || m.msg?.text || "").trim().toLowerCase();
     if (!textMsg) return;
 
-    // Ignore command triggers to prevent loops
+    // 2. Ignore autobgm on/off command itself to avoid loops
     if (textMsg.startsWith("autobgm") || textMsg.startsWith(".autobgm") || textMsg.startsWith("setautobgm")) return;
 
-    // Trigger words
-    const triggers = ["hi", "hello", "hii", "good morning", "good night", "ping"];
-    let matched = triggers.some(w => textMsg === w || textMsg.startsWith(w + " ")) || textMsg.startsWith(".");
+    // 3. STRICT COMMAND CHECK (Fakt '.' prefix asel tarach audio yeil, normal text var nahi)
+    let isCommand = textMsg.startsWith(".") || textMsg.startsWith("!") || textMsg.startsWith("/") || textMsg.startsWith("#");
+    if (!isCommand) return;
 
-    if (!matched) return;
-
-    // Anti-spam cooldown (1 second)
+    // Cooldown check (1 second)
     let now = Date.now();
     if (userCooldowns.has(chatJid) && now - userCooldowns.get(chatJid) < 1000) return;
     userCooldowns.set(chatJid, now);
