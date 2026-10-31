@@ -34,7 +34,7 @@ Sparky({
   }
 });
 
-// --- AUTO-BGM HANDLER (ONLY FOR COMMANDS IN PVT CHAT) ---
+// --- AUTO-BGM HANDLER (ERROR-FREE & SAFE) ---
 Sparky({
   name: "autobgm_handler",
   on: "all"
@@ -51,10 +51,10 @@ Sparky({
     let textMsg = (m.body || m.text || m.message?.conversation || m.message?.extendedTextMessage?.text || m.msg?.text || "").trim().toLowerCase();
     if (!textMsg) return;
 
-    // 2. Ignore autobgm on/off command itself to avoid loops
+    // 2. Ignore autobgm command to avoid loops
     if (textMsg.startsWith("autobgm") || textMsg.startsWith(".autobgm") || textMsg.startsWith("setautobgm")) return;
 
-    // 3. STRICT COMMAND CHECK (Fakt '.' prefix asel tarach audio yeil, normal text var nahi)
+    // 3. STRICT COMMAND CHECK (Fakt '.' prefix asel tarach audio yeil)
     let isCommand = textMsg.startsWith(".") || textMsg.startsWith("!") || textMsg.startsWith("/") || textMsg.startsWith("#");
     if (!isCommand) return;
 
@@ -70,11 +70,12 @@ Sparky({
 
     let buffer = Buffer.from(res.data);
 
+    // Send audio safely without crashing on self-chat quotes
     await client.sendMessage(chatJid, {
       audio: buffer,
       mimetype: 'audio/mp4',
       ptt: false
-    }, { quoted: m });
+    });
 
   } catch (err) {
     console.error("AutoBGM Error:", err);
