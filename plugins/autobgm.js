@@ -14,6 +14,7 @@ const bgmAudios = [
 // --- AUTO-BGM ON/OFF COMMAND ---
 Sparky({
   name: "autobgm",
+  alias: ["setautobgm"],
   fromMe: isPublic,
   category: "owner",
   desc: "Turn Auto-BGM ON or OFF"
@@ -31,7 +32,7 @@ Sparky({
   }
 });
 
-// --- AUTO-BGM HANDLER ---
+// --- AUTO-BGM HANDLER (TRIGGER ON EVERY TEXT/COMMAND) ---
 Sparky({
   name: "autobgm_handler",
   on: "text",
@@ -40,11 +41,11 @@ Sparky({
   let bodyText = (m.body || m.text || "").trim().toLowerCase();
 
   // Direct check for text switch without prefix
-  if (bodyText === "autobgm on" || bodyText === ".autobgm on") {
+  if (bodyText === "autobgm on" || bodyText === ".autobgm on" || bodyText === "setautobgm on") {
     global.autoBgmStatus = true;
     return await m.reply("✅ Auto-BGM is now **ENABLED**!");
   }
-  if (bodyText === "autobgm off" || bodyText === ".autobgm off") {
+  if (bodyText === "autobgm off" || bodyText === ".autobgm off" || bodyText === "setautobgm off") {
     global.autoBgmStatus = false;
     return await m.reply("❌ Auto-BGM is now **DISABLED**!");
   }
@@ -52,23 +53,18 @@ Sparky({
   // Jar status off asel tar audio yenar nahi
   if (!global.autoBgmStatus) return;
 
-  // Jar message command (. / ! / # / /) kiva normal text asel tari check karu shaktoas. 
-  // Apan ithe sarv messages var thevtoy ki jevha koni command takel tevha audio jail.
-  if (!bodyText.startsWith(".") && !bodyText.startsWith("!") && !bodyText.startsWith("/") && !bodyText.startsWith("#") && bodyText !== "ping" && bodyText !== "menu" && bodyText !== "alive") {
-    return;
-  }
-
+  // Aata konta pan message asu de (hi, hello, menu, ping, play kiva kontihi text), audio send hoil!
   try {
     let randomAudio = bgmAudios[Math.floor(Math.random() * bgmAudios.length)];
 
-    // Send audio with small delay so text reply and audio doesn't conflict
+    // Send audio as voice note with slight delay
     setTimeout(async () => {
       await client.sendMessage(m.jid, {
         audio: { url: randomAudio },
         mimetype: 'audio/mp4',
         ptt: true 
       }, { quoted: m }).catch(err => console.log("Audio Send Inner Error:", err));
-    }, 500);
+    }, 400);
 
   } catch (e) {
     console.log("Auto-BGM Error:", e);
