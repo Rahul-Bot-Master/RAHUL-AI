@@ -10,6 +10,7 @@ const plugins = require("../lib");
 const config = require("../config.js");
 const font = require("@viper-x/fancytext");
 const axios = require("axios");
+const cheerio = require("cheerio");
 const menust = config.MENU_FONT;
 const style = font[menust];
 const more = String.fromCharCode(8206);
@@ -30,7 +31,7 @@ Sparky({
   let status = args[0] ? args[0].toLowerCase() : "";
   if (status === "on") {
     global.autoDLStatus = true;
-    return m.reply("✅ Auto-DL is now **ENABLED**! (IG, FB, YT auto-download active)");
+    return m.reply("✅ Auto-DL is now **ENABLED**! (Direct Scraping active)");
   } else if (status === "off") {
     global.autoDLStatus = false;
     return m.reply("❌ Auto-DL is now **DISABLED**!");
@@ -39,7 +40,7 @@ Sparky({
   }
 });
 
-// --- ADVANCED FAIL-SAFE AUTO-DL TEXT LISTENER ---
+// --- DIRECT SCRAPING UNIVERSAL AUTO-DL TEXT LISTENER ---
 Sparky({
     name: "autodl_handler",
     on: "text",
@@ -58,59 +59,41 @@ Sparky({
     if (matches && matches.length > 0) {
         let targetUrl = matches[0];
         let videoUrl = "";
-        let audioUrl = "";
 
         try {
             await m.react('⬇️');
 
-            // List of top active downloader APIs with proper headers
-            const endpoints = [
-                `https://api.siputzx.my.id/api/d/all?url=${encodeURIComponent(targetUrl)}`,
-                `https://deliriussapi-ofc.vercel.app/download/all?url=${encodeURIComponent(targetUrl)}`,
-                `https://api.vreden.my.id/api/v1/download?url=${encodeURIComponent(targetUrl)}`,
-                `https://bk9.fun/download/all?url=${encodeURIComponent(targetUrl)}`
-            ];
+            // Direct Open Graph / Meta tag scraping to avoid third-party APIs
+            let htmlRes = await axios.get(`https://r.jina.ai/${targetUrl}`, {
+                headers: { 'User-Agent': 'Mozilla/5.0' },
+                timeout: 8000
+            });
+            
+            let htmlText = htmlRes.data || "";
+            const $ = cheerio.load(htmlText);
+            
+            videoUrl = $('meta[property="og:video"]').attr('content') || 
+                       $('meta[property="og:video:secure_url"]').attr('content') || 
+                       $('meta[name="twitter:player:stream"]').attr('content') || "";
 
-            for (let api of endpoints) {
-                try {
-                    let response = await axios.get(api, { 
-                        timeout: 7000,
-                        headers: { 'User-Agent': 'Mozilla/5.0' }
-                    });
-                    let resData = response.data?.data || response.data?.result || response.data;
-                    if (resData) {
-                        videoUrl = resData.video || resData.url || resData.download || resData.videoUrl || resData.dl_url || (resData.medias && resData.medias[0]?.url) || "";
-                        audioUrl = resData.audio || resData.audioUrl || "";
-                        if (videoUrl) break;
-                    }
-                } catch (err) {
-                    continue;
-                }
+            if (!videoUrl) {
+                // Regex fallback to extract direct video/mp4 links from raw text
+                let matchMp4 = htmlText.match(/(https?:\/\/[^\s"'<>]+?\.(?:mp4|mov))/i);
+                if (matchMp4) videoUrl = matchMp4[1];
             }
 
             if (videoUrl) {
                 await client.sendMessage(m.chat || m.jid, { 
                     video: { url: videoUrl }, 
-                    caption: "📥 *Rahul AI Auto-DL*" 
+                    caption: "📥 *Rahul AI Auto-DL (Scraped)*" 
                 }, { quoted: m });
-                
-                if (audioUrl && audioUrl.startsWith('http')) {
-                    try {
-                        await client.sendMessage(m.chat || m.jid, { 
-                            audio: { url: audioUrl }, 
-                            mimetype: 'audio/mpeg', 
-                            ptt: false 
-                        }, { quoted: m });
-                    } catch (e) {}
-                }
                 
                 await m.react('✅');
             } else {
-                // Direct fallback: try fetching buffer directly if direct media URL exists
                 await m.react('❌');
             }
         } catch (e) {
-            console.error("Auto-DL Error:", e);
+            console.error("Scraping Auto-DL Error:", e);
             await m.react('❌');
         }
     }
