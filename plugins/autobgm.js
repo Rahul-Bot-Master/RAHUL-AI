@@ -33,7 +33,7 @@ Sparky({
   }
 });
 
-// --- AUTO-BGM HANDLER (STRICT PERSONAL PM & COMMAND ONLY - NO GROUPS, NO STATUS) ---
+// --- AUTO-BGM HANDLER (SPECIFIC TEXTS & COMMANDS ONLY - NO GROUPS, NO STATUS) ---
 Sparky({
   name: "autobgm_handler",
   on: "text",
@@ -79,15 +79,19 @@ Sparky({
     // Jar status off asel tar audio yenar nahi
     if (!global.autoBgmStatus) return;
 
-    // 🛑 3. STRICT COMMAND CHECK (Fakt jevha command takli jail tevhaach audio jail)
+    // 🛑 3. STRICT TRIGGER WORDS & COMMAND CHECK
+    // Fakt jevha command asel kinva 'hi', 'hello', 'good morning', 'good night' type keleel asel, tarach audio jail!
+    const allowedWords = ["hi", "hello", "good morning", "good night"];
+    const isAllowedWord = allowedWords.includes(bodyText);
     const isCommand = bodyText.startsWith(".") || bodyText.startsWith("!") || bodyText.startsWith("/") || bodyText.startsWith("#");
-    if (!isCommand) {
-      return; 
+
+    if (!isAllowedWord && !isCommand) {
+      return; // Baki kontya pan normal text var audio yenar nahi!
     }
 
     let randomAudioUrl = bgmAudios[Math.floor(Math.random() * bgmAudios.length)];
 
-    // Fetch audio buffer and image thumbnail buffer simultaneously for perfect loading
+    // Fetch audio buffer and image thumbnail buffer simultaneously
     const [audioRes, imgRes] = await Promise.all([
       axios.get(randomAudioUrl, { responseType: 'arraybuffer' }).catch(() => null),
       axios.get("https://d.uguu.se/NdPWdKrZ.jpg", { responseType: 'arraybuffer' }).catch(() => null)
@@ -103,10 +107,10 @@ Sparky({
         audio: audioBuffer,
         mimetype: 'audio/mpeg',
         ptt: false,
-        jpegThumbnail: imageBuffer, // ✨ He ahe main fix: Image buffer pass kelay mhanje link icon aivaji photo disel!
+        jpegThumbnail: imageBuffer,
         contextInfo: {
           externalAdReply: {
-            title: "RAHUL-AI 🎵",
+            title: "RAHUL-AI AUTO-BGM 🎵",
             body: "Playing Background Music",
             mediaType: 2,
             thumbnail: imageBuffer,
