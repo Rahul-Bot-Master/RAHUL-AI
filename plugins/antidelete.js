@@ -28,29 +28,30 @@ Sparky({
   }
 });
 
-// --- STORE MESSAGES IN BACKGROUND (Strictly Filtering Out Bot's Own Messages & Broadcasts) ---
+// --- STORE MESSAGES (Strict Self-Chat & Bot Spam Protection) ---
 Sparky({
   name: "antidelete_store",
   on: "all",
   fromMe: false
-}, async ({ m }) => {
+}, async ({ client, m }) => {
   try {
     if (!m || !m.key || !m.key.id) return;
     
     let chatJid = m.key.remoteJid || "";
-    let participant = m.participant || m.key.participant || chatJid;
+    let botNumber = client.user ? client.user.id.split(":")[0] + "@s.whatsapp.net" : "";
 
-    // 🛑 Block broadcast and bot's own messages from getting stored (Fixes the spam/loop loop)
+    // 🛑 STRICTOR BLOCK: Stop storing if it's status, broadcast, bot's own message, or user's own self-chat (Saved Messages)
     if (
       chatJid.includes("status@broadcast") || 
       chatJid === "broadcast" || 
       m.key.fromMe === true || 
-      m.fromMe === true
+      m.fromMe === true ||
+      chatJid === botNumber // Prevents self-chat spam loop completely!
     ) {
       return;
     }
 
-    // Store only incoming user messages
+    // Store valid messages safely
     messageStore.set(m.key.id, {
       key: m.key,
       message: m.message,
@@ -58,8 +59,8 @@ Sparky({
       remoteJid: chatJid
     });
 
-    // Limit store size to 500 messages
-    if (messageStore.size > 500) {
+    // Limit store size to 300 messages
+    if (messageStore.size > 300) {
       const firstKey = messageStore.keys().next().value;
       messageStore.delete(firstKey);
     }
@@ -87,7 +88,7 @@ Sparky({
     let chatJid = storedMessage.remoteJid;
     if (!chatJid) return;
 
-    // Resend the deleted message cleanly without extra text or forwarded tags
+    // Resend the exact deleted message cleanly without any extra text or loop triggers
     if (storedMessage.message) {
       await client.sendMessage(chatJid, storedMessage.message, { quoted: storedMessage.key }).catch(async () => {
         if (storedMessage.body) {
@@ -98,7 +99,7 @@ Sparky({
       await client.sendMessage(chatJid, { text: storedMessage.body });
     }
 
-    // Clean up from memory after resending
+    // Clean up memory
     messageStore.delete(deletedMsgId);
 
   } catch (e) {
