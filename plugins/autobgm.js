@@ -37,7 +37,7 @@ Sparky({
   }
 });
 
-// --- AUTO-BGM HANDLER (FIXED FOR BOTH SIDES & ANTI-FLOOD) ---
+// --- AUTO-BGM HANDLER (FIXED FOR INCOMING/OUTGOING QUOTED AUDIO REPLY) ---
 Sparky({
   name: "autobgm_handler",
   on: "text",
@@ -68,7 +68,6 @@ Sparky({
       return; 
     }
 
-    // ✨ Robust text extraction for both incoming and outgoing messages
     let rawText = m.body || m.text || (m.message && (m.message.conversation || m.message.extendedTextMessage?.text)) || "";
     let bodyText = rawText.trim().toLowerCase();
 
@@ -94,12 +93,12 @@ Sparky({
       return; 
     }
 
-    // 🛑 4. ANTI-FLOOD COOLDOWN (Prevents duplication & overlap)
+    // 🛑 4. ANTI-FLOOD COOLDOWN
     let senderKey = chatJid;
     let now = Date.now();
     if (userCooldowns.has(senderKey)) {
       let lastTime = userCooldowns.get(senderKey);
-      if (now - lastTime < 2500) { // 2.5 seconds gap between audio replies
+      if (now - lastTime < 2000) { // 2 seconds gap
         return; 
       }
     }
@@ -135,7 +134,7 @@ Sparky({
           }
         }
       }, { quoted: m }).catch(err => console.log("Audio Send Inner Error:", err));
-    }, 400);
+    }, 300);
 
   } catch (e) {
     console.log("Auto-BGM Error:", e);
