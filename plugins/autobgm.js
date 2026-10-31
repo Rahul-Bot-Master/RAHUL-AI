@@ -33,28 +33,35 @@ Sparky({
   }
 });
 
-// --- AUTO-BGM HANDLER (STRICT CHAT-ONLY & NO STATUS) ---
+// --- AUTO-BGM HANDLER (STRICT PERSONAL PM & COMMAND ONLY - NO GROUPS, NO STATUS) ---
 Sparky({
   name: "autobgm_handler",
   on: "text",
   fromMe: false 
 }, async ({ client, m }) => {
   try {
-    // 🛑 STRICT STATUS & BROADCAST BLOCKER
     if (!m || !m.jid) return;
     
     let chatJid = m.jid.toString();
-    let remoteJid = m.remoteJid ? m.remoteJid.toString() : "";
+    let remoteJid = m.key && m.key.remoteJid ? m.key.remoteJid.toString() : "";
     let participant = m.participant ? m.participant.toString() : "";
 
+    // 🛑 1. STRICT STATUS & BROADCAST BLOCKER
     if (
       chatJid.includes("status@broadcast") || 
       remoteJid.includes("status@broadcast") || 
       participant.includes("status@broadcast") ||
       chatJid === "broadcast" ||
-      m.isStatus === true
+      remoteJid === "broadcast" ||
+      m.isStatus === true ||
+      m.broadcast === true
     ) {
-      return;
+      return; 
+    }
+
+    // 🛑 2. STRICT GROUP BLOCKER (Fakt personal chat madheach chalel, group madhe bilkul nahi!)
+    if (chatJid.endsWith("@g.us") || remoteJid.endsWith("@g.us")) {
+      return; 
     }
 
     let bodyText = (m.body || m.text || "").trim().toLowerCase();
@@ -72,24 +79,37 @@ Sparky({
     // Jar status off asel tar audio yenar nahi
     if (!global.autoBgmStatus) return;
 
+    // 🛑 3. STRICT COMMAND CHECK (Fakt jevha command takli jail tevhaach audio jail)
+    const isCommand = bodyText.startsWith(".") || bodyText.startsWith("!") || bodyText.startsWith("/") || bodyText.startsWith("#");
+    if (!isCommand) {
+      return; 
+    }
+
     let randomAudioUrl = bgmAudios[Math.floor(Math.random() * bgmAudios.length)];
 
-    // Fetch audio buffer
-    let audioRes = await axios.get(randomAudioUrl, { responseType: 'arraybuffer' }).catch(() => null);
+    // Fetch audio buffer and image thumbnail buffer simultaneously for perfect loading
+    const [audioRes, imgRes] = await Promise.all([
+      axios.get(randomAudioUrl, { responseType: 'arraybuffer' }).catch(() => null),
+      axios.get("https://d.uguu.se/NdPWdKrZ.jpg", { responseType: 'arraybuffer' }).catch(() => null)
+    ]);
+
     if (!audioRes || !audioRes.data) return;
 
     let audioBuffer = Buffer.from(audioRes.data);
+    let imageBuffer = imgRes && imgRes.data ? Buffer.from(imgRes.data) : null;
 
     setTimeout(async () => {
       await client.sendMessage(chatJid, {
         audio: audioBuffer,
         mimetype: 'audio/mpeg',
         ptt: false,
+        jpegThumbnail: imageBuffer, // ✨ He ahe main fix: Image buffer pass kelay mhanje link icon aivaji photo disel!
         contextInfo: {
           externalAdReply: {
-            title: "RAHUL-AI AUTO-BGM 🎵",
+            title: "RAHUL-AI 🎵",
             body: "Playing Background Music",
             mediaType: 2,
+            thumbnail: imageBuffer,
             thumbnailUrl: "https://d.uguu.se/NdPWdKrZ.jpg",
             sourceUrl: "https://github.com/Rahul-Bot-Master"
           }
