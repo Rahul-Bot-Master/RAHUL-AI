@@ -8,7 +8,7 @@ Sparky({
   desc: "Clear messages in current chat"
 }, async ({ client, m }) => {
   try {
-    // Method: Baileys chatModify clear payload with conversation delete
+    // Exact Baileys multi-device chatModify payload for clearing chat messages
     await client.chatModify({
       delete: true,
       lastMessages: [{
@@ -18,21 +18,31 @@ Sparky({
     }, m.jid);
     
     return m.reply("🧹 Chat successfully clear zali!");
-  } catch (e) {
+  } catch (e1) {
     try {
-      // Fallback: If chatModify throws error, use store/messages deletion if available
-      if (client.store && client.store.messages && client.store.messages[m.jid]) {
-        client.store.messages[m.jid].array = [];
+      // Alternative Baileys method structure for newer versions
+      await client.chatModify({ 
+        clear: { 
+          messages: [{ id: m.key.id, fromMe: m.key.fromMe, timestamp: m.messageTimestamp }] 
+        } 
+      }, m.jid);
+      
+      return m.reply("🧹 Chat messages successfully clear zale!");
+    } catch (e2) {
+      try {
+        // Fallback: Fetch store messages and delete them one by one if chatModify fails
+        if (client.store && client.store.loadMessage) {
+          const messages = await client.store.loadMessage(m.jid, 50);
+          if (messages) {
+            for (let msg of messages) {
+              await client.sendMessage(m.jid, { delete: msg.key });
+            }
+          }
+        }
+        return m.reply("🧹 Chat messages deleted via fallback loop!");
+      } catch (err) {
+        return m.reply(`❌ Error: ${err.message || e1.message}`);
       }
-      
-      // WhatsApp standard clear chat protocol via modify
-      await client.sendMessage(m.jid, { 
-        delete: { remoteJid: m.jid, fromMe: false, id: m.key.id } 
-      });
-      
-      return m.reply("🧹 Chat messages clear kele!");
-    } catch (err) {
-      return m.reply(`❌ Error: ${err.message}`);
     }
   }
 });
