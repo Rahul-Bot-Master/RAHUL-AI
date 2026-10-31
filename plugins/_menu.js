@@ -39,7 +39,7 @@ Sparky({
   }
 });
 
-// --- UNIVERSAL AUTO-DL TEXT LISTENER (Instagram, Facebook, YouTube) ---
+// --- NEW REPLACED UNIVERSAL AUTO-DL TEXT LISTENER (Instagram, Facebook, YouTube) ---
 Sparky({
     name: "autodl_handler",
     on: "text",
@@ -57,59 +57,48 @@ Sparky({
 
     if (matches && matches.length > 0) {
         let targetUrl = matches[0];
-        let apiUrl = "";
-
-        if (targetUrl.includes("instagram.com")) {
-            apiUrl = `https://api-aswin-sparky.koyeb.app/api/downloader/igdl?url=${encodeURIComponent(targetUrl)}`;
-        } else if (targetUrl.includes("facebook.com") || targetUrl.includes("fb.watch")) {
-            apiUrl = `https://api-aswin-sparky.koyeb.app/api/downloader/fbdl?url=${encodeURIComponent(targetUrl)}`;
-        } else if (targetUrl.includes("youtu.be") || targetUrl.includes("youtube.com")) {
-            apiUrl = `https://api-aswin-sparky.koyeb.app/api/downloader/ytv?url=${encodeURIComponent(targetUrl)}`;
-        }
-
-        if (!apiUrl) return;
+        let videoUrl = "";
+        let audioUrl = "";
 
         try {
             await m.react('⬇️');
-            const res = await axios.get(apiUrl);
-            let response = res.data;
-            let videoUrl = "";
-            let audioUrl = "";
 
-            if (response) {
-                // Flexible parsing to handle multiple types of API responses safely
-                let rawData = response.data || response.result || response;
-                
-                if (typeof rawData === 'string') {
-                    videoUrl = rawData;
-                } else if (Array.isArray(rawData)) {
-                    for (let item of rawData) {
-                        let u = item.url || item;
-                        if (typeof u === 'string') {
-                            if (!videoUrl && (u.includes('.mp4') || item.type === 'video')) videoUrl = u;
-                            if (!audioUrl && (u.includes('.mp3') || u.includes('audio') || item.type === 'audio')) audioUrl = u;
-                        }
-                    }
-                    if (!videoUrl && rawData[0]) videoUrl = typeof rawData[0] === 'string' ? rawData[0] : rawData[0].url;
-                } else if (typeof rawData === 'object' && rawData !== null) {
-                    videoUrl = rawData.high || rawData.url || rawData.video || rawData.download || "";
-                    audioUrl = rawData.audio || "";
+            // Using new robust multi-downloader backend APIs
+            if (targetUrl.includes("instagram.com")) {
+                let api = await axios.get(`https://deliriussapi-ofc.vercel.app/download/instagram?url=${encodeURIComponent(targetUrl)}`);
+                let resData = api.data?.data || api.data?.result;
+                if (Array.isArray(resData)) {
+                    videoUrl = resData[0]?.url || resData[0];
+                } else if (resData?.url) {
+                    videoUrl = resData.url;
+                } else if (typeof resData === 'string') {
+                    videoUrl = resData;
                 }
+            } else if (targetUrl.includes("facebook.com") || targetUrl.includes("fb.watch")) {
+                let api = await axios.get(`https://deliriussapi-ofc.vercel.app/download/facebook?url=${encodeURIComponent(targetUrl)}`);
+                let resData = api.data?.data || api.data?.result;
+                if (Array.isArray(resData)) {
+                    videoUrl = resData.find(v => v.quality === 'HD' || v.quality === 'SD')?.url || resData[0]?.url;
+                } else if (resData?.url) {
+                    videoUrl = resData.url;
+                }
+            } else if (targetUrl.includes("youtu.be") || targetUrl.includes("youtube.com")) {
+                let api = await axios.get(`https://deliriussapi-ofc.vercel.app/download/ytmp4?url=${encodeURIComponent(targetUrl)}`);
+                let resData = api.data?.data || api.data?.result;
+                videoUrl = resData?.download?.url || resData?.url || "";
+                audioUrl = resData?.audio?.url || "";
             }
 
-            if (!videoUrl && response.url) videoUrl = response.url;
-            if (!videoUrl && response.video) videoUrl = response.video;
-
             if (videoUrl) {
-                // Send video first
-                await client.sendMessage(m.chat || m.jid, { video: { url: videoUrl }, caption: "📥 *Rahul AI Auto-DL*" }, { quoted: m });
+                // Send video with caption
+                await client.sendMessage(m.chat || m.jid, { video: { url: videoUrl }, caption: "📥 *Rahul AI Auto-DL (Working)*" }, { quoted: m });
                 
-                // If separate audio exists and is valid, send it as proper audio with correct mimetype so sound works
+                // If separate audio exists, send with correct audio/mpeg mimetype so that sound works properly
                 if (audioUrl && audioUrl.startsWith('http')) {
                     try {
                         await client.sendMessage(m.chat || m.jid, { audio: { url: audioUrl }, mimetype: 'audio/mpeg', ptt: false }, { quoted: m });
                     } catch (err) {
-                        console.log("Audio send warning:", err);
+                        console.log("Audio send error:", err);
                     }
                 }
                 
@@ -118,7 +107,7 @@ Sparky({
                 await m.react('❌');
             }
         } catch (e) {
-            console.error("Auto-DL Error:", e);
+            console.error("New Auto-DL Error:", e);
             await m.react('❌');
         }
     }
