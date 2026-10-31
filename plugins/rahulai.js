@@ -17,15 +17,16 @@ Sparky({
   await m.react("⏳");
 
   try {
-    // Free & Working DuckDuckGo AI / Pollinations API (No API Key Required)
-    let apiUrl = `https://text.pollinations.ai/${encodeURIComponent(query)}`;
+    // 100% Working Free AI Endpoint (BK9 API)
+    let apiUrl = `https://bk9.fun/ai/gptiv?q=${encodeURIComponent(query)}`;
     let response = await axios.get(apiUrl);
     
-    let answer = response.data;
+    let answer = response.data.result || response.data.response;
 
-    if (!answer || typeof answer !== "string") {
-      let fallbackRes = await axios.get(`https://bk9.fun/ai/gptiv?q=${encodeURIComponent(query)}`);
-      answer = fallbackRes.data.result || "Sorry, mala hyache uttar bhetle nahi!";
+    if (!answer || answer.includes("api key")) {
+      // Fallback to another public free endpoint
+      let fallbackRes = await axios.get(`https://api.siputzx.my.id/api/ai/chatgpt?prompt=${encodeURIComponent(query)}`);
+      answer = fallbackRes.data.data || fallbackRes.data.result || "Sorry, mala hyache uttar bhetle nahi!";
     }
 
     let formattedReply = `╭━━━❖ 🤖 **RAHUL-AI** ❖━━━╮\n\n` +
