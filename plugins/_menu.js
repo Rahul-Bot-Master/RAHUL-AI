@@ -301,78 +301,15 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
             "participant": "0@s.whatsapp.net"
         };
 
-        // Apali navin image ithe fix keli aahe
+        // Apali image link
         let imageUrl = 'https://n.uguu.se/ZLOefAMW.jpg';
 
-        switch (config.MENU_TYPE.toLowerCase()) {
-            case 'big':
-                return await client.sendMessage(m.jid, { 
-                    text: style(menu), 
-                    contextInfo: { 
-                        externalAdReply: { 
-                            title: style(`Hey ${m.pushName}!`), 
-                            body: style(`${config.BOT_INFO.split(";")[0]}`), 
-                            mediaType: 1, 
-                            showAdAttribution: true, 
-                            renderLargerThumbnail: true, 
-                            thumbnailUrl: imageUrl,
-                            sourceUrl: "https://whatsapp.com" 
-                        } 
-                    } 
-                }, { quoted: m });
+        // Aata fkt image format madhe send hoil, kontahi link preview yenar nahi
+        return await client.sendMessage(m.jid, { 
+            image: { url: imageUrl }, 
+            caption: style(menu) 
+        }, { quoted: sperky });
 
-            case 'image':
-                return await client.sendMessage(m.jid, { 
-                    image: { url: imageUrl }, 
-                    caption: style(menu) 
-                }, { quoted: sperky });
-
-            case 'small':
-                return await client.sendMessage(m.jid, { 
-                    text: style(menu), 
-                    contextInfo: { 
-                        externalAdReply: { 
-                            title: style(`Hey ${m.pushName}!`), 
-                            body: style(`${config.BOT_INFO.style || config.BOT_INFO.split(";")[0]}`), 
-                            mediaType: 1, 
-                            showAdAttribution: true, 
-                            renderLargerThumbnail: false, 
-                            thumbnailUrl: imageUrl,
-                            sourceUrl: "https://whatsapp.com" 
-                        } 
-                    } 
-                }, { quoted: sperky });
-
-            case 'document':
-                return await client.sendMessage(m.jid, { 
-                    document: { url: imageUrl }, 
-                    caption: menu, 
-                    mimetype: 'application/zip', 
-                    fileName: style(config.BOT_INFO.split(";")[0]), 
-                    fileLength: "99999999999", 
-                    contextInfo: { 
-                        externalAdReply: { 
-                            title: style(`Hey ${m.pushName}!`), 
-                            body: style(`${config.BOT_INFO.split(";")[0]}`), 
-                            mediaType: 1, 
-                            showAdAttribution: true, 
-                            renderLargerThumbnail: true, 
-                            thumbnailUrl: imageUrl,
-                            sourceUrl: "https://whatsapp.com" 
-                        } 
-                    } 
-                }, { quoted: sperky });
-
-            case 'video':
-                return await client.sendMessage(m.jid, { 
-                    video: { url: imageUrl }, 
-                    caption: style(menu), 
-                    gifPlayback: true 
-                }, { quoted: sperky });
-
-            default:
-                return await client.sendMessage(m.jid, { text: style(menu) }, { quoted: sperky });
-        }
     } catch (e) {
         console.log("Menu Error:", e);
     }
