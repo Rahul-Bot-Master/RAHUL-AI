@@ -2,24 +2,25 @@ const { Sparky, isPublic } = require("../lib");
 
 // Global States
 global.autoReactStatus = global.autoReactStatus !== undefined ? global.autoReactStatus : true;
-global.customReactEmoji = global.customReactEmoji || ""; // Blank asel tr random emojis vaprel
+global.customReactEmoji = global.customReactEmoji || ""; 
 
-// --- AUTO-REACT ON/OFF COMMAND ---
+// --- AUTO-REACT ON/OFF COMMAND (Supports with or without prefix) ---
 Sparky({
   name: "autoreact",
   fromMe: isPublic,
   category: "owner",
   desc: "Turn Auto-React ON or OFF"
-}, async ({ m, args }) => {
-  let status = args[0] ? args[0].toLowerCase() : "";
-  if (status === "on") {
+}, async ({ m, args, text }) => {
+  let fullQuery = (text || args.join(" ") || "").toLowerCase();
+  
+  if (fullQuery.includes("on")) {
     global.autoReactStatus = true;
     return m.reply("✅ Auto-React is now **ENABLED**!");
-  } else if (status === "off") {
+  } else if (fullQuery.includes("off")) {
     global.autoReactStatus = false;
     return m.reply("❌ Auto-React is now **DISABLED**!");
   } else {
-    return m.reply(`ℹ️ Current Auto-React Status: *${global.autoReactStatus ? "ON ✅" : "OFF ❌"}*\n📌 Custom Emoji: *${global.customReactEmoji || "Random 🎲"}*\n\nUse:\n• \`.autoreact on\`\n• \`.autoreact off\`\n• \`.setreact ❤️\``);
+    return m.reply(`ℹ️ Current Auto-React Status: *${global.autoReactStatus ? "ON ✅" : "OFF ❌"}*\n📌 Custom Emoji: *${global.customReactEmoji || "Random 🎲"}*\n\nUse:\n• \`autoreact on\`\n• \`autoreact off\`\n• \`setreact ❤️\``);
   }
 });
 
@@ -32,7 +33,7 @@ Sparky({
 }, async ({ m, args }) => {
   let emoji = args[0];
   if (!emoji) {
-    global.customReactEmoji = ""; // Reset to random
+    global.customReactEmoji = ""; 
     return m.reply("🔄 Custom react emoji reset to **Random (🎲)**!");
   }
   
@@ -40,15 +41,19 @@ Sparky({
   return m.reply(`✅ Auto-react custom emoji successfully set to: ${emoji}`);
 });
 
-// --- AUTO-REACT MESSAGE LISTENER (WORKS FOR EVERYONE & OWNER) ---
+// --- AUTO-REACT MESSAGE LISTENER ---
 Sparky({
     name: "autoreact_handler",
     on: "text",
-    fromMe: true // Owner swata message karel tari react hoil
+    fromMe: true 
 }, async ({ m }) => {
     if (!global.autoReactStatus) return;
     if (m.jid === 'status@broadcast' || (m.key && m.key.remoteJid === 'status@broadcast')) return;
     if (m.broadcast || m.isStatus) return;
+
+    // Command messages var auto-react honar nahi
+    let bodyText = m.body || m.text || "";
+    if (bodyText.startsWith(".") || bodyText.startsWith("!") || bodyText.startsWith("/") || bodyText.startsWith("#")) return;
 
     try {
         let reactionEmoji = "";
