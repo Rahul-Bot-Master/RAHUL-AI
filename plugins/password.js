@@ -5,7 +5,7 @@ Sparky({
   alias: ["genpass", "pass"],
   fromMe: isPublic,
   category: "tools",
-  desc: "Generate a strong random password with interactive buttons"
+  desc: "Generate password with native Copy Code button"
 }, async ({ client, m }) => {
   try {
     const length = 14;
@@ -16,20 +16,32 @@ Sparky({
       password += charset.charAt(Math.floor(Math.random() * charset.length));
     }
 
-    // Baileys interactive / button message format (Baileys version nusar support bagha)
-    const buttonMessage = {
-      text: `🔑 *Generated Password:*\n\n\`${password}\`\n\n🛡️ *Strength:* Ultra Secure (14 Chars)`,
+    // Native WhatsApp Interactive Copy Code Button Payload
+    const interactiveMessage = {
+      text: `🔑 *Generated Password:*`,
       footer: "Rahul AI Password Manager",
-      buttons: [
-        { buttonId: `pass ${password}`, buttonText: { displayText: "🔄 Generate New" }, type: 1 },
-        { buttonId: `copy_${password}`, buttonText: { displayText: "📋 Copy Password" }, type: 1 }
-      ],
-      headerType: 1
+      interactiveMessage: {
+        body: { text: `\`${password}\`` },
+        footer: { text: "Tap button below to copy password" },
+        nativeFlowMessage: {
+          buttons: [
+            {
+              name: "cta_copy",
+              buttonParamsJson: JSON.stringify({
+                display_text: "📋 Copy Password",
+                copy_code: password
+              })
+            }
+          ]
+        }
+      }
     };
 
-    return client.sendMessage(m.jid, buttonMessage, { quoted: m });
+    return client.sendMessage(m.jid, interactiveMessage, { quoted: m });
   } catch (e) {
-    // Fallback jar button support nasel tar text pathvel
-    return m.reply(`🔑 Password: \`${password}\``);
+    // Fallback in case native flow isn't supported by the current client wrapper
+    return client.sendMessage(m.jid, { 
+      text: `🔑 *Password:* \`${password}\`\n\n*(Tap above text to copy)*` 
+    }, { quoted: m });
   }
 });
