@@ -5,43 +5,44 @@ Sparky({
   alias: ["genpass", "pass"],
   fromMe: isPublic,
   category: "tools",
-  desc: "Generate password with native Copy Code button"
-}, async ({ client, m }) => {
+  desc: "Generate password with custom text support"
+}, async ({ client, m, text }) => {
   try {
-    const length = 14;
-    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
+    // Jar user ne kahi text dila asel (e.g. .password rahul9356) tar toch vaprel, nahitar random banwel
+    let customText = text ? text.trim() : "";
     let password = "";
-    
-    for (let i = 0; i < length; i++) {
-      password += charset.charAt(Math.floor(Math.random() * charset.length));
+
+    if (customText) {
+      // Custom text asel tar tyat thode numbers/symbols add karun secure banwel
+      const symbols = "!@#$%^&*()_+0123456789";
+      let randomSuffix = "";
+      for (let i = 0; i < 4; i++) {
+        randomSuffix += symbols.charAt(Math.floor(Math.random() * symbols.length));
+      }
+      password = `${customText}${randomSuffix}`;
+    } else {
+      // Normal random secure password (14 characters)
+      const length = 14;
+      const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
+      for (let i = 0; i < length; i++) {
+        password += charset.charAt(Math.floor(Math.random() * charset.length));
+      }
     }
 
-    // Native WhatsApp Interactive Copy Code Button Payload
-    const interactiveMessage = {
-      text: `🔑 *Generated Password:*`,
-      footer: "Rahul AI Password Manager",
-      interactiveMessage: {
-        body: { text: `\`${password}\`` },
-        footer: { text: "Tap button below to copy password" },
-        nativeFlowMessage: {
-          buttons: [
-            {
-              name: "cta_copy",
-              buttonParamsJson: JSON.stringify({
-                display_text: "📋 Copy Password",
-                copy_code: password
-              })
-            }
-          ]
-        }
-      }
-    };
+    let responseText = `
+┌─── ◇ *PASSWORD GENERATOR* ◇ ───
+│
+│ 🔑 *Password:* 
+│ \`${password}\`
+│
+│ 💡 *(Tap above to copy)*
+│ 🛡️ *Status:* Generated Successfully
+│
+└───────────────────────────
+    `.trim();
 
-    return client.sendMessage(m.jid, interactiveMessage, { quoted: m });
+    return client.sendMessage(m.jid, { text: responseText }, { quoted: m });
   } catch (e) {
-    // Fallback in case native flow isn't supported by the current client wrapper
-    return client.sendMessage(m.jid, { 
-      text: `🔑 *Password:* \`${password}\`\n\n*(Tap above text to copy)*` 
-    }, { quoted: m });
+    return m.reply(`❌ Error: ${e.message}`);
   }
 });
