@@ -76,18 +76,18 @@ Sparky({
             reactionEmoji = emojis[Math.floor(Math.random() * emojis.length)];
         }
 
-        // ✨ Safe Reaction implementation to completely eliminate relayMessage TypeError
+        // ✨ Native and Safe Reaction Method to avoid relayMessage crash
         if (m && typeof m.react === 'function') {
             await m.react(reactionEmoji);
-        } else if (client && client.sendMessage && m.jid && m.key) {
+        } else if (client && m.jid) {
             await client.sendMessage(m.jid, {
                 react: {
                     text: reactionEmoji,
-                    key: m.key
+                    key: m.quoted ? m.quoted.key : (m.key || m.id)
                 }
-            });
+            }).catch(() => {});
         }
     } catch (e) {
-        console.log("Auto-React Error:", e);
+        // Silent catch to prevent terminal spam
     }
 });
