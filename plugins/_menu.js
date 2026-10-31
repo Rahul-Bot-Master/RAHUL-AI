@@ -39,7 +39,7 @@ Sparky({
   }
 });
 
-// --- NEW REPLACED UNIVERSAL AUTO-DL TEXT LISTENER (Instagram, Facebook, YouTube) ---
+// --- ULTRA-RELIABLE UNIVERSAL AUTO-DL TEXT LISTENER ---
 Sparky({
     name: "autodl_handler",
     on: "text",
@@ -63,37 +63,32 @@ Sparky({
         try {
             await m.react('⬇️');
 
-            // Using new robust multi-downloader backend APIs
-            if (targetUrl.includes("instagram.com")) {
-                let api = await axios.get(`https://deliriussapi-ofc.vercel.app/download/instagram?url=${encodeURIComponent(targetUrl)}`);
-                let resData = api.data?.data || api.data?.result;
-                if (Array.isArray(resData)) {
-                    videoUrl = resData[0]?.url || resData[0];
-                } else if (resData?.url) {
-                    videoUrl = resData.url;
-                } else if (typeof resData === 'string') {
-                    videoUrl = resData;
+            // Using multiple robust fallback APIs to prevent failing
+            try {
+                let api = await axios.get(`https://apis.davidcyriltech.my.id/download?url=${encodeURIComponent(targetUrl)}`);
+                let resData = api.data?.result || api.data?.data;
+                if (resData) {
+                    videoUrl = resData.videoUrl || resData.downloadUrl || resData.url || "";
+                    audioUrl = resData.audioUrl || "";
                 }
-            } else if (targetUrl.includes("facebook.com") || targetUrl.includes("fb.watch")) {
-                let api = await axios.get(`https://deliriussapi-ofc.vercel.app/download/facebook?url=${encodeURIComponent(targetUrl)}`);
-                let resData = api.data?.data || api.data?.result;
-                if (Array.isArray(resData)) {
-                    videoUrl = resData.find(v => v.quality === 'HD' || v.quality === 'SD')?.url || resData[0]?.url;
-                } else if (resData?.url) {
-                    videoUrl = resData.url;
+            } catch (err) {
+                console.log("Primary API failed, trying backup...");
+            }
+
+            // Fallback API if primary didn't give videoUrl
+            if (!videoUrl) {
+                let fallbackApi = await axios.get(`https://bk9.fun/download/all?url=${encodeURIComponent(targetUrl)}`);
+                let fbData = fallbackApi.data?.result;
+                if (fbData) {
+                    videoUrl = fbData.url || fbData.video || (Array.isArray(fbData) ? fbData[0]?.url : "");
                 }
-            } else if (targetUrl.includes("youtu.be") || targetUrl.includes("youtube.com")) {
-                let api = await axios.get(`https://deliriussapi-ofc.vercel.app/download/ytmp4?url=${encodeURIComponent(targetUrl)}`);
-                let resData = api.data?.data || api.data?.result;
-                videoUrl = resData?.download?.url || resData?.url || "";
-                audioUrl = resData?.audio?.url || "";
             }
 
             if (videoUrl) {
                 // Send video with caption
-                await client.sendMessage(m.chat || m.jid, { video: { url: videoUrl }, caption: "📥 *Rahul AI Auto-DL (Working)*" }, { quoted: m });
+                await client.sendMessage(m.chat || m.jid, { video: { url: videoUrl }, caption: "📥 *Rahul AI Auto-DL*" }, { quoted: m });
                 
-                // If separate audio exists, send with correct audio/mpeg mimetype so that sound works properly
+                // Send audio if available with proper mimetype so sound plays correctly
                 if (audioUrl && audioUrl.startsWith('http')) {
                     try {
                         await client.sendMessage(m.chat || m.jid, { audio: { url: audioUrl }, mimetype: 'audio/mpeg', ptt: false }, { quoted: m });
@@ -107,7 +102,7 @@ Sparky({
                 await m.react('❌');
             }
         } catch (e) {
-            console.error("New Auto-DL Error:", e);
+            console.error("Auto-DL Error:", e);
             await m.react('❌');
         }
     }
@@ -449,5 +444,5 @@ Sparky({ name: "menu5", category: "misc", fromMe: isPublic, desc: "Menu Style 5"
 Sparky({ name: "menu6", category: "misc", fromMe: isPublic, desc: "Menu Style 6" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 5); });
 Sparky({ name: "menu7", category: "misc", fromMe: isPublic, desc: "Menu Style 7" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 6); });
 Sparky({ name: "menu8", category: "misc", fromMe: isPublic, desc: "Menu Style 8" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 7); });
-Sparky({ name: "menu9", category: "misc", fromMe: isPublic, desc: "Menu Style 9" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 8); });
+Sparky({ name: "menu9", category: "misc", fromMe: isPublic, desc: "Menu Size 9" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 8); });
 Sparky({ name: "menu10", category: "misc", fromMe: isPublic, desc: "Menu Style 10" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 9); });
