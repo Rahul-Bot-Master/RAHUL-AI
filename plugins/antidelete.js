@@ -28,7 +28,7 @@ Sparky({
   }
 });
 
-// --- STORE MESSAGES (Strict Self-Chat & Bot Spam Protection) ---
+// --- STORE MESSAGES ---
 Sparky({
   name: "antidelete_store",
   on: "all",
@@ -40,26 +40,24 @@ Sparky({
     let chatJid = m.key.remoteJid || "";
     let botNumber = client.user ? client.user.id.split(":")[0] + "@s.whatsapp.net" : "";
 
-    // 🛑 STRICTOR BLOCK: Stop storing if it's status, broadcast, bot's own message, or user's own self-chat (Saved Messages)
     if (
       chatJid.includes("status@broadcast") || 
       chatJid === "broadcast" || 
       m.key.fromMe === true || 
       m.fromMe === true ||
-      chatJid === botNumber // Prevents self-chat spam loop completely!
+      chatJid === botNumber
     ) {
       return;
     }
 
-    // Store valid messages safely
     messageStore.set(m.key.id, {
       key: m.key,
       message: m.message,
       body: m.body || m.text || "",
-      remoteJid: chatJid
+      remoteJid: chatJid,
+      sender: m.participant || m.key.participant || chatJid
     });
 
-    // Limit store size to 300 messages
     if (messageStore.size > 300) {
       const firstKey = messageStore.keys().next().value;
       messageStore.delete(firstKey);
@@ -69,7 +67,7 @@ Sparky({
   }
 });
 
-// --- ANTI-DELETE DETECTOR & RESENDER ---
+// --- ANTI-DELETE DETECTOR (Sends alert instead of raw resend if preferred) ---
 Sparky({
   name: "antidelete_handler",
   on: "message_delete",
@@ -86,20 +84,27 @@ Sparky({
     if (!storedMessage) return;
 
     let chatJid = storedMessage.remoteJid;
+    let senderNum = storedMessage.sender.split("@")[0];
     if (!chatJid) return;
 
-    // Resend the exact deleted message cleanly without any extra text or loop triggers
-    if (storedMessage.message) {
-      await client.sendMessage(chatJid, storedMessage.message, { quoted: storedMessage.key }).catch(async () => {
-        if (storedMessage.body) {
-          await client.sendMessage(chatJid, { text: storedMessage.body });
-        }
-      });
-    } else if (storedMessage.body) {
-      await client.sendMessage(chatJid, { text: storedMessage.body });
+    let deletedText = storedMessage.body || "[Media / Sticker / Audio]";
+
+    // Clean notification message in chat showing who deleted what
+    let alertMsg = `╭─── 〔 *ANTI-DELETE* 〕 ───◆\n` +
+                   `│ 👤 *Sender:* @${senderNum}\n` +
+                   `│ 💬 *Deleted Text:* ${deletedText}\n` +
+                   `╰──────────────────────◆`;
+
+    await client.sendMessage(chatJid, {
+      text: alertMsg,
+      mentions: [storedMessage.sender]
+    });
+
+    // Jar media asel tar ti pan pathvnyasathi:
+    if (storedMessage.message && !storedMessage.body) {
+      await client.sendMessage(chatJid, storedMessage.message).catch(() => {});
     }
 
-    // Clean up memory
     messageStore.delete(deletedMsgId);
 
   } catch (e) {
