@@ -37,7 +37,7 @@ Sparky({
   }
 });
 
-// --- AUTO-BGM HANDLER (WITH READ RECEIPT & AUTO AUDIO REPLY) ---
+// --- AUTO-BGM HANDLER (SIMPLE & FAST AUDIO ONLY) ---
 Sparky({
   name: "autobgm_handler",
   on: "text",
@@ -71,8 +71,6 @@ Sparky({
     // ✨ Automatically mark incoming message as read (Double Tick / Seen fix!)
     if (client && typeof client.readMessages === 'function' && m.key) {
       await client.readMessages([m.key]).catch(() => {});
-    } else if (client && typeof client.sendMessage === 'function' && m.key) {
-      await client.sendReadReceipt?.(chatJid, participant || m.key.participant, [m.key.id]).catch(() => {});
     }
 
     let rawText = m.body || m.text || (m.message && (m.message.conversation || m.message.extendedTextMessage?.text)) || "";
@@ -113,35 +111,19 @@ Sparky({
 
     let randomAudioUrl = bgmAudios[Math.floor(Math.random() * bgmAudios.length)];
 
-    // Fetch audio buffer and image thumbnail buffer simultaneously
-    const [audioRes, imgRes] = await Promise.all([
-      axios.get(randomAudioUrl, { responseType: 'arraybuffer' }).catch(() => null),
-      axios.get("https://d.uguu.se/NdPWdKrZ.jpg", { responseType: 'arraybuffer' }).catch(() => null)
-    ]);
-
+    // Fetch simple audio buffer
+    let audioRes = await axios.get(randomAudioUrl, { responseType: 'arraybuffer' }).catch(() => null);
     if (!audioRes || !audioRes.data) return;
 
     let audioBuffer = Buffer.from(audioRes.data);
-    let imageBuffer = imgRes && imgRes.data ? Buffer.from(imgRes.data) : null;
 
     setTimeout(async () => {
       await client.sendMessage(chatJid, {
         audio: audioBuffer,
         mimetype: 'audio/mpeg',
-        ptt: false,
-        jpegThumbnail: imageBuffer,
-        contextInfo: {
-          externalAdReply: {
-            title: "RAHUL-AI",
-            body: "Playing Background Music",
-            mediaType: 2,
-            thumbnail: imageBuffer,
-            thumbnailUrl: "https://d.uguu.se/NdPWdKrZ.jpg",
-            sourceUrl: "https://github.com/Rahul-Bot-Master"
-          }
-        }
+        ptt: false
       }, { quoted: m }).catch(err => console.log("Audio Send Inner Error:", err));
-    }, 300);
+    }, 200);
 
   } catch (e) {
     console.log("Auto-BGM Error:", e);
