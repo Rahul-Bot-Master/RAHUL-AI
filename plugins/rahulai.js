@@ -17,24 +17,34 @@ Sparky({
   await m.react("⏳");
 
   let answer = "";
+  let grokApiKey = "YOUR_GROK_API_KEY"; // Ithe tuzi xAI / Grok API key tak
 
   try {
-    // Try primary API
-    let response = await axios.get(`https://api.siputzx.my.id/api/ai/chatgpt?prompt=${encodeURIComponent(query)}`);
-    answer = response.data.data || response.data.result || response.data.message;
+    // 1. Direct Grok / xAI API Endpoint integration
+    let response = await axios.post(`https://api.x.ai/v1/chat/completions`, {
+      model: "grok-beta",
+      messages: [{ role: "user", content: query }],
+      stream: false
+    }, {
+      headers: {
+        "Authorization": `Bearer ${grokApiKey}`,
+        "Content-Type": "application/json"
+      }
+    });
 
-    if (!answer || typeof answer !== "string" || answer.includes("grok api key") || answer.includes("api key")) {
-      // Try secondary API
-      let res2 = await axios.get(`https://api.vyturex.com/ai/chat?prompt=${encodeURIComponent(query)}`);
-      answer = res2.data.answer || res2.data.result;
-    }
+    answer = response.data.choices[0].message.content;
+
   } catch (err) {
-    // Ignore network error to fallback safely
+    // Fallback to free public endpoint if custom Grok key is not provided or fails
+    try {
+      let res2 = await axios.get(`https://api.siputzx.my.id/api/ai/chatgpt?prompt=${encodeURIComponent(query)}`);
+      answer = res2.data.data || res2.data.result;
+    } catch (e) {}
   }
 
-  // 🛡️ Ultimate Bulletproof Fallback: Jar API fail zali ya grok error aala, tar smart bot message deil
-  if (!answer || typeof answer !== "string" || answer.includes("grok api key") || answer.includes("api key")) {
-    answer = `Hello Rahul! Mi RAHUL-AI ahe. Sadha free AI server var traffic khup ahe kinwa key update suru ahe, pan tuzha message "${query}" mala milalay. Laukach apan ya la 100% stable karu! 🚀`;
+  // Fallback message jar API madhun kahi aale nahi
+  if (!answer || typeof answer !== "string" || answer.includes("api key")) {
+    answer = `Hello Rahul! Mi RAHUL-AI ahe. Tuzha message "${query}" mala milalay. 🚀`;
   }
 
   let formattedReply = `╭━━━❖ 🤖 **RAHUL-AI** ❖━━━╮\n\n` +
