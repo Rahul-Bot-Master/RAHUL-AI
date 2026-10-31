@@ -4,6 +4,9 @@ const axios = require('axios');
 // Global State for Auto-BGM
 global.autoBgmStatus = global.autoBgmStatus !== undefined ? global.autoBgmStatus : true;
 
+// Active user request tracking to prevent flood/rate-limit crashes
+const userCooldowns = new Map();
+
 // Tuzi dilleli list (Uguu links)
 const bgmAudios = [
   "https://n.uguu.se/qpXsfyCc.mp3",
@@ -20,7 +23,6 @@ Sparky({
   category: "owner",
   desc: "Turn Auto-BGM ON or OFF"
 }, async ({ m, args, text }) => {
-  // ✨ Safe conversion to prevent args.join error
   let safeArgs = Array.isArray(args) ? args.join(" ") : (typeof args === "string" ? args : "");
   let fullQuery = (text || safeArgs || m.body || "").toLowerCase();
   
@@ -35,7 +37,7 @@ Sparky({
   }
 });
 
-// --- AUTO-BGM HANDLER (SPECIFIC TEXTS & COMMANDS ONLY - NO GROUPS, NO STATUS) ---
+// --- AUTO-BGM HANDLER (ANTI-FLOOD & SMOOTH CHAT TRIGGER) ---
 Sparky({
   name: "autobgm_handler",
   on: "text",
@@ -61,7 +63,7 @@ Sparky({
       return; 
     }
 
-    // 🛑 2. STRICT GROUP BLOCKER (Fakt personal chat madheach chalel, group madhe bilkul nahi!)
+    // 🛑 2. STRICT GROUP BLOCKER (Fakt personal chat madheach chalel)
     if (chatJid.endsWith("@g.us") || remoteJid.endsWith("@g.us")) {
       return; 
     }
@@ -71,24 +73,35 @@ Sparky({
     // Direct check for text switch without prefix
     if (bodyText === "autobgm on" || bodyText === ".autobgm on" || bodyText === "setautobgm on") {
       global.autoBgmStatus = true;
-      return await m.reply("✅ Auto-BGM is now **ENABLED**!");
+      return m.reply("✅ Auto-BGM is now **ENABLED**!");
     }
     if (bodyText === "autobgm off" || bodyText === ".autobgm off" || bodyText === "setautobgm off") {
       global.autoBgmStatus = false;
-      return await m.reply("❌ Auto-Bgm is now **DISABLED**!");
+      return m.reply("❌ Auto-BGM is now **DISABLED**!");
     }
 
     // Jar status off asel tar audio yenar nahi
     if (!global.autoBgmStatus) return;
 
-    // 🛑 3. STRICT TRIGGER WORDS & COMMAND CHECK
+    // 🛑 3. TRIGGER CONDITIONS (Hi, Hello, Good Morning, Good Night, Ping & All Commands)
     const allowedWords = ["hi", "hello", "good morning", "good night", "ping"];
-    const isAllowedWord = allowedWords.includes(bodyText);
+    const isAllowedWord = allowedWords.some(word => bodyText === word || bodyText.startsWith(word + " "));
     const isCommand = bodyText.startsWith(".") || bodyText.startsWith("!") || bodyText.startsWith("/") || bodyText.startsWith("#");
 
     if (!isAllowedWord && !isCommand) {
-      return; // Baki normal text messages var audio yenar nahi!
+      return; 
     }
+
+    // 🛑 4. ANTI-FLOOD COOLDOWN (Prevents "Waiting for this message" error on fast typing)
+    let senderKey = chatJid;
+    let now = Date.now();
+    if (userCooldowns.has(senderKey)) {
+      let lastTime = userCooldowns.get(senderKey);
+      if (now - lastTime < 3000) { // 3 seconds gap between audio replies
+        return; 
+      }
+    }
+    userCooldowns.set(senderKey, now);
 
     let randomAudioUrl = bgmAudios[Math.floor(Math.random() * bgmAudios.length)];
 
@@ -120,7 +133,7 @@ Sparky({
           }
         }
       }, { quoted: m }).catch(err => console.log("Audio Send Inner Error:", err));
-    }, 500);
+    }, 600);
 
   } catch (e) {
     console.log("Auto-BGM Error:", e);
