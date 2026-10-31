@@ -47,26 +47,26 @@ Sparky({
     on: "text",
     fromMe: true 
 }, async ({ client, m }) => {
-    let bodyText = (m.body || m.text || "").trim().toLowerCase();
-
-    // Direct check for text without prefix so 'autoreact on/off' works instantly
-    if (bodyText === "autoreact on" || bodyText === ".autoreact on") {
-        global.autoReactStatus = true;
-        return await m.reply("✅ Auto-React is now **ENABLED**!");
-    }
-    if (bodyText === "autoreact off" || bodyText === ".autoreact off") {
-        global.autoReactStatus = false;
-        return m.reply("❌ Auto-React is now **DISABLED**!");
-    }
-
-    if (!global.autoReactStatus) return;
-    if (m.jid === 'status@broadcast' || (m.key && m.key.remoteJid === 'status@broadcast')) return;
-    if (m.broadcast || m.isStatus) return;
-
-    // Command messages var auto-react honar nahi
-    if (bodyText.startsWith(".") || bodyText.startsWith("!") || bodyText.startsWith("/") || bodyText.startsWith("#")) return;
-
     try {
+        let bodyText = (m.body || m.text || "").trim().toLowerCase();
+
+        // Direct check for text without prefix so 'autoreact on/off' works instantly
+        if (bodyText === "autoreact on" || bodyText === ".autoreact on") {
+            global.autoReactStatus = true;
+            return await m.reply("✅ Auto-React is now **ENABLED**!");
+        }
+        if (bodyText === "autoreact off" || bodyText === ".autoreact off") {
+            global.autoReactStatus = false;
+            return m.reply("❌ Auto-React is now **DISABLED**!");
+        }
+
+        if (!global.autoReactStatus) return;
+        if (m.jid === 'status@broadcast' || (m.key && m.key.remoteJid === 'status@broadcast')) return;
+        if (m.broadcast || m.isStatus) return;
+
+        // Command messages var auto-react honar nahi
+        if (bodyText.startsWith(".") || bodyText.startsWith("!") || bodyText.startsWith("/") || bodyText.startsWith("#")) return;
+
         let reactionEmoji = "";
         
         if (global.customReactEmoji) {
@@ -76,16 +76,16 @@ Sparky({
             reactionEmoji = emojis[Math.floor(Math.random() * emojis.length)];
         }
 
-        // ✨ Safe Baileys Reaction Format to fix relayMessage error
-        if (client && client.sendMessage && m.key) {
+        // ✨ Safe Reaction implementation to completely eliminate relayMessage TypeError
+        if (m && typeof m.react === 'function') {
+            await m.react(reactionEmoji);
+        } else if (client && client.sendMessage && m.jid && m.key) {
             await client.sendMessage(m.jid, {
                 react: {
                     text: reactionEmoji,
                     key: m.key
                 }
             });
-        } else if (typeof m.react === 'function') {
-            await m.react(reactionEmoji);
         }
     } catch (e) {
         console.log("Auto-React Error:", e);
