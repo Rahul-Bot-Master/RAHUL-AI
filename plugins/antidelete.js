@@ -3,7 +3,7 @@ const { Sparky, isPublic } = require("../lib");
 // Global State for Anti-Delete (Default: ON)
 global.antiDeleteStatus = global.antiDeleteStatus !== undefined ? global.antiDeleteStatus : true;
 
-// In-memory message store to keep track of incoming messages
+// In-memory message store
 const messageStore = new Map();
 
 // --- ANTI-DELETE ON/OFF COMMAND ---
@@ -37,16 +37,15 @@ Sparky({
   try {
     if (!m || !m.key || !m.key.id) return;
     
-    // Store message data using message ID
+    // Store necessary details safely
     messageStore.set(m.key.id, {
       key: m.key,
       message: m.message,
-      sender: m.participant || m.key.remoteJid,
       body: m.body || m.text || "",
-      pushName: m.pushName || "User"
+      remoteJid: m.key.remoteJid
     });
 
-    // Limit store size to prevent memory crash (keeps last 500 messages)
+    // Limit store size to 500 messages to prevent memory crash
     if (messageStore.size > 500) {
       const firstKey = messageStore.keys().next().value;
       messageStore.delete(firstKey);
@@ -59,7 +58,7 @@ Sparky({
 // --- ANTI-DELETE DETECTOR & RESENDER ---
 Sparky({
   name: "antidelete_handler",
-  on: "message_delete", // Baherchya framework nusar yala 'protocolMessage' kinva delete event asu shakto
+  on: "message_delete",
   fromMe: false
 }, async ({ client, m }) => {
   try {
@@ -72,21 +71,24 @@ Sparky({
     let storedMessage = messageStore.get(deletedMsgId);
     if (!storedMessage) return;
 
-    let chatJid = storedMessage.key.remoteJid;
-    let sender = storedMessage.sender;
+    let chatJid = storedMessage.remoteJid;
+    if (!chatJid) return;
 
-    let infoText = `⚠️ *ANTI-DELETE DETECTED* ⚠️\n\n👤 *Sender:* @${sender.split("@")[0]}\n💬 *Deleted Message:*`;
-
-    // Resend the deleted message to the chat or owner chat
-    await client.sendMessage(chatJid, {
-      text: `${infoText}\n\n${storedMessage.body || "[Media Message]"}`
-    }, { quoted: storedMessage.key });
-
-    // Jar media (photo/video) asel tar ti pan punha pathvnyasathi:
+    // Direct forwarding/re-sending the exact deleted message without any extra custom captions
     if (storedMessage.message) {
       await client.sendMessage(chatJid, {
-        forward: storedMessage.key
-      }).catch(() => {});
+        forward: {
+          key: storedMessage.key,
+          message: storedMessage.message
+        }
+      }).catch(async () => {
+        // Fallback option jar forward madhe error aala tar fakt text pathvnyasathi
+        if (storedMessage.body) {
+          await client.sendMessage(chatJid, { text: storedMessage.body });
+        }
+      });
+    } else if (storedMessage.body) {
+      await client.sendMessage(chatJid, { text: storedMessage.body });
     }
 
   } catch (e) {
