@@ -34,9 +34,25 @@ Sparky({
 ┗━━━━━━━━━━━━━━━━━━━━┛`);
     }
 
+    // Robust MIME detection for Audio, Voice Notes, Images, Videos, and Documents
     let mime = target.mimetype || target.msg?.mimetype || target.mediaMessage?.mimetype || '';
     if (!mime && target.msg) {
       mime = target.msg.mimetype || '';
+    }
+
+    // Force detect audio / PTT voice notes if mime is missing but audio message exists
+    if (!mime && target.message && (target.message.audioMessage || target.message.videoMessage || target.message.imageMessage || target.message.stickerMessage)) {
+      if (target.message.audioMessage) mime = target.message.audioMessage.mimetype || 'audio/mp4';
+      else if (target.message.videoMessage) mime = target.message.videoMessage.mimetype || 'video/mp4';
+      else if (target.message.imageMessage) mime = target.message.imageMessage.mimetype || 'image/jpeg';
+      else if (target.message.stickerMessage) mime = 'image/webp';
+    }
+    
+    // Fallback check on quoted raw structure
+    if ((!mime || mime === '') && m.quoted) {
+      if (m.quoted.message?.audioMessage) mime = m.quoted.message.audioMessage.mimetype || 'audio/mp4';
+      else if (m.quoted.message?.videoMessage) mime = m.quoted.message.videoMessage.mimetype || 'video/mp4';
+      else if (m.quoted.message?.imageMessage) mime = m.quoted.message.imageMessage.mimetype || 'image/jpeg';
     }
 
     await m.reply(`┏━━━━━━━━━━━━━━━━━━━━┓
@@ -50,22 +66,27 @@ Sparky({
     let ext = 'bin';
     if (mime.includes('video') || mime.includes('mp4')) {
       ext = 'mp4';
+      mime = 'video/mp4';
     } else if (mime.includes('png')) {
       ext = 'png';
+      mime = 'image/png';
     } else if (mime.includes('jpeg') || mime.includes('jpg')) {
       ext = 'jpg';
-    } else if (mime.includes('audio') || mime.includes('ogg') || mime.includes('mp3') || mime.includes('m4a')) {
+      mime = 'image/jpeg';
+    } else if (mime.includes('audio') || mime.includes('ogg') || mime.includes('mp3') || mime.includes('m4a') || mime.includes('opus')) {
       ext = 'mp3';
-      if (!mime.includes('audio')) mime = 'audio/mp3';
+      mime = 'audio/mp3';
     } else if (mime.includes('webp')) {
       ext = 'webp';
-    } else if (mime.includes('document')) {
-      ext = 'bin';
+      mime = 'image/webp';
+    } else {
+      ext = 'mp3';
+      mime = 'audio/mp3';
     }
 
     formData.append('files[]', buffer, {
       filename: `media_${Date.now()}.${ext}`,
-      contentType: mime || 'application/octet-stream'
+      contentType: mime
     });
 
     const response = await axios.post(
@@ -93,7 +114,7 @@ Sparky({
     }
 
     let fileTypeDisplay = mime.split('/')[0].toUpperCase();
-    if (fileTypeDisplay === 'APPLICATION') fileTypeDisplay = 'DOCUMENT';
+    if (fileTypeDisplay === 'APPLICATION' || !fileTypeDisplay) fileTypeDisplay = 'AUDIO';
 
     const fileSizeKB = (buffer.length / 1024).toFixed(2);
     const fileSizeMB = (buffer.length / (1024 * 1024)).toFixed(2);
