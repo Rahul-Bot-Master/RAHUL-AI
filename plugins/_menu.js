@@ -301,7 +301,8 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
             "participant": "0@s.whatsapp.net"
         };
 
-        let imageUrl = config.BOT_INFO.split(";")[2] || 'https://n.uguu.se/mZAKwZrP.jpg';
+        // Apali navin image ithe fix keli aahe
+        let imageUrl = 'https://n.uguu.se/ZLOefAMW.jpg';
 
         switch (config.MENU_TYPE.toLowerCase()) {
             case 'big':
