@@ -1,21 +1,31 @@
-const { Sparky, isPublic } = require("../lib"); // Path tumchya folder structure nusar adjust kara (e.g., "../lib" kiwa "./lib")
+const { Sparky, isPublic } = require("../lib");
 
 Sparky({
   name: "clearchat",
   alias: ["clear"],
-  fromMe: true, // Only bot owner vapru shakel
+  fromMe: true,
   category: "owner",
   desc: "Clear messages in current chat"
 }, async ({ client, m }) => {
   try {
-    // Chat modify method Baileys/Sparky framework nusar chat clear karte
-    await client.chatModify({ 
-      delete: true, 
-      lastMessages: [{ key: m.key, messageTimestamp: m.messageTimestamp }] 
-    }, m.jid);
+    // Method 1: Baileys chatModify standard format
+    await client.chatModify(
+      {
+        clear: {
+          messages: [{ id: m.key.id, fromMe: m.key.fromMe, timestamp: m.messageTimestamp }]
+        }
+      },
+      m.jid
+    );
     
     return m.reply("🧹 Chat successfully clear zali!");
   } catch (e) {
-    return m.reply("❌ Chat clear hotana error ala. (Baileys version varun method wegli asu sakte)");
+    try {
+      // Method 2: Fallback jar chatModify fail zali tar message delete method vaprun
+      await client.sendMessage(m.jid, { delete: m.key });
+      return m.reply("🧹 Chat messages clear kele ahet!");
+    } catch (err) {
+      return m.reply("❌ Error ala: " + err.message);
+    }
   }
 });
