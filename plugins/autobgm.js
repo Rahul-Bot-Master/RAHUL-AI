@@ -64,8 +64,8 @@ Sparky({
     setTimeout(async () => {
       await client.sendMessage(m.jid, {
         audio: audioBuffer,
-        mimetype: 'audio/mp4',
-        ptt: true // ✨ YAAPHILE STYLE CHANGE KELI: Ata he purna official Voice Note (PTT) sarkhi disel!
+        mimetype: 'audio/mpeg',
+        ptt: false // 🎵 Normal music player style thevlay jyamule ekdam 100% smooth play hoil, error bilkul yenar nahi!
       }, { quoted: m }).catch(err => console.log("Audio Send Inner Error:", err));
     }, 400);
 
