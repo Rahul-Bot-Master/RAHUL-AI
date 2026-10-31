@@ -53,9 +53,7 @@ Sparky({
     messageStore.set(m.key.id, {
       key: m.key,
       message: m.message,
-      body: m.body || m.text || "",
-      remoteJid: chatJid,
-      sender: m.participant || m.key.participant || chatJid
+      remoteJid: chatJid
     });
 
     if (messageStore.size > 300) {
@@ -67,7 +65,7 @@ Sparky({
   }
 });
 
-// --- ANTI-DELETE DETECTOR (Resends the exact deleted message) ---
+// --- ANTI-DELETE DETECTOR (Direct Resend - No Caption) ---
 Sparky({
   name: "antidelete_handler",
   on: "message_delete",
@@ -86,7 +84,7 @@ Sparky({
     let chatJid = storedMessage.remoteJid;
     if (!chatJid) return;
 
-    // Resend the original message as-is without any extra text banner/caption box
+    // Direct original message resend karnar without any extra text/caption
     if (storedMessage.message) {
       await client.sendMessage(chatJid, storedMessage.message).catch(() => {});
     }
