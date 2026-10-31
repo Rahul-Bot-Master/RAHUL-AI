@@ -26,18 +26,18 @@ Sparky({
   let safeArgs = Array.isArray(args) ? args.join(" ") : (typeof args === "string" ? args : "");
   let fullQuery = (text || safeArgs || m.body || m.text || "").toLowerCase();
   
-  if (fullQuery.includes("on")) {
-    global.autoBgmStatus = true;
-    return m.reply("✅ Auto-BGM is now **ENABLED**!");
-  } else if (fullQuery.includes("off")) {
+  if (fullQuery.includes("off")) {
     global.autoBgmStatus = false;
     return m.reply("❌ Auto-BGM is now **DISABLED**!");
+  } else if (fullQuery.includes("on") || fullQuery === "") {
+    global.autoBgmStatus = true;
+    return m.reply("✅ Auto-BGM is now **ENABLED**!");
   } else {
     return m.reply(`ℹ️ Current Auto-BGM Status: *${global.autoBgmStatus ? "ON ✅" : "OFF ❌"}*\n\nUse:\n• \`autobgm on\`\n• \`autobgm off\``);
   }
 });
 
-// --- AUTO-BGM HANDLER (FIXED FOR SELF & PVT CHATS) ---
+// --- AUTO-BGM HANDLER (ONLY FOR AUDIO & TRIGGERS, NO COMMAND DUPLICATION) ---
 Sparky({
   name: "autobgm_handler",
   on: "text",
@@ -59,12 +59,12 @@ Sparky({
       return; 
     }
 
-    // 🛑 2. STRICT GROUP BLOCKER (Fakt personal chat madheach chalel - group block)
+    // 🛑 2. STRICT GROUP BLOCKER (Fakt personal chat madheach chalel)
     if (chatJid.endsWith("@g.us")) {
       return; 
     }
 
-    // Robust text extraction for all message types including self-chats
+    // Robust text extraction
     let rawText = m.body || m.text || 
                   m.message?.conversation || 
                   m.message?.extendedTextMessage?.text || 
@@ -73,14 +73,9 @@ Sparky({
     let bodyText = rawText.trim().toLowerCase();
     if (!bodyText) return;
 
-    // Direct check for text switch without prefix
-    if (bodyText === "autobgm on" || bodyText === ".autobgm on" || bodyText === "setautobgm on") {
-      global.autoBgmStatus = true;
-      return m.reply("✅ Auto-BGM is now **ENABLED**!");
-    }
-    if (bodyText === "autobgm off" || bodyText === ".autobgm off" || bodyText === "setautobgm off") {
-      global.autoBgmStatus = false;
-      return m.reply("❌ Auto-BGM is now **DISABLED**!");
+    // Jar autobgm command asel tar handler madhun kahich karu naye (fakt main command handle karel)
+    if (bodyText.startsWith("autobgm") || bodyText.startsWith(".autobgm") || bodyText.startsWith("setautobgm")) {
+      return;
     }
 
     // Jar status off asel tar audio yenar nahi
