@@ -8,24 +8,20 @@ Sparky({
   desc: "Clear messages in current chat"
 }, async ({ client, m }) => {
   try {
-    // Method 1: Baileys chatModify standard format
+    // Baileys standard chat delete/clear payload
     await client.chatModify(
-      {
-        clear: {
-          messages: [{ id: m.key.id, fromMe: m.key.fromMe, timestamp: m.messageTimestamp }]
-        }
-      },
+      { delete: true, lastMessages: [{ key: m.key, messageTimestamp: m.messageTimestamp }] },
       m.jid
     );
     
     return m.reply("🧹 Chat successfully clear zali!");
   } catch (e) {
     try {
-      // Method 2: Fallback jar chatModify fail zali tar message delete method vaprun
-      await client.sendMessage(m.jid, { delete: m.key });
-      return m.reply("🧹 Chat messages clear kele ahet!");
+      // Jar to fail zala tar chat archive/delete baghuya kinwa direct messages fetch karun delete karu
+      await client.chatModify({ delete: true }, m.jid);
+      return m.reply("🧹 Chat clear zali!");
     } catch (err) {
-      return m.reply("❌ Error ala: " + err.message);
+      return m.reply(`❌ Error: ${err.message}`);
     }
   }
 });
