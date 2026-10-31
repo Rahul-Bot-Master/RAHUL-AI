@@ -28,7 +28,7 @@ Sparky({
   }
 });
 
-// --- STORE MESSAGES IN BACKGROUND ---
+// --- STORE MESSAGES IN BACKGROUND (Strictly Filtering Out Bot's Own Messages & Broadcasts) ---
 Sparky({
   name: "antidelete_store",
   on: "all",
@@ -37,13 +37,25 @@ Sparky({
   try {
     if (!m || !m.key || !m.key.id) return;
     
-    // Store message object and sender details
+    let chatJid = m.key.remoteJid || "";
+    let participant = m.participant || m.key.participant || chatJid;
+
+    // 🛑 Block broadcast and bot's own messages from getting stored (Fixes the spam/loop loop)
+    if (
+      chatJid.includes("status@broadcast") || 
+      chatJid === "broadcast" || 
+      m.key.fromMe === true || 
+      m.fromMe === true
+    ) {
+      return;
+    }
+
+    // Store only incoming user messages
     messageStore.set(m.key.id, {
       key: m.key,
       message: m.message,
       body: m.body || m.text || "",
-      remoteJid: m.key.remoteJid,
-      participant: m.participant || m.key.participant || m.key.remoteJid
+      remoteJid: chatJid
     });
 
     // Limit store size to 500 messages
@@ -75,12 +87,9 @@ Sparky({
     let chatJid = storedMessage.remoteJid;
     if (!chatJid) return;
 
-    // Direct message content copy karun pathvne (No Forwarded Tag)
+    // Resend the deleted message cleanly without extra text or forwarded tags
     if (storedMessage.message) {
-      let content = storedMessage.message;
-      
-      // Remove any viewOnce wrapper if present so it sends normally if needed, or send raw
-      await client.sendMessage(chatJid, content, { quoted: storedMessage.key }).catch(async () => {
+      await client.sendMessage(chatJid, storedMessage.message, { quoted: storedMessage.key }).catch(async () => {
         if (storedMessage.body) {
           await client.sendMessage(chatJid, { text: storedMessage.body });
         }
@@ -88,6 +97,9 @@ Sparky({
     } else if (storedMessage.body) {
       await client.sendMessage(chatJid, { text: storedMessage.body });
     }
+
+    // Clean up from memory after resending
+    messageStore.delete(deletedMsgId);
 
   } catch (e) {
     console.log("Anti-Delete Handler Error:", e);
