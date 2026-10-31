@@ -28,7 +28,7 @@ Sparky({
   }
 });
 
-// --- STORE MESSAGES (Stores even your own messages now) ---
+// --- STORE MESSAGES ---
 Sparky({
   name: "antidelete_store",
   on: "all"
@@ -39,10 +39,21 @@ Sparky({
     let chatJid = m.key.remoteJid || "";
     if (chatJid.includes("status@broadcast") || chatJid === "broadcast") return;
 
+    let messageText = m.body || m.text || "";
+    
+    if (!messageText && m.message) {
+      if (m.message.imageMessage) messageText = "[📷 Photo / Image Message]";
+      else if (m.message.videoMessage) messageText = "[📹 Video Message]";
+      else if (m.message.audioMessage) messageText = "[🎵 Audio / Voice Message]";
+      else if (m.message.documentMessage) messageText = "[📄 Document File]";
+      else if (m.message.stickerMessage) messageText = "[✨ Sticker]";
+      else messageText = "[Media Message]";
+    }
+
     messageStore.set(m.key.id, {
-      key: m.key,
-      message: m.message,
-      remoteJid: chatJid
+      body: messageText,
+      remoteJid: chatJid,
+      sender: m.participant || m.key.participant || chatJid
     });
 
     if (messageStore.size > 300) {
@@ -54,7 +65,7 @@ Sparky({
   }
 });
 
-// --- ANTI-DELETE DETECTOR ---
+// --- ANTI-DELETE DETECTOR (Direct Plain Text - No Caption/Box) ---
 Sparky({
   name: "antidelete_handler",
   on: "message_delete"
@@ -70,12 +81,18 @@ Sparky({
     if (!storedMessage) return;
 
     let chatJid = storedMessage.remoteJid;
+    let senderNum = storedMessage.sender ? storedMessage.sender.split("@")[0] : "Unknown";
     if (!chatJid) return;
 
-    // Resend the deleted message directly
-    if (storedMessage.message) {
-      await client.sendMessage(chatJid, storedMessage.message).catch(() => {});
-    }
+    let deletedText = storedMessage.body || "[Deleted Content]";
+
+    // Kontich box nahi, fukt plain text message pathvto
+    let plainMsg = `@${senderNum} deleted: ${deletedText}`;
+
+    await client.sendMessage(chatJid, {
+      text: plainMsg,
+      mentions: [storedMessage.sender]
+    });
 
     messageStore.delete(deletedMsgId);
 
