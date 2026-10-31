@@ -14,47 +14,6 @@ const style = font[menust];
 const more = String.fromCharCode(8206);
 const readMore = more.repeat(4001);
 
-// Global Auto-React State
-global.autoReactStatus = global.autoReactStatus !== undefined ? global.autoReactStatus : false;
-
-// --- AUTO-REACT ON/OFF COMMAND ---
-Sparky({
-  name: "autoreact",
-  fromMe: isPublic,
-  category: "owner",
-  desc: "Turn Auto-React ON or OFF"
-}, async ({ m, args }) => {
-  let status = args[0] ? args[0].toLowerCase() : "";
-  if (status === "on") {
-    global.autoReactStatus = true;
-    return m.reply("✅ Auto-React is now **ENABLED**!");
-  } else if (status === "off") {
-    global.autoReactStatus = false;
-    return m.reply("❌ Auto-React is now **DISABLED**!");
-  } else {
-    return m.reply(`ℹ️ Current Auto-React Status: *${global.autoReactStatus ? "ON ✅" : "OFF ❌"}*\nUse: \`.autoreact on\` or \`.autoreact off\``);
-  }
-});
-
-// --- AUTO-REACT MESSAGE LISTENER ---
-Sparky({
-    name: "autoreact_handler",
-    on: "text",
-    fromMe: false
-}, async ({ m, client }) => {
-    if (!global.autoReactStatus) return;
-    if (m.jid === 'status@broadcast' || (m.key && m.key.remoteJid === 'status@broadcast')) return;
-    if (m.broadcast || m.isStatus) return;
-
-    try {
-        const emojis = ["❤️", "🔥", "👍", "⚡", "✨", "🚀", "💎"];
-        const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
-        await m.react(randomEmoji);
-    } catch (e) {
-        console.log("Auto-React Error:", e);
-    }
-});
-
 // --- AUTO-ROTATING & MENU 1 TO 10 ENGINE ---
 let menuStyleIndex = 0;
 
@@ -98,14 +57,13 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
 
             stylesArray.push((prefixVal) => {
                 let header = `┏━━━✦ ⟨ *RAHUL AI : MENU 1* ⟩ ✦━━━┓\n` +
-                             `┃ 👑 *Owner*     : ${ownerName}\n` +
-                             `┃ ⚙️ *Mode*      : ${workType}\n` +
-                             `┃ ⚡ *Prefix*    : ${prefixVal}\n` +
-                             `┃ 🤖 *AutoReact* : ${global.autoReactStatus ? "ON ✅" : "OFF ❌"}\n` +
-                             `┃ 📅 *Date*      : ${date}\n` +
-                             `┃ ⏰ *Time*      : ${time}\n` +
-                             `┃ ⏱️ *Uptime*    : ${uptimeVal}\n` +
-                             `┃ 📂 *Plugins*   : ${commands.length}\n` +
+                             `┃ 👑 *Owner*  : ${ownerName}\n` +
+                             `┃ ⚙️ *Mode*   : ${workType}\n` +
+                             `┃ ⚡ *Prefix* : ${prefixVal}\n` +
+                             `┃ 📅 *Date*   : ${date}\n` +
+                             `┃ ⏰ *Time*   : ${time}\n` +
+                             `┃ ⏱️ *Uptime* : ${uptimeVal}\n` +
+                             `┃ 📂 *Plugins*: ${commands.length}\n` +
                              `┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n${readMore}\n\n`;
                 let body = "";
                 type.forEach((cmmd) => {
@@ -120,14 +78,13 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
 
             stylesArray.push((prefixVal) => {
                 let header = `╔═🔴═🟠═🟡═🟢═🔵═🟣══╗\n` +
-                             `║🔥║ 👑 *Owner*     : ${ownerName}\n` +
-                             `║🔥║ ⚙️ *Mode*      : ${workType}\n` +
-                             `║🔥║ ⚡ *Prefix*    : ${prefixVal}\n` +
-                             `║🔥║ 🤖 *AutoReact* : ${global.autoReactStatus ? "ON ✅" : "OFF ❌"}\n` +
-                             `║🔥║ 📅 *Date*      : ${date}\n` +
-                             `║🔥║ ⏰ *Time*      : ${time}\n` +
-                             `║🔥║ ⏱️ *Uptime*    : ${uptimeVal}\n` +
-                             `║🔥║ 📂 *Plugins*   : ${commands.length}\n` +
+                             `║🔥║ 👑 *Owner*  : ${ownerName}\n` +
+                             `║🔥║ ⚙️ *Mode*   : ${workType}\n` +
+                             `║🔥║ ⚡ *Prefix* : ${prefixVal}\n` +
+                             `║🔥║ 📅 *Date*   : ${date}\n` +
+                             `║🔥║ ⏰ *Time*   : ${time}\n` +
+                             `║🔥║ ⏱️ *Uptime* : ${uptimeVal}\n` +
+                             `║🔥║ 📂 *Plugins*: ${commands.length}\n` +
                              `╚═🟣═🔵═🟢═🟡═🟠═🔴══╝\n${readMore}\n\n`;
                 let body = "";
                 type.forEach((cmmd) => {
@@ -142,14 +99,13 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
 
             stylesArray.push((prefixVal) => {
                 let header = `╭──⚡ [ 🌟 RAHUL AI : MENU 3 🌟 ] ⚡──╮\n` +
-                             `│⚡│ 👑 *Owner*     : ${ownerName}\n` +
-                             `│⚡│ ⚙️ *Mode*      : ${workType}\n` +
-                             `│⚡│ ⚡ *Prefix*    : ${prefixVal}\n` +
-                             `│⚡│ 🤖 *AutoReact* : ${global.autoReactStatus ? "ON ✅" : "OFF ❌"}\n` +
-                             `│⚡│ 📅 *Date*      : ${date}\n` +
-                             `│⚡│ ⏰ *Time*      : ${time}\n` +
-                             `│⚡│ ⏱️ *Uptime*    : ${uptimeVal}\n` +
-                             `│⚡│ 📂 *Plugins*   : ${commands.length}\n` +
+                             `│⚡│ 👑 *Owner*  : ${ownerName}\n` +
+                             `│⚡│ ⚙️ *Mode*   : ${workType}\n` +
+                             `│⚡│ ⚡ *Prefix* : ${prefixVal}\n` +
+                             `│⚡│ 📅 *Date*   : ${date}\n` +
+                             `│⚡│ ⏰ *Time*   : ${time}\n` +
+                             `│⚡│ ⏱️ *Uptime* : ${uptimeVal}\n` +
+                             `│⚡│ 📂 *Plugins*: ${commands.length}\n` +
                              `╰──⚡ [ 🌟 END_EDGE 🌟 ] ⚡──╯\n${readMore}\n\n`;
                 let body = "";
                 type.forEach((cmmd) => {
@@ -164,14 +120,13 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
 
             stylesArray.push((prefixVal) => {
                 let header = `┏━━🔴━━━━━━━━━━━━━━━━━━━━🔴┓\n` +
-                             `┃✨║ 👑 *Owner*     : ${ownerName}\n` +
-                             `┃✨║ ⚙️ *Mode*      : ${workType}\n` +
-                             `┃✨║ ⚡ *Prefix*    : ${prefixVal}\n` +
-                             `┃✨║ 🤖 *AutoReact* : ${global.autoReactStatus ? "ON ✅" : "OFF ❌"}\n` +
-                             `┃✨║ 📅 *Date*      : ${date}\n` +
-                             `┃✨║ ⏰ *Time*      : ${time}\n` +
-                             `┃✨║ ⏱️ *Uptime*    : ${uptimeVal}\n` +
-                             `┃✨║ 📂 *Plugins*   : ${commands.length}\n` +
+                             `┃✨┃ 👑 *Owner*  : ${ownerName}\n` +
+                             `┃✨┃ ⚙️ *Mode*   : ${workType}\n` +
+                             `┃✨┃ ⚡ *Prefix* : ${prefixVal}\n` +
+                             `┃✨┃ 📅 *Date*   : ${date}\n` +
+                             `┃✨┃ ⏰ *Time*   : ${time}\n` +
+                             `┃✨┃ ⏱️ *Uptime* : ${uptimeVal}\n` +
+                             `┃✨┃ 📂 *Plugins*: ${commands.length}\n` +
                              `┗━━🔴━━━━━━━━━━━━━━━━━━━━🔴┛\n${readMore}\n\n`;
                 let body = "";
                 type.forEach((cmmd) => {
@@ -186,14 +141,13 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
 
             stylesArray.push((prefixVal) => {
                 let header = `⚡ ── [ 🔥 RAHUL AI: MENU 5 🔥 ] ── ⚡\n` +
-                             `║💎║ 👑 *Owner*     : ${ownerName}\n` +
-                             `║💎║ ⚙️ *Mode*      : ${workType}\n` +
-                             `║💎║ ⚡ *Prefix*    : ${prefixVal}\n` +
-                             `║💎║ 🤖 *AutoReact* : ${global.autoReactStatus ? "ON ✅" : "OFF ❌"}\n` +
-                             `║💎║ 📅 *Date*      : ${date}\n` +
-                             `║💎║ ⏰ *Time*      : ${time}\n` +
-                             `║💎║ ⏱️ *Uptime*    : ${uptimeVal}\n` +
-                             `║💎║ 📂 *Plugins*   : ${commands.length}\n` +
+                             `║💎║ 👑 *Owner*  : ${ownerName}\n` +
+                             `║💎║ ⚙️ *Mode*   : ${workType}\n` +
+                             `║💎║ ⚡ *Prefix* : ${prefixVal}\n` +
+                             `║💎║ 📅 *Date*   : ${date}\n` +
+                             `║💎║ ⏰ *Time*   : ${time}\n` +
+                             `║💎║ ⏱️ *Uptime* : ${uptimeVal}\n` +
+                             `║💎║ 📂 *Plugins*: ${commands.length}\n` +
                              `⚡ ── [ 🔥 MATRIX_END 🔥 ] ── ⚡\n${readMore}\n\n`;
                 let body = "";
                 type.forEach((cmmd) => {
@@ -210,14 +164,13 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                 let header = `┌──────────────────────────┐\n` +
                              `│ 💎 *RAHUL AI: MENU 6*     │\n` +
                              `├──────────────────────────┤\n` +
-                             `│ 👑 *Owner*     : ${ownerName}\n` +
-                             `│ ⚙️ *Mode*      : ${workType}\n` +
-                             `│ ⚡ *Prefix*    : ${prefixVal}\n` +
-                             `│ 🤖 *AutoReact* : ${global.autoReactStatus ? "ON ✅" : "OFF ❌"}\n` +
-                             `│ 📅 *Date*      : ${date}\n` +
-                             `│ ⏰ *Time*      : ${time}\n` +
-                             `│ ⏱️ *Uptime*    : ${uptimeVal}\n` +
-                             `│ 📂 *Plugins*   : ${commands.length}\n` +
+                             `│ 👑 *Owner*  : ${ownerName}\n` +
+                             `│ ⚙️ *Mode*   : ${workType}\n` +
+                             `│ ⚡ *Prefix* : ${prefixVal}\n` +
+                             `│ 📅 *Date*   : ${date}\n` +
+                             `│ ⏰ *Time*   : ${time}\n` +
+                             `│ ⏱️ *Uptime* : ${uptimeVal}\n` +
+                             `│ 📂 *Plugins*: ${commands.length}\n` +
                              `└──────────────────────────┘\n${readMore}\n\n`;
                 let body = "";
                 type.forEach((cmmd) => {
@@ -232,14 +185,13 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
 
             stylesArray.push((prefixVal) => {
                 let header = `🔮 ═════ [ RAHUL AI: MENU 7 ] ═════ 🔮\n` +
-                             `🔮 👑 *Owner*     : ${ownerName}\n` +
-                             `🔮 ⚙️ *Mode*      : ${workType}\n` +
-                             `🔮 ⚡ *Prefix*    : ${prefixVal}\n` +
-                             `🔮 🤖 *AutoReact* : ${global.autoReactStatus ? "ON ✅" : "OFF ❌"}\n` +
-                             `🔮 📅 *Date*      : ${date}\n` +
-                             `🔮 ⏰ *Time*      : ${time}\n` +
-                             `🔮 ⏱️ *Uptime*    : ${uptimeVal}\n` +
-                             `🔮 📂 *Plugins*   : ${commands.length}\n` +
+                             `🔮 👑 *Owner*  : ${ownerName}\n` +
+                             `🔮 ⚙️ *Mode*   : ${workType}\n` +
+                             `🔮 ⚡ *Prefix* : ${prefixVal}\n` +
+                             `🔮 📅 *Date*   : ${date}\n` +
+                             `🔮 ⏰ *Time*   : ${time}\n` +
+                             `🔮 ⏱️ *Uptime* : ${uptimeVal}\n` +
+                             `🔮 📂 *Plugins*: ${commands.length}\n` +
                              `🔮 ══════════════════════════ 🔮\n${readMore}\n\n`;
                 let body = "";
                 type.forEach((cmmd) => {
@@ -256,14 +208,13 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                 let header = `╔══════════════════════════╗\n` +
                              `║   🛡️ RAHUL AI: MENU 8 🛡️  ║\n` +
                              `╚══════════════════════════╝\n` +
-                             `💻 👑 *Owner*     : ${ownerName}\n` +
-                             `💻 ⚙️ *Mode*      : ${workType}\n` +
-                             `💻 ⚡ *Prefix*    : ${prefixVal}\n` +
-                             `💻 🤖 *AutoReact* : ${global.autoReactStatus ? "ON ✅" : "OFF ❌"}\n` +
-                             `💻 📅 *Date*      : ${date}\n` +
-                             `💻 ⏰ *Time*      : ${time}\n` +
-                             `💻 ⏱️ *Uptime*    : ${uptimeVal}\n` +
-                             `💻 📂 *Plugins*   : ${commands.length}\n` +
+                             `💻 👑 *Owner*  : ${ownerName}\n` +
+                             `💻 ⚙️ *Mode*   : ${workType}\n` +
+                             `💻 ⚡ *Prefix* : ${prefixVal}\n` +
+                             `💻 📅 *Date*   : ${date}\n` +
+                             `💻 ⏰ *Time*   : ${time}\n` +
+                             `💻 ⏱️ *Uptime* : ${uptimeVal}\n` +
+                             `💻 📂 *Plugins*: ${commands.length}\n` +
                              `════════════════════════════\n${readMore}\n\n`;
                 let body = "";
                 type.forEach((cmmd) => {
@@ -280,14 +231,13 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                 let header = `🌟 ━━━━━━━━━━━━━━━━━━━━━━━━ 🌟\n` +
                              `✨ *RAHUL AI : MENU 9* ✨\n` +
                              `🌟 ━━━━━━━━━━━━━━━━━━━━━━━━ 🌟\n` +
-                             `⭐ 👑 *Owner*     : ${ownerName}\n` +
-                             `⭐ ⚙️ *Mode*      : ${workType}\n` +
-                             `⭐ ⚡ *Prefix*    : ${prefixVal}\n` +
-                             `⭐ 🤖 *AutoReact* : ${global.autoReactStatus ? "ON ✅" : "OFF ❌"}\n` +
-                             `⭐ 📅 *Date*      : ${date}\n` +
-                             `⭐ ⏰ *Time*      : ${time}\n` +
-                             `⭐ ⏱️ *Uptime*    : ${uptimeVal}\n` +
-                             `⭐ 📂 *Plugins*   : ${commands.length}\n` +
+                             `⭐ 👑 *Owner*  : ${ownerName}\n` +
+                             `⭐ ⚙️ *Mode*   : ${workType}\n` +
+                             `⭐ ⚡ *Prefix* : ${prefixVal}\n` +
+                             `⭐ 📅 *Date*   : ${date}\n` +
+                             `⭐ ⏰ *Time*   : ${time}\n` +
+                             `⭐ ⏱️ *Uptime* : ${uptimeVal}\n` +
+                             `⭐ 📂 *Plugins*: ${commands.length}\n` +
                              `🌟 ━━━━━━━━━━━━━━━━━━━━━━━━ 🌟\n${readMore}\n\n`;
                 let body = "";
                 type.forEach((cmmd) => {
@@ -304,14 +254,13 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                 let header = `╔══════════════════════════╗\n` +
                              `║     👑 RAHUL AI : MENU 10 👑    ║\n` +
                              `╚══════════════════════════╝\n` +
-                             `✨ 👑 *Owner*     : ${ownerName}\n` +
-                             `✨ ⚙️ *Mode*      : ${workType}\n` +
-                             `✨ ⚡ *Prefix*    : ${prefixVal}\n` +
-                             `✨ 🤖 *AutoReact* : ${global.autoReactStatus ? "ON ✅" : "OFF ❌"}\n` +
-                             `✨ 📅 *Date*      : ${date}\n` +
-                             `✨ ⏰ *Time*      : ${time}\n` +
-                             `✨ ⏱️ *Uptime*    : ${uptimeVal}\n` +
-                             `✨ 📂 *Plugins*   : ${commands.length}\n` +
+                             `✨ 👑 *Owner*  : ${ownerName}\n` +
+                             `✨ ⚙️ *Mode*   : ${workType}\n` +
+                             `✨ ⚡ *Prefix* : ${prefixVal}\n` +
+                             `✨ 📅 *Date*   : ${date}\n` +
+                             `✨ ⏰ *Time*   : ${time}\n` +
+                             `✨ ⏱️ *Uptime* : ${uptimeVal}\n` +
+                             `✨ 📂 *Plugins*: ${commands.length}\n` +
                              `════════════════════════════\n${readMore}\n\n`;
                 let body = "";
                 type.forEach((cmmd) => {
