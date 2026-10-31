@@ -35,15 +35,20 @@ Sparky({
     answer = response.data.choices[0].message.content;
 
   } catch (err) {
+    // Terminal var error print hoil mhanje nakki kay problem ahe te kalel
+    console.error("Grok API Error:", err.response?.data || err.message);
+
     // Fallback to free public endpoint if custom Grok key is not provided or fails
     try {
       let res2 = await axios.get(`https://api.siputzx.my.id/api/ai/chatgpt?prompt=${encodeURIComponent(query)}`);
       answer = res2.data.data || res2.data.result;
-    } catch (e) {}
+    } catch (e) {
+      console.error("Fallback API Error:", e.message);
+    }
   }
 
-  // Fallback message jar API madhun kahi aale nahi
-  if (!answer || typeof answer !== "string" || answer.includes("api key")) {
+  // Fallback message jar API madhun kahich aale nahi tar
+  if (!answer || typeof answer !== "string") {
     answer = `Hello Rahul! Mi RAHUL-AI ahe. Tuzha message "${query}" mala milalay. 🚀`;
   }
 
