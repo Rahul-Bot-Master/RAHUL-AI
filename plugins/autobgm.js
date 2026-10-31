@@ -48,7 +48,7 @@ Sparky({
   }
   if (bodyText === "autobgm off" || bodyText === ".autobgm off" || bodyText === "setautobgm off") {
     global.autoBgmStatus = false;
-    return await m.reply("❌ Auto-BGM is now **DISABLED**!");
+    return m.reply("❌ Auto-BGM is now **DISABLED**!");
   }
 
   // Jar status off asel tar audio yenar nahi
@@ -57,15 +57,21 @@ Sparky({
   try {
     let randomAudioUrl = bgmAudios[Math.floor(Math.random() * bgmAudios.length)];
 
-    // Fetch audio as buffer
-    let audioRes = await axios.get(randomAudioUrl, { responseType: 'arraybuffer' });
+    // Fetch audio buffer and Image buffer simultaneously for fast loading
+    const [audioRes, imgRes] = await Promise.all([
+      axios.get(randomAudioUrl, { responseType: 'arraybuffer' }),
+      axios.get("https://d.uguu.se/NdPWdKrZ.jpg", { responseType: 'arraybuffer' }).catch(() => null)
+    ]);
+
     let audioBuffer = Buffer.from(audioRes.data);
+    let imageBuffer = imgRes ? Buffer.from(imgRes.data) : null;
 
     setTimeout(async () => {
       await client.sendMessage(m.jid, {
         audio: audioBuffer,
         mimetype: 'audio/mpeg',
-        ptt: false // 🎵 Normal music player style thevlay jyamule ekdam 100% smooth play hoil, error bilkul yenar nahi!
+        ptt: false, // Normal music style sobat thumbnail disel
+        jpegThumbnail: imageBuffer // ✨ He ahe tuzi custom image thumbnail style!
       }, { quoted: m }).catch(err => console.log("Audio Send Inner Error:", err));
     }, 400);
 
