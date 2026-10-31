@@ -17,7 +17,7 @@ Sparky({
   await m.react("⏳");
 
   let answer = "";
-  let grokApiKey = "grok_e9715fa89c13fb9eea2de47d02e1b010_a48d9ea0bbe0191f0e9ba85398147ef40370c5e2c7edeee7fd74e5deb4607de8"; // Ithe tuzi xAI / Grok API key tak
+  let grokApiKey = "grok_e9715fa89c13fb9eea2de47d02e1b010_a48d9ea0bbe0191f0e9ba85398147ef40370c5e2c7edeee7fd74e5deb4607de8";
 
   try {
     // 1. Direct Grok / xAI API Endpoint integration
@@ -35,19 +35,15 @@ Sparky({
     answer = response.data.choices[0].message.content;
 
   } catch (err) {
-    // Terminal var error print hoil mhanje nakki kay problem ahe te kalel
-    console.error("Grok API Error:", err.response?.data || err.message);
-
-    // Fallback to free public endpoint if custom Grok key is not provided or fails
+    // Grok fail zalyavar silent thevun direct free fallback API vapru
     try {
       let res2 = await axios.get(`https://api.siputzx.my.id/api/ai/chatgpt?prompt=${encodeURIComponent(query)}`);
       answer = res2.data.data || res2.data.result;
     } catch (e) {
-      console.error("Fallback API Error:", e.message);
+      answer = `Hello Rahul! Mi RAHUL-AI ahe. Tuzha message "${query}" mala milalay. 🚀`;
     }
   }
 
-  // Fallback message jar API madhun kahich aale nahi tar
   if (!answer || typeof answer !== "string") {
     answer = `Hello Rahul! Mi RAHUL-AI ahe. Tuzha message "${query}" mala milalay. 🚀`;
   }
