@@ -305,11 +305,11 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
             case 'big':
                 return await client.sendMessage(m.jid, { text: style(menu), contextInfo: { externalAdReply: { title: style(`Hey ${m.pushName}!`), body: style(`${config.BOT_INFO.split(";")[0]}`), mediaType: 1, showAdAttribution: true, renderLargerThumbnail: true, thumbnailUrl: `${config.BOT_INFO.split(";")[2]}` } } }, { quoted: m });
             case 'image':
-                return await client.sendMessage(m.jid, { image: { url: config.BOT_INFO.split(";")[2] || 'https://sam-cdn.zone.id/files/xQer9GrIVT.jpg' }, caption: style(menu) }, { quoted: sperky });
+                return await client.sendMessage(m.jid, { image: { url: config.BOT_INFO.split(";")[2] || 'https://n.uguu.se/mZAKwZrP.jpg' }, caption: style(menu) }, { quoted: sperky });
             case 'small':
                 return await client.sendMessage(m.jid, { text: style(menu), contextInfo: { externalAdReply: { title: style(`Hey ${m.pushName}!`), body: style(`${config.BOT_INFO.style || config.BOT_INFO.split(";")[0]}`), mediaType: 1, showAdAttribution: true, renderLargerThumbnail: false, thumbnailUrl: `${config.BOT_INFO.split(";")[2]}` } } }, { quoted: sperky });
             case 'document':
-                return await client.sendMessage(m.jid, { document: { url: 'https://sam-cdn.zone.id/files/xQer9GrIVT.jpg' }, caption: menu, mimetype: 'application/zip', fileName: style(config.BOT_INFO.split(";")[0]), fileLength: "99999999999", contextInfo: { externalAdReply: { title: style(`Hey ${m.pushName}!`), body: style(`${config.BOT_INFO.split(";")[0]}`), mediaType: 1, showAdAttribution: true, renderLargerThumbnail: true, thumbnailUrl: `${config.BOT_INFO.split(";")[2]}` } } }, { quoted: sperky });
+                return await client.sendMessage(m.jid, { document: { url: 'https://n.uguu.se/mZAKwZrP.jpg' }, caption: menu, mimetype: 'application/zip', fileName: style(config.BOT_INFO.split(";")[0]), fileLength: "99999999999", contextInfo: { externalAdReply: { title: style(`Hey ${m.pushName}!`), body: style(`${config.BOT_INFO.split(";")[0]}`), mediaType: 1, showAdAttribution: true, renderLargerThumbnail: true, thumbnailUrl: `${config.BOT_INFO.split(";")[2]}` } } }, { quoted: sperky });
             case 'video':
                 return await client.sendMessage(m.jid, { video: { url: config.BOT_INFO.split(";")[2] }, caption: style(menu), gifPlayback: true }, { quoted: sperky });
             default:
