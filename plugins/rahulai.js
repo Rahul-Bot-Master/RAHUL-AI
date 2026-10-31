@@ -17,7 +17,7 @@ Sparky({
   await m.react("⏳");
 
   let answer = "";
-  let grokApiKey = "YOUR_GROK_API_KEY"; // Ithe tuzi xAI / Grok API key tak
+  let grokApiKey = "grok_e9715fa89c13fb9eea2de47d02e1b010_a48d9ea0bbe0191f0e9ba85398147ef40370c5e2c7edeee7fd74e5deb4607de8"; // Ithe tuzi xAI / Grok API key tak
 
   try {
     // 1. Direct Grok / xAI API Endpoint integration
