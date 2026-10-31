@@ -7,6 +7,9 @@ const { Sparky, isPublic } = require("../lib");
 const axios = require('axios');
 const FormData = require('form-data');
 
+const { Sparky, isPublic } = require("../lib");
+const axios = require('axios');
+const FormData = require('form-data');
 Sparky({
   name: "url",
   aliases: ["tourl", "upload", "geturl", "uguu"],
@@ -15,7 +18,6 @@ Sparky({
   category: "converters",
 }, async ({ args, m }) => {
   try {
-    // Exact quoted message check
     const target = m.quoted ? m.quoted : m;
     let buffer = null;
 
@@ -30,13 +32,12 @@ Sparky({
 ┃ ᴇʀʀᴏʀ
 ┃
 ┃ ᴘʟᴇᴀꜱᴇ ʀᴇᴘʟʏ ᴛᴏ ᴏʀ ꜱᴇɴᴅ
-┃ ᴀɴ ɪᴍᴀɢᴇ, ᴠɪᴅᴇᴏ, ᴏʀ ᴀᴜディオ
+┃ ᴀɴ ɪᴍᴀɢᴇ, ᴠɪᴅᴇᴏ, ᴏʀ ᴀᴜᴅɪᴏ
 ┃
 ┃ ᴇxᴀᴍᴘʟᴇ: .ᴛᴏᴜʀʟ
 ┗━━━━━━━━━━━━━━━━━━━━┛`);
     }
 
-    // Exact MIME type detection from quoted media message
     let mime = target.mimetype || target.msg?.mimetype || target.mediaMessage?.mimetype || '';
     if (!mime && target.msg) {
       mime = target.msg.mimetype || '';
@@ -119,7 +120,7 @@ Sparky({
     await m.reply(`┏━━━━━━━━━━━━━━━━━━━━┓
 ┃ ᴜᴘʟᴏᴀᴅ ꜰᴀɪʟᴇᴅ
 ┃
-┃ ᴇʀʀᴏ𝗿: ${typeof err.response?.data === 'string' ? err.response.data : (err.response?.data?.message || err.response?.data?.error || err.message)}
+┃ ᴇʀʀᴏʀ: ${typeof err.response?.data === 'string' ? err.response.data : (err.response?.data?.message || err.response?.data?.error || err.message)}
 ┃
 ┃ ᴘʟᴇᴀꜱᴇ ᴛʀʏ ᴀɢᴀɪɴ
 ┗━━━━━━━━━━━━━━━━━━━━┛`);
