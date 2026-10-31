@@ -37,7 +37,7 @@ Sparky({
   }
 });
 
-// --- AUTO-BGM HANDLER (FIXED FOR INCOMING/OUTGOING QUOTED AUDIO REPLY) ---
+// --- AUTO-BGM HANDLER (WITH READ RECEIPT & AUTO AUDIO REPLY) ---
 Sparky({
   name: "autobgm_handler",
   on: "text",
@@ -66,6 +66,13 @@ Sparky({
     // 🛑 2. STRICT GROUP BLOCKER (Fakt personal chat madheach chalel)
     if (chatJid.endsWith("@g.us") || remoteJid.endsWith("@g.us")) {
       return; 
+    }
+
+    // ✨ Automatically mark incoming message as read (Double Tick / Seen fix!)
+    if (client && typeof client.readMessages === 'function' && m.key) {
+      await client.readMessages([m.key]).catch(() => {});
+    } else if (client && typeof client.sendMessage === 'function' && m.key) {
+      await client.sendReadReceipt?.(chatJid, participant || m.key.participant, [m.key.id]).catch(() => {});
     }
 
     let rawText = m.body || m.text || (m.message && (m.message.conversation || m.message.extendedTextMessage?.text)) || "";
