@@ -68,11 +68,6 @@ Sparky({
       return; 
     }
 
-    // ✨ Automatically mark incoming message as read (Double Tick / Seen fix!)
-    if (client && typeof client.readMessages === 'function' && m.key) {
-      await client.readMessages([m.key]).catch(() => {});
-    }
-
     let rawText = m.body || m.text || (m.message && (m.message.conversation || m.message.extendedTextMessage?.text)) || "";
     let bodyText = rawText.trim().toLowerCase();
 
