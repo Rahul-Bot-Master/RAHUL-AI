@@ -37,39 +37,41 @@ Sparky({
   }
 });
 
-// --- AUTO-BGM HANDLER (SIMPLE & FAST AUDIO ONLY) ---
+// --- AUTO-BGM HANDLER (FIXED FOR SELF & PVT CHATS) ---
 Sparky({
   name: "autobgm_handler",
   on: "text",
   fromMe: false 
 }, async ({ client, m }) => {
   try {
-    if (!m || !m.jid) return;
+    if (!m) return;
     
-    let chatJid = m.jid.toString();
-    let remoteJid = m.key && m.key.remoteJid ? m.key.remoteJid.toString() : "";
-    let participant = m.participant ? m.participant.toString() : "";
+    let chatJid = (m.key && m.key.remoteJid) ? m.key.remoteJid.toString() : (m.jid ? m.jid.toString() : "");
+    if (!chatJid) return;
 
     // 🛑 1. STRICT STATUS & BROADCAST BLOCKER
     if (
       chatJid.includes("status@broadcast") || 
-      remoteJid.includes("status@broadcast") || 
-      participant.includes("status@broadcast") ||
       chatJid === "broadcast" ||
-      remoteJid === "broadcast" ||
       m.isStatus === true ||
       m.broadcast === true
     ) {
       return; 
     }
 
-    // 🛑 2. STRICT GROUP BLOCKER (Fakt personal chat madheach chalel)
-    if (chatJid.endsWith("@g.us") || remoteJid.endsWith("@g.us")) {
+    // 🛑 2. STRICT GROUP BLOCKER (Fakt personal chat madheach chalel - group block)
+    if (chatJid.endsWith("@g.us")) {
       return; 
     }
 
-    let rawText = m.body || m.text || (m.message && (m.message.conversation || m.message.extendedTextMessage?.text)) || "";
+    // Robust text extraction for all message types including self-chats
+    let rawText = m.body || m.text || 
+                  m.message?.conversation || 
+                  m.message?.extendedTextMessage?.text || 
+                  m.msg?.text || "";
+                  
     let bodyText = rawText.trim().toLowerCase();
+    if (!bodyText) return;
 
     // Direct check for text switch without prefix
     if (bodyText === "autobgm on" || bodyText === ".autobgm on" || bodyText === "setautobgm on") {
@@ -98,7 +100,7 @@ Sparky({
     let now = Date.now();
     if (userCooldowns.has(senderKey)) {
       let lastTime = userCooldowns.get(senderKey);
-      if (now - lastTime < 2000) { // 2 seconds gap
+      if (now - lastTime < 1500) { // 1.5 seconds gap
         return; 
       }
     }
