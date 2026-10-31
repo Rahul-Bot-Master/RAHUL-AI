@@ -301,17 +301,74 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
             "participant": "0@s.whatsapp.net"
         };
 
+        let imageUrl = config.BOT_INFO.split(";")[2] || 'https://n.uguu.se/mZAKwZrP.jpg';
+
         switch (config.MENU_TYPE.toLowerCase()) {
             case 'big':
-                return await client.sendMessage(m.jid, { text: style(menu), contextInfo: { externalAdReply: { title: style(`Hey ${m.pushName}!`), body: style(`${config.BOT_INFO.split(";")[0]}`), mediaType: 1, showAdAttribution: true, renderLargerThumbnail: true, thumbnailUrl: `${config.BOT_INFO.split(";")[2]}` } } }, { quoted: m });
+                return await client.sendMessage(m.jid, { 
+                    text: style(menu), 
+                    contextInfo: { 
+                        externalAdReply: { 
+                            title: style(`Hey ${m.pushName}!`), 
+                            body: style(`${config.BOT_INFO.split(";")[0]}`), 
+                            mediaType: 1, 
+                            showAdAttribution: true, 
+                            renderLargerThumbnail: true, 
+                            thumbnailUrl: imageUrl,
+                            sourceUrl: "https://whatsapp.com" 
+                        } 
+                    } 
+                }, { quoted: m });
+
             case 'image':
-                return await client.sendMessage(m.jid, { image: { url: config.BOT_INFO.split(";")[2] || 'https://n.uguu.se/mZAKwZrP.jpg' }, caption: style(menu) }, { quoted: sperky });
+                return await client.sendMessage(m.jid, { 
+                    image: { url: imageUrl }, 
+                    caption: style(menu) 
+                }, { quoted: sperky });
+
             case 'small':
-                return await client.sendMessage(m.jid, { text: style(menu), contextInfo: { externalAdReply: { title: style(`Hey ${m.pushName}!`), body: style(`${config.BOT_INFO.style || config.BOT_INFO.split(";")[0]}`), mediaType: 1, showAdAttribution: true, renderLargerThumbnail: false, thumbnailUrl: `${config.BOT_INFO.split(";")[2]}` } } }, { quoted: sperky });
+                return await client.sendMessage(m.jid, { 
+                    text: style(menu), 
+                    contextInfo: { 
+                        externalAdReply: { 
+                            title: style(`Hey ${m.pushName}!`), 
+                            body: style(`${config.BOT_INFO.style || config.BOT_INFO.split(";")[0]}`), 
+                            mediaType: 1, 
+                            showAdAttribution: true, 
+                            renderLargerThumbnail: false, 
+                            thumbnailUrl: imageUrl,
+                            sourceUrl: "https://whatsapp.com" 
+                        } 
+                    } 
+                }, { quoted: sperky });
+
             case 'document':
-                return await client.sendMessage(m.jid, { document: { url: 'https://n.uguu.se/mZAKwZrP.jpg' }, caption: menu, mimetype: 'application/zip', fileName: style(config.BOT_INFO.split(";")[0]), fileLength: "99999999999", contextInfo: { externalAdReply: { title: style(`Hey ${m.pushName}!`), body: style(`${config.BOT_INFO.split(";")[0]}`), mediaType: 1, showAdAttribution: true, renderLargerThumbnail: true, thumbnailUrl: `${config.BOT_INFO.split(";")[2]}` } } }, { quoted: sperky });
+                return await client.sendMessage(m.jid, { 
+                    document: { url: imageUrl }, 
+                    caption: menu, 
+                    mimetype: 'application/zip', 
+                    fileName: style(config.BOT_INFO.split(";")[0]), 
+                    fileLength: "99999999999", 
+                    contextInfo: { 
+                        externalAdReply: { 
+                            title: style(`Hey ${m.pushName}!`), 
+                            body: style(`${config.BOT_INFO.split(";")[0]}`), 
+                            mediaType: 1, 
+                            showAdAttribution: true, 
+                            renderLargerThumbnail: true, 
+                            thumbnailUrl: imageUrl,
+                            sourceUrl: "https://whatsapp.com" 
+                        } 
+                    } 
+                }, { quoted: sperky });
+
             case 'video':
-                return await client.sendMessage(m.jid, { video: { url: config.BOT_INFO.split(";")[2] }, caption: style(menu), gifPlayback: true }, { quoted: sperky });
+                return await client.sendMessage(m.jid, { 
+                    video: { url: imageUrl }, 
+                    caption: style(menu), 
+                    gifPlayback: true 
+                }, { quoted: sperky });
+
             default:
                 return await client.sendMessage(m.jid, { text: style(menu) }, { quoted: sperky });
         }
@@ -324,7 +381,7 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
 Sparky({ name: "menu", category: "misc", fromMe: isPublic, desc: "List all available commands" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, null); });
 Sparky({ name: "menu1", category: "misc", fromMe: isPublic, desc: "Menu Style 1" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 0); });
 Sparky({ name: "menu2", category: "misc", fromMe: isPublic, desc: "Menu Style 2" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 1); });
-Sparky({ name: "menu3", category: "misc", fromMe: isPublic, desc: "Menu Style 3" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 2); });
+Sparky({ name: "menu3", category: "misc", desc: "Menu Style 3" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 2); });
 Sparky({ name: "menu4", category: "misc", fromMe: isPublic, desc: "Menu Style 4" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 3); });
 Sparky({ name: "menu5", category: "misc", fromMe: isPublic, desc: "Menu Style 5" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 4); });
 Sparky({ name: "menu6", category: "misc", fromMe: isPublic, desc: "Menu Style 6" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 5); });
