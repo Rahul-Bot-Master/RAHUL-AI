@@ -5,23 +5,26 @@ Sparky({
   alias: ["genpass", "pass"],
   fromMe: isPublic,
   category: "tools",
-  desc: "Generate a strong random password"
+  desc: "Generate a strong random password with easy copy"
 }, async ({ client, m }) => {
   try {
-    const length = 12;
+    const length = 14; // Length thodi vadhvli ahe security sathi
     const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
     let password = "";
     
-    for (let i = 0, n = charset.length; i < length; ++i) {
-      password += charset.charAt(Math.floor(Math.random() * n));
+    for (let i = 0; i < length; i++) {
+      password += charset.charAt(Math.floor(Math.random() * charset.length));
     }
 
     let responseText = `
 ┌─── ◇ *PASSWORD GENERATOR* ◇ ───
 │
-│ 🔑 *Password:* \`${password}\`
+│ 🔑 *Password:* 
+│ \`${password}\`
+│
+│ 💡 *(Tap above to copy)*
 │ 📏 *Length:* ${length} Characters
-│ 🛡️ *Strength:* Strong / Secure
+│ 🛡️ *Strength:* Ultra Secure
 │
 └───────────────────────────
     `.trim();
