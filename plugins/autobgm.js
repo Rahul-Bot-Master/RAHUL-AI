@@ -37,15 +37,16 @@ Sparky({
   }
 });
 
-// --- AUTO-BGM HANDLER (ONLY FOR AUDIO & TRIGGERS, NO COMMAND DUPLICATION) ---
+// --- AUTO-BGM HANDLER (FIXED FOR SELF-CHAT & ALL MESSAGES) ---
 Sparky({
   name: "autobgm_handler",
-  on: "text",
-  fromMe: false 
+  on: "text"
+  // fromMe kadhun taklay jyamule self-chat (Message yourself) madhe pan work hoil
 }, async ({ client, m }) => {
   try {
     if (!m) return;
     
+    // Jar message swatahcha asel ani to bot cha command reply nasel tarach pudhe jail
     let chatJid = (m.key && m.key.remoteJid) ? m.key.remoteJid.toString() : (m.jid ? m.jid.toString() : "");
     if (!chatJid) return;
 
@@ -73,7 +74,7 @@ Sparky({
     let bodyText = rawText.trim().toLowerCase();
     if (!bodyText) return;
 
-    // Jar autobgm command asel tar handler madhun kahich karu naye (fakt main command handle karel)
+    // Jar autobgm command asel tar handler madhun kahich karu naye
     if (bodyText.startsWith("autobgm") || bodyText.startsWith(".autobgm") || bodyText.startsWith("setautobgm")) {
       return;
     }
