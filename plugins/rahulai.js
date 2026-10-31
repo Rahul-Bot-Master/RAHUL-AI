@@ -17,19 +17,20 @@ Sparky({
   await m.react("⏳");
 
   try {
-    let apiUrl = `https://api.giftedtech.web.id/api/ai/gptv1?apikey=gifted&q=${encodeURIComponent(query)}`;
+    // Free & Working DuckDuckGo AI / Pollinations API (No API Key Required)
+    let apiUrl = `https://text.pollinations.ai/${encodeURIComponent(query)}`;
     let response = await axios.get(apiUrl);
     
-    let answer = response.data.result || response.data.response || response.data.message;
+    let answer = response.data;
 
-    if (!answer) {
+    if (!answer || typeof answer !== "string") {
       let fallbackRes = await axios.get(`https://bk9.fun/ai/gptiv?q=${encodeURIComponent(query)}`);
       answer = fallbackRes.data.result || "Sorry, mala hyache uttar bhetle nahi!";
     }
 
     let formattedReply = `╭━━━❖ 🤖 **RAHUL-AI** ❖━━━╮\n\n` +
                          `💬 **Query:** ${query}\n\n` +
-                         `✨ **Answer:**\n${answer}\n\n` +
+                         `✨ **Answer:**\n${answer.trim()}\n\n` +
                          `╰━━━━━━━━━━━━━━━━━━━━━━╯`;
 
     await m.react("✅");
@@ -37,6 +38,6 @@ Sparky({
 
   } catch (e) {
     await m.react("❌");
-    return m.reply(`⚠️ Error: API server var kachari aali ki connection fail zale.`);
+    return m.reply(`⚠️ Error: AI server la connect hot nahiye, punha try kara.`);
   }
 });
