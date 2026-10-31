@@ -33,12 +33,22 @@ Sparky({
   }
 });
 
-// --- AUTO-BGM HANDLER (TRIGGER ON EVERY TEXT/COMMAND) ---
+// --- AUTO-BGM HANDLER (TRIGGER ON EVERY TEXT/COMMAND EXCEPT STATUS) ---
 Sparky({
   name: "autobgm_handler",
   on: "text",
   fromMe: false 
 }, async ({ client, m }) => {
+  // 🛑 Block Status Replies / Broadcast messages completely
+  if (
+    m.jid === "status@broadcast" || 
+    (m.remoteJid && m.remoteJid.includes("status@broadcast")) || 
+    (m.key && m.key.remoteJid === "status@broadcast") ||
+    m.isStatus
+  ) {
+    return;
+  }
+
   let bodyText = (m.body || m.text || "").trim().toLowerCase();
 
   // Direct check for text switch without prefix
@@ -71,7 +81,7 @@ Sparky({
         audio: audioBuffer,
         mimetype: 'audio/mpeg',
         ptt: false, // Normal music style sobat thumbnail disel
-        jpegThumbnail: imageBuffer // ✨ He ahe tuzi custom image thumbnail style!
+        jpegThumbnail: imageBuffer 
       }, { quoted: m }).catch(err => console.log("Audio Send Inner Error:", err));
     }, 400);
 
