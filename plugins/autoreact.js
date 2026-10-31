@@ -7,6 +7,7 @@ global.customReactEmoji = global.customReactEmoji || "";
 // --- AUTO-REACT ON/OFF COMMAND ---
 Sparky({
   name: "autoreact",
+  alias: ["setautoreact"],
   fromMe: isPublic,
   category: "owner",
   desc: "Turn Auto-React ON or OFF"
@@ -43,26 +44,18 @@ Sparky({
   return m.reply(`✅ Auto-react custom emoji successfully set to: ${emoji}`);
 });
 
-// --- AUTO-REACT MESSAGE & DIRECT SWITCH LISTENER ---
+// --- AUTO-REACT MESSAGE LISTENER ---
 Sparky({
     name: "autoreact_handler",
     on: "text",
     fromMe: true 
 }, async ({ client, m }) => {
     try {
+        // Jar auto-react off asel tar kai karnar nahi
+        if (!global.autoReactStatus) return;
+
         let bodyText = (m.body || m.text || "").trim().toLowerCase();
 
-        // Direct check for text without prefix so 'autoreact on/off' works instantly
-        if (bodyText === "autoreact on" || bodyText === ".autoreact on") {
-            global.autoReactStatus = true;
-            return await m.reply("✅ Auto-React is now **ENABLED**!");
-        }
-        if (bodyText === "autoreact off" || bodyText === ".autoreact off") {
-            global.autoReactStatus = false;
-            return m.reply("❌ Auto-React is now **DISABLED**!");
-        }
-
-        if (!global.autoReactStatus) return;
         if (m.jid === 'status@broadcast' || (m.key && m.key.remoteJid === 'status@broadcast')) return;
         if (m.broadcast || m.isStatus) return;
 
