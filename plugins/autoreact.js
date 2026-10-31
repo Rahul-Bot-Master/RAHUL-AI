@@ -11,7 +11,9 @@ Sparky({
   category: "owner",
   desc: "Turn Auto-React ON or OFF"
 }, async ({ m, args, text }) => {
-  let fullQuery = (text || args.join(" ") || m.body || "").toLowerCase();
+  // Safe argument handling if args is not an array
+  let safeArgs = Array.isArray(args) ? args.join(" ") : (args || "");
+  let fullQuery = (text || safeArgs || m.body || "").toLowerCase();
   
   if (fullQuery.includes("on")) {
     global.autoReactStatus = true;
@@ -31,7 +33,7 @@ Sparky({
   category: "owner",
   desc: "Set custom emoji for auto-react"
 }, async ({ m, args }) => {
-  let emoji = args[0];
+  let emoji = Array.isArray(args) ? args[0] : args;
   if (!emoji) {
     global.customReactEmoji = ""; 
     return m.reply("🔄 Custom react emoji reset to **Random (🎲)**!");
