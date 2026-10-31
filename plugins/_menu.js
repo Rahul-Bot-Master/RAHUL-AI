@@ -77,30 +77,42 @@ Sparky({
             let audioUrl = "";
 
             if (response) {
-                if (response.data) {
-                    if (typeof response.data === 'string') videoUrl = response.data;
-                    else if (response.data.high) videoUrl = response.data.high;
-                    else if (response.data.url) videoUrl = response.data.url;
-                    else if (Array.isArray(response.data)) {
-                        for (let item of response.data) {
-                            if (item.type === 'video' || (item.url && item.url.includes('.mp4'))) videoUrl = item.url;
-                            if (item.type === 'audio' || (item.url && (item.url.includes('.mp3') || item.url.includes('audio')))) audioUrl = item.url;
+                // Flexible parsing to handle multiple types of API responses safely
+                let rawData = response.data || response.result || response;
+                
+                if (typeof rawData === 'string') {
+                    videoUrl = rawData;
+                } else if (Array.isArray(rawData)) {
+                    for (let item of rawData) {
+                        let u = item.url || item;
+                        if (typeof u === 'string') {
+                            if (!videoUrl && (u.includes('.mp4') || item.type === 'video')) videoUrl = u;
+                            if (!audioUrl && (u.includes('.mp3') || u.includes('audio') || item.type === 'audio')) audioUrl = u;
                         }
-                        if (!videoUrl && response.data[0]?.url) videoUrl = response.data[0].url;
                     }
+                    if (!videoUrl && rawData[0]) videoUrl = typeof rawData[0] === 'string' ? rawData[0] : rawData[0].url;
+                } else if (typeof rawData === 'object' && rawData !== null) {
+                    videoUrl = rawData.high || rawData.url || rawData.video || rawData.download || "";
+                    audioUrl = rawData.audio || "";
                 }
-                if (!videoUrl && response.url) videoUrl = response.url;
-                if (!videoUrl && response.result) videoUrl = response.result;
-                if (!videoUrl && response.video) videoUrl = response.video;
-                if (!audioUrl && response.audio) audioUrl = response.audio;
             }
 
+            if (!videoUrl && response.url) videoUrl = response.url;
+            if (!videoUrl && response.video) videoUrl = response.video;
+
             if (videoUrl) {
-                let finalAudioUrl = audioUrl || videoUrl;
-                await Promise.all([
-                    client.sendMessage(m.chat || m.jid, { video: { url: videoUrl } }, { quoted: m }),
-                    client.sendMessage(m.chat || m.jid, { audio: { url: finalAudioUrl }, mimetype: 'audio/mp4', ptt: false }, { quoted: m })
-                ]);
+                // Send video first
+                await client.sendMessage(m.chat || m.jid, { video: { url: videoUrl }, caption: "📥 *Rahul AI Auto-DL*" }, { quoted: m });
+                
+                // If separate audio exists and is valid, send it as proper audio with correct mimetype so sound works
+                if (audioUrl && audioUrl.startsWith('http')) {
+                    try {
+                        await client.sendMessage(m.chat || m.jid, { audio: { url: audioUrl }, mimetype: 'audio/mpeg', ptt: false }, { quoted: m });
+                    } catch (err) {
+                        console.log("Audio send warning:", err);
+                    }
+                }
+                
                 await m.react('✅');
             } else {
                 await m.react('❌');
@@ -425,7 +437,7 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
             case 'image':
                 return await client.sendMessage(m.jid, { image: { url: config.BOT_INFO.split(";")[2] || 'https://sam-cdn.zone.id/files/xQer9GrIVT.jpg' }, caption: style(menu) }, { quoted: sperky });
             case 'small':
-                return await client.sendMessage(m.jid, { text: style(menu), contextInfo: { externalAdReply: { title: style(`Hey ${m.pushName}!`), body: style(`${config.BOT_INFO.split(";")[0]}`), mediaType: 1, showAdAttribution: true, renderLargerThumbnail: false, thumbnailUrl: `${config.BOT_INFO.split(";")[2]}` } } }, { quoted: sperky });
+                return await client.sendMessage(m.jid, { text: style(menu), contextInfo: { externalAdReply: { title: style(`Hey ${m.pushName}!`), body: style(`${config.BOT_INFO.style || config.BOT_INFO.split(";")[0]}`), mediaType: 1, showAdAttribution: true, renderLargerThumbnail: false, thumbnailUrl: `${config.BOT_INFO.split(";")[2]}` } } }, { quoted: sperky });
             case 'document':
                 return await client.sendMessage(m.jid, { document: { url: 'https://sam-cdn.zone.id/files/xQer9GrIVT.jpg' }, caption: menu, mimetype: 'application/zip', fileName: style(config.BOT_INFO.split(";")[0]), fileLength: "99999999999", contextInfo: { externalAdReply: { title: style(`Hey ${m.pushName}!`), body: style(`${config.BOT_INFO.split(";")[0]}`), mediaType: 1, showAdAttribution: true, renderLargerThumbnail: true, thumbnailUrl: `${config.BOT_INFO.split(";")[2]}` } } }, { quoted: sperky });
             case 'video':
