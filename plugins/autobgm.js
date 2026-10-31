@@ -37,16 +37,14 @@ Sparky({
   }
 });
 
-// --- AUTO-BGM HANDLER (FIXED FOR SELF-CHAT & ALL MESSAGES) ---
+// --- AUTO-BGM HANDLER (FIXED FOR ALL MESSAGES & SELF-CHAT USING 'all') ---
 Sparky({
   name: "autobgm_handler",
-  on: "text"
-  // fromMe kadhun taklay jyamule self-chat (Message yourself) madhe pan work hoil
+  on: "all" // 'all' vaparalyamule self-chat ani outbound messages pan 100% trigger hotil
 }, async ({ client, m }) => {
   try {
     if (!m) return;
     
-    // Jar message swatahcha asel ani to bot cha command reply nasel tarach pudhe jail
     let chatJid = (m.key && m.key.remoteJid) ? m.key.remoteJid.toString() : (m.jid ? m.jid.toString() : "");
     if (!chatJid) return;
 
@@ -65,7 +63,7 @@ Sparky({
       return; 
     }
 
-    // Robust text extraction
+    // Robust text extraction from all possible message structures
     let rawText = m.body || m.text || 
                   m.message?.conversation || 
                   m.message?.extendedTextMessage?.text || 
@@ -83,7 +81,7 @@ Sparky({
     if (!global.autoBgmStatus) return;
 
     // 🛑 3. TRIGGER CONDITIONS (Hi, Hello, Good Morning, Good Night, Ping & All Commands)
-    const allowedWords = ["hi", "hello", "good morning", "good night", "ping"];
+    const allowedWords = ["hi", "hello", "hii", "good morning", "good night", "ping"];
     const isAllowedWord = allowedWords.some(word => bodyText === word || bodyText.startsWith(word + " "));
     const isCommand = bodyText.startsWith(".") || bodyText.startsWith("!") || bodyText.startsWith("/") || bodyText.startsWith("#");
 
