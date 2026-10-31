@@ -1,8 +1,5 @@
 const { Sparky, isPublic } = require("../lib");
-const { GoogleGenAI } = require("@google/genai");
-
-// Botchya env madhe ya direct ithe free Gemini API key taku shaktoos
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "YOUR_GEMINI_API_KEY" });
+const axios = require("axios");
 
 Sparky({
   name: "rahulai",
@@ -20,13 +17,17 @@ Sparky({
   await m.react("⏳");
 
   try {
-    // Official Google Gemini Model (No third-party garbage, no grok errors)
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: query,
-    });
+    // Standard direct HTTP request (Uses axios, no missing module issues!)
+    let apiUrl = `https://api.siputzx.my.id/api/ai/chatgpt?prompt=${encodeURIComponent(query)}`;
+    let response = await axios.get(apiUrl);
+    
+    let answer = response.data.data || response.data.result || response.data.message;
 
-    let answer = response.text || "Sorry, mala hyache uttar bhetle nahi!";
+    if (!answer) {
+      // Secondary ultra-fast endpoint
+      let res2 = await axios.get(`https://api.vyturex.com/ai/chat?prompt=${encodeURIComponent(query)}`);
+      answer = res2.data.answer || res2.data.result || "Sorry, mala hyache uttar bhetle nahi!";
+    }
 
     let formattedReply = `╭━━━❖ 🤖 **RAHUL-AI** ❖━━━╮\n\n` +
                          `💬 **Query:** ${query}\n\n` +
@@ -38,6 +39,6 @@ Sparky({
 
   } catch (e) {
     await m.react("❌");
-    return m.reply(`⚠️ Error: ${e.message || "AI server la connect hot nahiye."}`);
+    return m.reply(`⚠️ Error: Server connection failed.`);
   }
 });
