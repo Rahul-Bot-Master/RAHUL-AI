@@ -26,5 +26,8 @@
 <br>
 
 ### 🧩 External Plugins List:
-* **1. Status-Sender:** `https://gist.githubusercontent.com/Rahul-Bot-Master/5f615af61c8f28926cf87d73424cf4e2/raw`
-* **2. Plugin 2:** `https://gist.githubusercontent.com/Rahul-Bot-Master/006a539c2881d556e03fa5ad53a8c7db/raw`
+* **1. Status-Sender:**  
+  `https://gist.githubusercontent.com/Rahul-Bot-Master/5f615af61c8f28926cf87d73424cf4e2/raw`
+
+* **2. Plugin 2:**  
+  `https://gist.githubusercontent.com/Rahul-Bot-Master/006a539c2881d556e03fa5ad53a8c7db/raw`
