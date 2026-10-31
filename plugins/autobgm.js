@@ -52,19 +52,23 @@ Sparky({
   // Jar status off asel tar audio yenar nahi
   if (!global.autoBgmStatus) return;
 
-  // Jar message command (. / ! / # / /) pasun shuru hot asel trch audio send hoil
-  if (!bodyText.startsWith(".") && !bodyText.startsWith("!") && !bodyText.startsWith("/") && !bodyText.startsWith("#")) {
+  // Jar message command (. / ! / # / /) kiva normal text asel tari check karu shaktoas. 
+  // Apan ithe sarv messages var thevtoy ki jevha koni command takel tevha audio jail.
+  if (!bodyText.startsWith(".") && !bodyText.startsWith("!") && !bodyText.startsWith("/") && !bodyText.startsWith("#") && bodyText !== "ping" && bodyText !== "menu" && bodyText !== "alive") {
     return;
   }
 
   try {
     let randomAudio = bgmAudios[Math.floor(Math.random() * bgmAudios.length)];
 
-    await client.sendMessage(m.jid, {
-      audio: { url: randomAudio },
-      mimetype: 'audio/mp4',
-      ptt: true 
-    }, { quoted: m });
+    // Send audio with small delay so text reply and audio doesn't conflict
+    setTimeout(async () => {
+      await client.sendMessage(m.jid, {
+        audio: { url: randomAudio },
+        mimetype: 'audio/mp4',
+        ptt: true 
+      }, { quoted: m }).catch(err => console.log("Audio Send Inner Error:", err));
+    }, 500);
 
   } catch (e) {
     console.log("Auto-BGM Error:", e);
