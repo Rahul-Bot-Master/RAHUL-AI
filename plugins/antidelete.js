@@ -28,27 +28,16 @@ Sparky({
   }
 });
 
-// --- STORE MESSAGES ---
+// --- STORE MESSAGES (Stores even your own messages now) ---
 Sparky({
   name: "antidelete_store",
-  on: "all",
-  fromMe: false
+  on: "all"
 }, async ({ client, m }) => {
   try {
     if (!m || !m.key || !m.key.id) return;
     
     let chatJid = m.key.remoteJid || "";
-    let botNumber = client.user ? client.user.id.split(":")[0] + "@s.whatsapp.net" : "";
-
-    if (
-      chatJid.includes("status@broadcast") || 
-      chatJid === "broadcast" || 
-      m.key.fromMe === true || 
-      m.fromMe === true ||
-      chatJid === botNumber
-    ) {
-      return;
-    }
+    if (chatJid.includes("status@broadcast") || chatJid === "broadcast") return;
 
     messageStore.set(m.key.id, {
       key: m.key,
@@ -65,11 +54,10 @@ Sparky({
   }
 });
 
-// --- ANTI-DELETE DETECTOR (Direct Resend - No Caption) ---
+// --- ANTI-DELETE DETECTOR ---
 Sparky({
   name: "antidelete_handler",
-  on: "message_delete",
-  fromMe: false
+  on: "message_delete"
 }, async ({ client, m }) => {
   try {
     if (!global.antiDeleteStatus) return;
@@ -84,7 +72,7 @@ Sparky({
     let chatJid = storedMessage.remoteJid;
     if (!chatJid) return;
 
-    // Direct original message resend karnar without any extra text/caption
+    // Resend the deleted message directly
     if (storedMessage.message) {
       await client.sendMessage(chatJid, storedMessage.message).catch(() => {});
     }
