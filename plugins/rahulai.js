@@ -1,5 +1,8 @@
 const { Sparky, isPublic } = require("../lib");
-const axios = require("axios");
+const { GoogleGenAI } = require("@google/genai");
+
+// Botchya env madhe ya direct ithe free Gemini API key taku shaktoos
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "YOUR_GEMINI_API_KEY" });
 
 Sparky({
   name: "rahulai",
@@ -17,17 +20,13 @@ Sparky({
   await m.react("⏳");
 
   try {
-    // 100% Free & Stable AI Proxy (No API key / No Grok errors)
-    let apiUrl = `https://api.vyturex.com/ai/chat?prompt=${encodeURIComponent(query)}`;
-    let response = await axios.get(apiUrl);
-    
-    let answer = response.data.answer || response.data.result || response.data.message || response.data.data;
+    // Official Google Gemini Model (No third-party garbage, no grok errors)
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: query,
+    });
 
-    if (!answer || typeof answer !== "string" || answer.includes("api key")) {
-      // Direct secondary working public endpoint
-      let secondaryRes = await axios.get(`https://apis.davidcyriltech.my.id/ai/gemini?text=${encodeURIComponent(query)}`);
-      answer = secondaryRes.data.result || secondaryRes.data.message || "Sorry, mala hyache uttar bhetle nahi!";
-    }
+    let answer = response.text || "Sorry, mala hyache uttar bhetle nahi!";
 
     let formattedReply = `╭━━━❖ 🤖 **RAHUL-AI** ❖━━━╮\n\n` +
                          `💬 **Query:** ${query}\n\n` +
@@ -39,6 +38,6 @@ Sparky({
 
   } catch (e) {
     await m.react("❌");
-    return m.reply(`⚠️ Error: AI server la connect hot nahiye, punha try kara.`);
+    return m.reply(`⚠️ Error: ${e.message || "AI server la connect hot nahiye."}`);
   }
 });
