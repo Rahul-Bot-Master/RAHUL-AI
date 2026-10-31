@@ -20,7 +20,7 @@ Sparky({
     global.autoReactStatus = false;
     return m.reply("❌ Auto-React is now **DISABLED**!");
   } else {
-    return m.reply(`ℹ️ Current Auto-React Status: *${global.autoReactStatus ? "ON ✅" : "OFF ❌"}*\n📌 Custom Emoji: *${global.customReactEmoji || "Random 🎲"}*\n\nUse:\n• \`.autoreact on\` (or without dot: \`autoreact on\`)\n• \`.autoreact off\` (or without dot: \`autoreact off\`)\n• \`.setreact ❤️\``);
+    return m.reply(`ℹ️ Current Auto-React Status: *${global.autoReactStatus ? "ON ✅" : "OFF ❌"}*\n📌 Custom Emoji: *${global.customReactEmoji || "Random 🎲"}*\n\nUse:\n• \`.autoreact on\`\n• \`.autoreact off\`\n• \`.setreact ❤️\``);
   }
 });
 
@@ -46,7 +46,7 @@ Sparky({
     name: "autoreact_handler",
     on: "text",
     fromMe: true 
-}, async ({ m }) => {
+}, async ({ client, m }) => {
     let bodyText = (m.body || m.text || "").trim().toLowerCase();
 
     // Direct check for text without prefix so 'autoreact on/off' works instantly
@@ -56,7 +56,7 @@ Sparky({
     }
     if (bodyText === "autoreact off" || bodyText === ".autoreact off") {
         global.autoReactStatus = false;
-        return await m.reply("❌ Auto-React is now **DISABLED**!");
+        return m.reply("❌ Auto-React is now **DISABLED**!");
     }
 
     if (!global.autoReactStatus) return;
@@ -76,7 +76,17 @@ Sparky({
             reactionEmoji = emojis[Math.floor(Math.random() * emojis.length)];
         }
 
-        await m.react(reactionEmoji);
+        // ✨ Safe Baileys Reaction Format to fix relayMessage error
+        if (client && client.sendMessage && m.key) {
+            await client.sendMessage(m.jid, {
+                react: {
+                    text: reactionEmoji,
+                    key: m.key
+                }
+            });
+        } else if (typeof m.react === 'function') {
+            await m.react(reactionEmoji);
+        }
     } catch (e) {
         console.log("Auto-React Error:", e);
     }
