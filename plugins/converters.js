@@ -3,118 +3,128 @@ const {getString, appendMp3Data, convertToMp3, addExifToWebP, getBuffer, getJson
 const googleTTS = require('google-tts-api');
 const config = require('../config.js');
 const lang = getString('converters');
+const { Sparky, isPublic } = require("../lib");
+const axios = require('axios');
+const FormData = require('form-data');
+
 Sparky({
-    name: "url",
-    aliases: ["tourl", "upload", "geturl", "uguu"],
-    fromMe: true,
-    desc: "Upload files and get URL",
-    category: "converters",
-  }, async ({ args, m }) => {
+  name: "url",
+  aliases: ["tourl", "upload", "geturl", "uguu"],
+  fromMe: true,
+  desc: "Upload files and get URL",
+  category: "converters",
+}, async ({ args, m }) => {
+  try {
+    // Exact quoted message check
+    const target = m.quoted ? m.quoted : m;
+    let buffer = null;
+
     try {
-      const mediaTarget = m.quoted ? m.quoted : m;
-      let buffer = null;
+      buffer = await target.download();
+    } catch (e) {
+      console.log("Download target error:", e);
+    }
 
-      try {
-        buffer = await mediaTarget.download();
-      } catch (e) {
-        if (m.quoted) {
-          buffer = await m.download().catch(() => null);
-        }
-      }
-
-      if (!buffer) {
-        await m.reply(`┏━━━━━━━━━━━━━━━━━━━━┓
+    if (!buffer) {
+      return m.reply(`┏━━━━━━━━━━━━━━━━━━━━┓
 ┃ ᴇʀʀᴏʀ
 ┃
 ┃ ᴘʟᴇᴀꜱᴇ ʀᴇᴘʟʏ ᴛᴏ ᴏʀ ꜱᴇɴᴅ
-┃ ᴀɴ ɪᴍᴀɢᴇ, ᴠɪᴅᴇᴏ, ᴏʀ ᴀᴜᴅɪᴏ
+┃ ᴀɴ ɪᴍᴀɢᴇ, ᴠɪᴅᴇᴏ, ᴏʀ ᴀᴜディオ
 ┃
 ┃ ᴇxᴀᴍᴘʟᴇ: .ᴛᴏᴜʀʟ
 ┗━━━━━━━━━━━━━━━━━━━━┛`);
-        return;
-      }
+    }
 
-      let mime = mediaTarget.mimetype || mediaTarget.msg?.mimetype || m.mtype || 'image/jpeg';
+    // Exact MIME type detection from quoted media message
+    let mime = target.mimetype || target.msg?.mimetype || target.mediaMessage?.mimetype || '';
+    if (!mime && target.msg) {
+      mime = target.msg.mimetype || '';
+    }
 
-      await m.reply(`┏━━━━━━━━━━━━━━━━━━━━┓
+    await m.reply(`┏━━━━━━━━━━━━━━━━━━━━┓
 ┃ ᴜᴘʟᴏᴀᴅɪɴɢ...
 ┃
 ┃ ᴘʟᴇᴀꜱᴇ ᴡᴀɪᴛ ᴀ ᴍᴏᴍᴇɴᴛ
 ┗━━━━━━━━━━━━━━━━━━━━┛`);
 
-      const axios = require('axios');
-      const FormData = require('form-data');
-      const formData = new FormData();
+    const formData = new FormData();
 
-      let ext = 'bin';
-      if (mime.includes('video') || mime.includes('mp4')) {
-        ext = 'mp4';
-      } else if (mime.includes('png')) {
-        ext = 'png';
-      } else if (mime.includes('jpeg') || mime.includes('jpg')) {
-        ext = 'jpg';
-      } else if (mime.includes('audio')) {
-        ext = 'mp3';
-      } else if (mime.includes('webp')) {
-        ext = 'webp';
+    let ext = 'bin';
+    if (mime.includes('video') || mime.includes('mp4')) {
+      ext = 'mp4';
+    } else if (mime.includes('png')) {
+      ext = 'png';
+    } else if (mime.includes('jpeg') || mime.includes('jpg')) {
+      ext = 'jpg';
+    } else if (mime.includes('audio') || mime.includes('ogg') || mime.includes('mp3') || mime.includes('m4a')) {
+      ext = 'mp3';
+      if (!mime.includes('audio')) mime = 'audio/mp3';
+    } else if (mime.includes('webp')) {
+      ext = 'webp';
+    } else if (mime.includes('document')) {
+      ext = 'bin';
+    }
+
+    formData.append('files[]', buffer, {
+      filename: `media_${Date.now()}.${ext}`,
+      contentType: mime || 'application/octet-stream'
+    });
+
+    const response = await axios.post(
+      'https://uguu.se/upload.php',
+      formData,
+      {
+        headers: {
+          ...formData.getHeaders(),
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        },
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity
       }
+    );
 
-      formData.append('files[]', buffer, {
-        filename: `media_${Date.now()}.${ext}`,
-        contentType: mime
-      });
+    const resData = response.data;
+    let uploadUrl = '';
 
-      const response = await axios.post(
-        'https://uguu.se/upload.php',
-        formData,
-        {
-          headers: {
-            ...formData.getHeaders(),
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-          },
-          maxContentLength: Infinity,
-          maxBodyLength: Infinity
-        }
-      );
+    if (resData && resData.success && resData.files && resData.files[0]) {
+      uploadUrl = resData.files[0].url;
+    }
 
-      const resData = response.data;
-      let uploadUrl = '';
+    if (!uploadUrl) {
+      throw new Error('Upload failed: Invalid response from server');
+    }
 
-      if (resData && resData.success && resData.files && resData.files[0]) {
-        uploadUrl = resData.files[0].url;
-      }
+    let fileTypeDisplay = mime.split('/')[0].toUpperCase();
+    if (fileTypeDisplay === 'APPLICATION') fileTypeDisplay = 'DOCUMENT';
 
-      if (!uploadUrl) {
-        throw new Error('Upload failed: Invalid response from server');
-      }
+    const fileSizeKB = (buffer.length / 1024).toFixed(2);
+    const fileSizeMB = (buffer.length / (1024 * 1024)).toFixed(2);
 
-      const fileSizeKB = (buffer.length / 1024).toFixed(2);
-      const fileSizeMB = (buffer.length / (1024 * 1024)).toFixed(2);
-
-      const result = `┏━━━━━━━━━━━━━━━━━━━━┓
+    const result = `┏━━━━━━━━━━━━━━━━━━━━┓
 ┃ ᴜᴘʟᴏᴀᴅ ꜱᴜᴄᴄᴇꜱꜱꜰᴜ𝚕
 ┃
-┃ ᴛʏᴘᴇ: ${mime.split('/')[0].toUpperCase()}
+┃ ᴛʏᴘᴇ: ${fileTypeDisplay}
 ┃ ꜱɪᴢᴇ: ${fileSizeKB} ᴋʙ (${fileSizeMB} ᴍʙ)
 ┃ ᴜʀʟ: ${uploadUrl}
 ┃
 ┃ ᴜᴘʟᴏᴀᴅᴇᴅ
 ┗━━━━━━━━━━━━━━━━━━━━┛`;
 
-      await m.reply(result);
+    await m.reply(result);
 
-    } catch (err) {
-      console.error('Tourl Error:', err.response?.data || err.message);
+  } catch (err) {
+    console.error('Tourl Error:', err.response?.data || err.message);
 
-      await m.reply(`┏━━━━━━━━━━━━━━━━━━━━┓
+    await m.reply(`┏━━━━━━━━━━━━━━━━━━━━┓
 ┃ ᴜᴘʟᴏᴀᴅ ꜰᴀɪʟᴇᴅ
 ┃
-┃ ᴇʀʀᴏʀ: ${typeof err.response?.data === 'string' ? err.response.data : (err.response?.data?.message || err.response?.data?.error || err.message)}
+┃ ᴇʀʀᴏ𝗿: ${typeof err.response?.data === 'string' ? err.response.data : (err.response?.data?.message || err.response?.data?.error || err.message)}
 ┃
 ┃ ᴘʟᴇᴀꜱᴇ ᴛʀʏ ᴀɢᴀɪɴ
 ┗━━━━━━━━━━━━━━━━━━━━┛`);
-    }
-  });
+  }
+});
 
 Sparky(
     {
