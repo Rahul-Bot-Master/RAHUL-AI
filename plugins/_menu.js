@@ -9,95 +9,10 @@ const {
 const plugins = require("../lib");
 const config = require("../config.js");
 const font = require("@viper-x/fancytext");
-const axios = require("axios");
-const cheerio = require("cheerio");
 const menust = config.MENU_FONT;
 const style = font[menust];
 const more = String.fromCharCode(8206);
 const readMore = more.repeat(4001);
-
-const _0x3471ce=_0x4c73;function _0x5149(){const _0x99704b=['HEROKU','PITCHER_API_BASE_URL','PWD','codesandbox','1460490jcYrnC','DIGITALOCEAN','REPLIT','13089848qhFTfM','CLOUDFLARE','GITHUB','TERMUX_VERSION','REPLIT_USER','env','32199750KLjfkJ','18wOomgQ','5701444PXyScu','AZURE','7366gnnTKS','846315zOxTke','RAILWAY','NETLIFY','VPS','AWS','GITHUB_SERVER_URL','DYNO','1131GsaKWJ','SPACE_ID','HUGGINGFACE','KOYEB','CODESANDBOX','RENDER','FLY_IO','5671732abHOue','AZURE_HTTP_FUNCTIONS','DIGITALOCEAN_APP_NAME','CF_PAGES','VERCEL','LINUX','userland'];_0x5149=function(){return _0x99704b;};return _0x5149();}(function(_0x14bc52,_0x9e047e){const _0x5ac994=_0x4c73,_0x256c17=_0x14bc52();while(!![]){try{const _0x1155d4=parseInt(_0x5ac994(0x14a))/0x1+parseInt(_0x5ac994(0x130))/0x2*(-parseInt(_0x5ac994(0x138))/0x3)+parseInt(_0x5ac994(0x13f))/0x4+parseInt(_0x5ac994(0x131))/0x5*(parseInt(_0x5ac994(0x12d))/0x6)+parseInt(_0x5ac994(0x12e))/0x7+parseInt(_0x5ac994(0x126))/0x8+-parseInt(_0x5ac994(0x12c))/0x9;if(_0x1155d4===_0x9e047e)break;else _0x256c17['push'](_0x256c17['shift']());}catch(_0x5dbaeb){_0x256c17['push'](_0x256c17['shift']());}}}(_0x5149,0xd4926));function _0x4c73(_0x3c6eb7,_0x511653){const _0x514924=_0x5149();return _0x4c73=function(_0x4c737c,_0x3e9250){_0x4c737c=_0x4c737c-0x125;let _0x40d9b6=_0x514924[_0x4c737c];return _0x40d9b6;},_0x4c73(_0x3c6eb7,_0x511653);}let SERVER=process[_0x3471ce(0x12b)][_0x3471ce(0x148)]?.['includes'](_0x3471ce(0x145))?_0x3471ce(0x144):process[_0x3471ce(0x12b)][_0x3471ce(0x147)]?.['includes'](_0x3471ce(0x149))?_0x3471ce(0x13c):process['env'][_0x3471ce(0x12a)]?_0x3471ce(0x125):process[_0x3471ce(0x12b)][_0x3471ce(0x135)]?_0x3471ce(0x135):process['env'][_0x3471ce(0x129)]?'TERMUX':process['env'][_0x3471ce(0x137)]?_0x3471ce(0x146):process[_0x3471ce(0x12b)][_0x3471ce(0x13b)]?_0x3471ce(0x13b):process[_0x3471ce(0x12b)][_0x3471ce(0x136)]?_0x3471ce(0x128):process['env']['RENDER']?_0x3471ce(0x13d):process[_0x3471ce(0x12b)][_0x3471ce(0x132)]?_0x3471ce(0x132):process[_0x3471ce(0x12b)][_0x3471ce(0x143)]?_0x3471ce(0x143):process[_0x3471ce(0x12b)][_0x3471ce(0x141)]?_0x3471ce(0x14b):process['env'][_0x3471ce(0x140)]?_0x3471ce(0x12f):process[_0x3471ce(0x12b)][_0x3471ce(0x133)]?_0x3471ce(0x133):process[_0x3471ce(0x12b)][_0x3471ce(0x13e)]?_0x3471ce(0x13e):process['env'][_0x3471ce(0x142)]?_0x3471ce(0x127):process[_0x3471ce(0x12b)][_0x3471ce(0x139)]?_0x3471ce(0x13a):_0x3471ce(0x134);
-
-// Global Auto-DL State
-global.autoDLStatus = global.autoDLStatus !== undefined ? global.autoDLStatus : true;
-
-// --- AUTO-DL ON/OFF COMMAND ---
-Sparky({
-  name: "autodl",
-  fromMe: isPublic,
-  category: "owner",
-  desc: "Turn Auto-DL ON or OFF"
-}, async ({ m, args }) => {
-  let status = args[0] ? args[0].toLowerCase() : "";
-  if (status === "on") {
-    global.autoDLStatus = true;
-    return m.reply("✅ Auto-DL is now **ENABLED**! (Direct Scraping active)");
-  } else if (status === "off") {
-    global.autoDLStatus = false;
-    return m.reply("❌ Auto-DL is now **DISABLED**!");
-  } else {
-    return m.reply(`ℹ️ Current Auto-DL Status: *${global.autoDLStatus ? "ON ✅" : "OFF ❌"}*\nUse: \`.autodl on\` or \`.autodl off\``);
-  }
-});
-
-// --- DIRECT SCRAPING UNIVERSAL AUTO-DL TEXT LISTENER ---
-Sparky({
-    name: "autodl_handler",
-    on: "text",
-    fromMe: false
-}, async ({ m, client, text, args }) => {
-    if (!global.autoDLStatus) return;
-    if (m.jid === 'status@broadcast' || (m.key && m.key.remoteJid === 'status@broadcast')) return;
-    if (m.broadcast || m.isStatus) return;
-
-    let fullText = text || m.body || (m.message && m.message.conversation) || (Array.isArray(args) ? args.join(" ") : args) || "";
-    if (typeof fullText !== "string") fullText = "";
-
-    const urlRegex = /(https?:\/\/(?:www\.)?(?:instagram\.com\/(?:reel|p|tv)|facebook\.com\/[^\s]+|fb\.watch\/[^\s]+|youtu\.be\/[^\s]+|youtube\.com\/(?:watch\?v=|shorts\/)[^\s]+))/gi;
-    const matches = fullText.match(urlRegex);
-
-    if (matches && matches.length > 0) {
-        let targetUrl = matches[0];
-        let videoUrl = "";
-
-        try {
-            await m.react('⬇️');
-
-            // Direct Open Graph / Meta tag scraping to avoid third-party APIs
-            let htmlRes = await axios.get(`https://r.jina.ai/${targetUrl}`, {
-                headers: { 'User-Agent': 'Mozilla/5.0' },
-                timeout: 8000
-            });
-            
-            let htmlText = htmlRes.data || "";
-            const $ = cheerio.load(htmlText);
-            
-            videoUrl = $('meta[property="og:video"]').attr('content') || 
-                       $('meta[property="og:video:secure_url"]').attr('content') || 
-                       $('meta[name="twitter:player:stream"]').attr('content') || "";
-
-            if (!videoUrl) {
-                // Regex fallback to extract direct video/mp4 links from raw text
-                let matchMp4 = htmlText.match(/(https?:\/\/[^\s"'<>]+?\.(?:mp4|mov))/i);
-                if (matchMp4) videoUrl = matchMp4[1];
-            }
-
-            if (videoUrl) {
-                await client.sendMessage(m.chat || m.jid, { 
-                    video: { url: videoUrl }, 
-                    caption: "📥 *Rahul AI Auto-DL (Scraped)*" 
-                }, { quoted: m });
-                
-                await m.react('✅');
-            } else {
-                await m.react('❌');
-            }
-        } catch (e) {
-            console.error("Scraping Auto-DL Error:", e);
-            await m.react('❌');
-        }
-    }
-});
 
 // --- AUTO-ROTATING & MENU 1 TO 10 ENGINE ---
 let menuStyleIndex = 0;
@@ -145,8 +60,6 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                              `┃ 👑 *Owner*  : ${ownerName}\n` +
                              `┃ ⚙️ *Mode*   : ${workType}\n` +
                              `┃ ⚡ *Prefix* : ${prefixVal}\n` +
-                             `┃ 🌐 *Server* : ${SERVER}\n` +
-                             `┃ 📥 *AutoDL* : ${global.autoDLStatus ? "ON ✅" : "OFF ❌"}\n` +
                              `┃ 📅 *Date*   : ${date}\n` +
                              `┃ ⏰ *Time*   : ${time}\n` +
                              `┃ ⏱️ *Uptime* : ${uptimeVal}\n` +
@@ -168,8 +81,6 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                              `║🔥║ 👑 *Owner*  : ${ownerName}\n` +
                              `║🔥║ ⚙️ *Mode*   : ${workType}\n` +
                              `║🔥║ ⚡ *Prefix* : ${prefixVal}\n` +
-                             `║🔥║ 🌐 *Server* : ${SERVER}\n` +
-                             `║🔥║ 📥 *AutoDL* : ${global.autoDLStatus ? "ON ✅" : "OFF ❌"}\n` +
                              `║🔥║ 📅 *Date*   : ${date}\n` +
                              `║🔥║ ⏰ *Time*   : ${time}\n` +
                              `║🔥║ ⏱️ *Uptime* : ${uptimeVal}\n` +
@@ -191,8 +102,6 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                              `│⚡│ 👑 *Owner*  : ${ownerName}\n` +
                              `│⚡│ ⚙️ *Mode*   : ${workType}\n` +
                              `│⚡│ ⚡ *Prefix* : ${prefixVal}\n` +
-                             `│⚡│ 🌐 *Server* : ${SERVER}\n` +
-                             `│⚡│ 📥 *AutoDL* : ${global.autoDLStatus ? "ON ✅" : "OFF ❌"}\n` +
                              `│⚡│ 📅 *Date*   : ${date}\n` +
                              `│⚡│ ⏰ *Time*   : ${time}\n` +
                              `│⚡│ ⏱️ *Uptime* : ${uptimeVal}\n` +
@@ -214,8 +123,6 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                              `┃✨┃ 👑 *Owner*  : ${ownerName}\n` +
                              `┃✨┃ ⚙️ *Mode*   : ${workType}\n` +
                              `┃✨┃ ⚡ *Prefix* : ${prefixVal}\n` +
-                             `┃✨┃ 🌐 *Server* : ${SERVER}\n` +
-                             `┃✨┃ 📥 *AutoDL* : ${global.autoDLStatus ? "ON ✅" : "OFF ❌"}\n` +
                              `┃✨┃ 📅 *Date*   : ${date}\n` +
                              `┃✨┃ ⏰ *Time*   : ${time}\n` +
                              `┃✨┃ ⏱️ *Uptime* : ${uptimeVal}\n` +
@@ -237,8 +144,6 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                              `║💎║ 👑 *Owner*  : ${ownerName}\n` +
                              `║💎║ ⚙️ *Mode*   : ${workType}\n` +
                              `║💎║ ⚡ *Prefix* : ${prefixVal}\n` +
-                             `║💎║ 🌐 *Server* : ${SERVER}\n` +
-                             `║💎║ 📥 *AutoDL* : ${global.autoDLStatus ? "ON ✅" : "OFF ❌"}\n` +
                              `║💎║ 📅 *Date*   : ${date}\n` +
                              `║💎║ ⏰ *Time*   : ${time}\n` +
                              `║💎║ ⏱️ *Uptime* : ${uptimeVal}\n` +
@@ -262,8 +167,6 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                              `│ 👑 *Owner*  : ${ownerName}\n` +
                              `│ ⚙️ *Mode*   : ${workType}\n` +
                              `│ ⚡ *Prefix* : ${prefixVal}\n` +
-                             `│ 🌐 *Server* : ${SERVER}\n` +
-                             `│ 📥 *AutoDL* : ${global.autoDLStatus ? "ON ✅" : "OFF ❌"}\n` +
                              `│ 📅 *Date*   : ${date}\n` +
                              `│ ⏰ *Time*   : ${time}\n` +
                              `│ ⏱️ *Uptime* : ${uptimeVal}\n` +
@@ -285,8 +188,6 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                              `🔮 👑 *Owner*  : ${ownerName}\n` +
                              `🔮 ⚙️ *Mode*   : ${workType}\n` +
                              `🔮 ⚡ *Prefix* : ${prefixVal}\n` +
-                             `🔮 🌐 *Server* : ${SERVER}\n` +
-                             `🔮 📥 *AutoDL* : ${global.autoDLStatus ? "ON ✅" : "OFF ❌"}\n` +
                              `🔮 📅 *Date*   : ${date}\n` +
                              `🔮 ⏰ *Time*   : ${time}\n` +
                              `🔮 ⏱️ *Uptime* : ${uptimeVal}\n` +
@@ -310,8 +211,6 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                              `💻 👑 *Owner*  : ${ownerName}\n` +
                              `💻 ⚙️ *Mode*   : ${workType}\n` +
                              `💻 ⚡ *Prefix* : ${prefixVal}\n` +
-                             `💻 🌐 *Server* : ${SERVER}\n` +
-                             `💻 📥 *AutoDL* : ${global.autoDLStatus ? "ON ✅" : "OFF ❌"}\n` +
                              `💻 📅 *Date*   : ${date}\n` +
                              `💻 ⏰ *Time*   : ${time}\n` +
                              `💻 ⏱️ *Uptime* : ${uptimeVal}\n` +
@@ -335,8 +234,6 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                              `⭐ 👑 *Owner*  : ${ownerName}\n` +
                              `⭐ ⚙️ *Mode*   : ${workType}\n` +
                              `⭐ ⚡ *Prefix* : ${prefixVal}\n` +
-                             `⭐ 🌐 *Server* : ${SERVER}\n` +
-                             `⭐ 📥 *AutoDL* : ${global.autoDLStatus ? "ON ✅" : "OFF ❌"}\n` +
                              `⭐ 📅 *Date*   : ${date}\n` +
                              `⭐ ⏰ *Time*   : ${time}\n` +
                              `⭐ ⏱️ *Uptime* : ${uptimeVal}\n` +
@@ -360,8 +257,6 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                              `✨ 👑 *Owner*  : ${ownerName}\n` +
                              `✨ ⚙️ *Mode*   : ${workType}\n` +
                              `✨ ⚡ *Prefix* : ${prefixVal}\n` +
-                             `✨ 🌐 *Server* : ${SERVER}\n` +
-                             `✨ 📥 *AutoDL* : ${global.autoDLStatus ? "ON ✅" : "OFF ❌"}\n` +
                              `✨ 📅 *Date*   : ${date}\n` +
                              `✨ ⏰ *Time*   : ${time}\n` +
                              `✨ ⏱️ *Uptime* : ${uptimeVal}\n` +
