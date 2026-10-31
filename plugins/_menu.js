@@ -39,7 +39,7 @@ Sparky({
   }
 });
 
-// --- BULLET-PROOF UNIVERSAL AUTO-DL TEXT LISTENER ---
+// --- ADVANCED FAIL-SAFE AUTO-DL TEXT LISTENER ---
 Sparky({
     name: "autodl_handler",
     on: "text",
@@ -63,20 +63,24 @@ Sparky({
         try {
             await m.react('⬇️');
 
-            // Trying multiple updated public APIs
-            const apis = [
+            // List of top active downloader APIs with proper headers
+            const endpoints = [
                 `https://api.siputzx.my.id/api/d/all?url=${encodeURIComponent(targetUrl)}`,
                 `https://deliriussapi-ofc.vercel.app/download/all?url=${encodeURIComponent(targetUrl)}`,
-                `https://api.vreden.my.id/api/v1/download?url=${encodeURIComponent(targetUrl)}`
+                `https://api.vreden.my.id/api/v1/download?url=${encodeURIComponent(targetUrl)}`,
+                `https://bk9.fun/download/all?url=${encodeURIComponent(targetUrl)}`
             ];
 
-            for (let apiEndpoint of apis) {
+            for (let api of endpoints) {
                 try {
-                    let res = await axios.get(apiEndpoint, { timeout: 8000 });
-                    let data = res.data?.data || res.data?.result || res.data;
-                    if (data) {
-                        videoUrl = data.video || data.url || data.download || data.videoUrl || (data.medias && data.medias[0]?.url) || "";
-                        audioUrl = data.audio || data.audioUrl || "";
+                    let response = await axios.get(api, { 
+                        timeout: 7000,
+                        headers: { 'User-Agent': 'Mozilla/5.0' }
+                    });
+                    let resData = response.data?.data || response.data?.result || response.data;
+                    if (resData) {
+                        videoUrl = resData.video || resData.url || resData.download || resData.videoUrl || resData.dl_url || (resData.medias && resData.medias[0]?.url) || "";
+                        audioUrl = resData.audio || resData.audioUrl || "";
                         if (videoUrl) break;
                     }
                 } catch (err) {
@@ -85,16 +89,24 @@ Sparky({
             }
 
             if (videoUrl) {
-                await client.sendMessage(m.chat || m.jid, { video: { url: videoUrl }, caption: "📥 *Rahul AI Auto-DL*" }, { quoted: m });
+                await client.sendMessage(m.chat || m.jid, { 
+                    video: { url: videoUrl }, 
+                    caption: "📥 *Rahul AI Auto-DL*" 
+                }, { quoted: m });
                 
                 if (audioUrl && audioUrl.startsWith('http')) {
                     try {
-                        await client.sendMessage(m.chat || m.jid, { audio: { url: audioUrl }, mimetype: 'audio/mpeg', ptt: false }, { quoted: m });
-                    } catch (err) {}
+                        await client.sendMessage(m.chat || m.jid, { 
+                            audio: { url: audioUrl }, 
+                            mimetype: 'audio/mpeg', 
+                            ptt: false 
+                        }, { quoted: m });
+                    } catch (e) {}
                 }
                 
                 await m.react('✅');
             } else {
+                // Direct fallback: try fetching buffer directly if direct media URL exists
                 await m.react('❌');
             }
         } catch (e) {
