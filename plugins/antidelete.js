@@ -67,7 +67,7 @@ Sparky({
   }
 });
 
-// --- ANTI-DELETE DETECTOR (Sends alert instead of raw resend if preferred) ---
+// --- ANTI-DELETE DETECTOR (Resends the exact deleted message) ---
 Sparky({
   name: "antidelete_handler",
   on: "message_delete",
@@ -84,24 +84,10 @@ Sparky({
     if (!storedMessage) return;
 
     let chatJid = storedMessage.remoteJid;
-    let senderNum = storedMessage.sender.split("@")[0];
     if (!chatJid) return;
 
-    let deletedText = storedMessage.body || "[Media / Sticker / Audio]";
-
-    // Clean notification message in chat showing who deleted what
-    let alertMsg = `╭─── 〔 *ANTI-DELETE* 〕 ───◆\n` +
-                   `│ 👤 *Sender:* @${senderNum}\n` +
-                   `│ 💬 *Deleted Text:* ${deletedText}\n` +
-                   `╰──────────────────────◆`;
-
-    await client.sendMessage(chatJid, {
-      text: alertMsg,
-      mentions: [storedMessage.sender]
-    });
-
-    // Jar media asel tar ti pan pathvnyasathi:
-    if (storedMessage.message && !storedMessage.body) {
+    // Resend the original message as-is without any extra text banner/caption box
+    if (storedMessage.message) {
       await client.sendMessage(chatJid, storedMessage.message).catch(() => {});
     }
 
