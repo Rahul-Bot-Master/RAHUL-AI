@@ -1,11 +1,11 @@
-const {Sparky, isPublic,uploadMedia,handleMediaUpload} = require("../lib");
-const {getString, appendMp3Data, convertToMp3, addExifToWebP, getBuffer, getJson} = require('./pluginsCore');
+const { Sparky, isPublic, uploadMedia, handleMediaUpload } = require("../lib");
+const { getString, appendMp3Data, convertToMp3, addExifToWebP, getBuffer, getJson } = require('./pluginsCore');
 const googleTTS = require('google-tts-api');
 const config = require('../config.js');
 const lang = getString('converters');
-const { Sparky, isPublic } = require("../lib");
 const axios = require('axios');
 const FormData = require('form-data');
+
 Sparky({
   name: "url",
   aliases: ["tourl", "upload", "geturl", "uguu"],
@@ -182,7 +182,7 @@ Sparky({
 			return await m.reply(lang.MP3_ALERT);
 		}
 		await m.react('⏫');
-		await m.sendMsg(m.jid, await convertToMp3(await m.quoted.download()), { mimetype: "audio/mpeg", quoted: m }, 'audio');
+		await m.sendMsg(m.jid, await convertToMp3(await m.quoted.download()), { mimetype: "audio/mpeg", quoted: m }, 'audio');
 		return await m.react('✅');
 	});
 
@@ -366,6 +366,7 @@ Sparky(
     }
   }
 );
+
 Sparky(
   {
     name: "nondoc",
