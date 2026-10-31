@@ -4,7 +4,7 @@ const axios = require('axios');
 // Global State for Auto-BGM
 global.autoBgmStatus = global.autoBgmStatus !== undefined ? global.autoBgmStatus : true;
 
-// Tuzi dilleli list (Uguu links tasach thevlyat)
+// Tuzi dilleli list (Uguu links)
 const bgmAudios = [
   "https://n.uguu.se/qpXsfyCc.mp3",
   "https://d.uguu.se/mPahXQmj.mp3",
@@ -57,15 +57,15 @@ Sparky({
   try {
     let randomAudioUrl = bgmAudios[Math.floor(Math.random() * bgmAudios.length)];
 
-    // Fetch audio as buffer so WhatsApp gets the file directly without stream errors
+    // Fetch audio as buffer
     let audioRes = await axios.get(randomAudioUrl, { responseType: 'arraybuffer' });
     let audioBuffer = Buffer.from(audioRes.data);
 
     setTimeout(async () => {
       await client.sendMessage(m.jid, {
         audio: audioBuffer,
-        mimetype: 'audio/mpeg',
-        ptt: false // Normal audio file sarkhe play hoil, error nahi yenar
+        mimetype: 'audio/mp4',
+        ptt: true // ✨ YAAPHILE STYLE CHANGE KELI: Ata he purna official Voice Note (PTT) sarkhi disel!
       }, { quoted: m }).catch(err => console.log("Audio Send Inner Error:", err));
     }, 400);
 
