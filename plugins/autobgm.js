@@ -40,7 +40,7 @@ Sparky({
   fromMe: false 
 }, async ({ client, m }) => {
   try {
-    // 🛑 STRICT STATUS & BROADCAST BLOCKER (Prevents 428 Precondition Required error)
+    // 🛑 STRICT STATUS & BROADCAST BLOCKER
     if (!m || !m.jid) return;
     
     let chatJid = m.jid.toString();
@@ -54,7 +54,7 @@ Sparky({
       chatJid === "broadcast" ||
       m.isStatus === true
     ) {
-      return; // Status var aalela message asel tr ithech return hoil, connection safe rahil!
+      return;
     }
 
     let bodyText = (m.body || m.text || "").trim().toLowerCase();
@@ -74,23 +74,26 @@ Sparky({
 
     let randomAudioUrl = bgmAudios[Math.floor(Math.random() * bgmAudios.length)];
 
-    // Fetch audio buffer and Image buffer simultaneously
-    const [audioRes, imgRes] = await Promise.all([
-      axios.get(randomAudioUrl, { responseType: 'arraybuffer' }).catch(() => null),
-      axios.get("https://d.uguu.se/NdPWdKrZ.jpg", { responseType: 'arraybuffer' }).catch(() => null)
-    ]);
-
+    // Fetch audio buffer
+    let audioRes = await axios.get(randomAudioUrl, { responseType: 'arraybuffer' }).catch(() => null);
     if (!audioRes || !audioRes.data) return;
 
     let audioBuffer = Buffer.from(audioRes.data);
-    let imageBuffer = imgRes ? Buffer.from(imgRes.data) : null;
 
     setTimeout(async () => {
       await client.sendMessage(chatJid, {
         audio: audioBuffer,
         mimetype: 'audio/mpeg',
         ptt: false,
-        jpegThumbnail: imageBuffer 
+        contextInfo: {
+          externalAdReply: {
+            title: "RAHUL-AI AUTO-BGM 🎵",
+            body: "Playing Background Music",
+            mediaType: 2,
+            thumbnailUrl: "https://d.uguu.se/NdPWdKrZ.jpg",
+            sourceUrl: "https://github.com/Rahul-Bot-Master"
+          }
+        }
       }, { quoted: m }).catch(err => console.log("Audio Send Inner Error:", err));
     }, 500);
 
