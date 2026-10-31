@@ -17,16 +17,16 @@ Sparky({
   await m.react("⏳");
 
   try {
-    // 100% Working Free AI Endpoint (BK9 API)
-    let apiUrl = `https://bk9.fun/ai/gptiv?q=${encodeURIComponent(query)}`;
+    // 100% Free & Stable AI Proxy (No API key / No Grok errors)
+    let apiUrl = `https://api.vyturex.com/ai/chat?prompt=${encodeURIComponent(query)}`;
     let response = await axios.get(apiUrl);
     
-    let answer = response.data.result || response.data.response;
+    let answer = response.data.answer || response.data.result || response.data.message || response.data.data;
 
-    if (!answer || answer.includes("api key")) {
-      // Fallback to another public free endpoint
-      let fallbackRes = await axios.get(`https://api.siputzx.my.id/api/ai/chatgpt?prompt=${encodeURIComponent(query)}`);
-      answer = fallbackRes.data.data || fallbackRes.data.result || "Sorry, mala hyache uttar bhetle nahi!";
+    if (!answer || typeof answer !== "string" || answer.includes("api key")) {
+      // Direct secondary working public endpoint
+      let secondaryRes = await axios.get(`https://apis.davidcyriltech.my.id/ai/gemini?text=${encodeURIComponent(query)}`);
+      answer = secondaryRes.data.result || secondaryRes.data.message || "Sorry, mala hyache uttar bhetle nahi!";
     }
 
     let formattedReply = `╭━━━❖ 🤖 **RAHUL-AI** ❖━━━╮\n\n` +
