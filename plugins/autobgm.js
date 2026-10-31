@@ -5,7 +5,7 @@ global.autoBgmStatus = global.autoBgmStatus !== undefined ? global.autoBgmStatus
 
 // List of random audio/voice note URLs
 const bgmAudios = [
-  "https://files.catbox.moe/57v4c3.mp3",
+  "https://n.uguu.se/qpXsfyCc.mp3",
   "https://github.com/Rahul-Bot-Master/database/raw/main/audio/bgm1.mp3",
   "https://github.com/Rahul-Bot-Master/database/raw/main/audio/bgm2.mp3",
   "https://github.com/Rahul-Bot-Master/database/raw/main/audio/bgm3.mp3"
