@@ -37,15 +37,16 @@ Sparky({
   try {
     if (!m || !m.key || !m.key.id) return;
     
-    // Store necessary details safely
+    // Store message object and sender details
     messageStore.set(m.key.id, {
       key: m.key,
       message: m.message,
       body: m.body || m.text || "",
-      remoteJid: m.key.remoteJid
+      remoteJid: m.key.remoteJid,
+      participant: m.participant || m.key.participant || m.key.remoteJid
     });
 
-    // Limit store size to 500 messages to prevent memory crash
+    // Limit store size to 500 messages
     if (messageStore.size > 500) {
       const firstKey = messageStore.keys().next().value;
       messageStore.delete(firstKey);
@@ -74,15 +75,12 @@ Sparky({
     let chatJid = storedMessage.remoteJid;
     if (!chatJid) return;
 
-    // Direct forwarding/re-sending the exact deleted message without any extra custom captions
+    // Direct message content copy karun pathvne (No Forwarded Tag)
     if (storedMessage.message) {
-      await client.sendMessage(chatJid, {
-        forward: {
-          key: storedMessage.key,
-          message: storedMessage.message
-        }
-      }).catch(async () => {
-        // Fallback option jar forward madhe error aala tar fakt text pathvnyasathi
+      let content = storedMessage.message;
+      
+      // Remove any viewOnce wrapper if present so it sends normally if needed, or send raw
+      await client.sendMessage(chatJid, content, { quoted: storedMessage.key }).catch(async () => {
         if (storedMessage.body) {
           await client.sendMessage(chatJid, { text: storedMessage.body });
         }
