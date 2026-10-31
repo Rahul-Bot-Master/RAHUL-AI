@@ -17,36 +17,29 @@ Sparky({
   await m.react("⏳");
 
   let answer = "";
-  let grokApiKey = "grok_e9715fa89c13fb9eea2de47d02e1b010_a48d9ea0bbe0191f0e9ba85398147ef40370c5e2c7edeee7fd74e5deb4607de8";
 
   try {
-    // 1. Direct Grok / xAI API Endpoint integration
-    let response = await axios.post(`https://api.x.ai/v1/chat/completions`, {
-      model: "grok-beta",
-      messages: [{ role: "user", content: query }],
-      stream: false
-    }, {
-      headers: {
-        "Authorization": `Bearer ${grokApiKey}`,
-        "Content-Type": "application/json"
-      }
-    });
+    // Multiple free reliable AI endpoints as fallback
+    let apis = [
+      `https://api.siputzx.my.id/api/ai/chatgpt?prompt=${encodeURIComponent(query)}`,
+      `https://deliriussapi-v2.vercel.app/api/openai?q=${encodeURIComponent(query)}`
+    ];
 
-    answer = response.data.choices[0].message.content;
+    for (let apiUrl of apis) {
+      try {
+        let res = await axios.get(apiUrl, { timeout: 10000 });
+        answer = res.data.data || res.data.result || res.data.message || res.data.answer;
+        if (answer) break;
+      } catch (err) {
+        continue; // Jar ek API fail zali tar dusrya var switch hoil
+      }
+    }
 
   } catch (err) {
-    console.error("Grok API Error:", err.response?.data || err.message);
-    
-    // Grok fail zalyavar fallback API vapru
-    try {
-      let res2 = await axios.get(`https://api.siputzx.my.id/api/ai/chatgpt?prompt=${encodeURIComponent(query)}`);
-      answer = res2.data.data || res2.data.result;
-    } catch (e) {
-      console.error("Fallback API Error:", e.message);
-      answer = `Kahi tari samasya nimanali ahe. Punha prayatna kara!`;
-    }
+    console.error("AI API Error:", err.message);
   }
 
+  // Fallback jar APIs kadun response ala nahi tar
   if (!answer || typeof answer !== "string") {
     answer = `Hello Rahul! Mi RAHUL-AI ahe. Tuzha message "${query}" mala milalay. 🚀`;
   }
