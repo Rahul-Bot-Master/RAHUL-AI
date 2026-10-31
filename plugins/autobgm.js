@@ -20,7 +20,9 @@ Sparky({
   category: "owner",
   desc: "Turn Auto-BGM ON or OFF"
 }, async ({ m, args, text }) => {
-  let fullQuery = (text || args.join(" ") || m.body || "").toLowerCase();
+  // ✨ Safe conversion to prevent args.join error
+  let safeArgs = Array.isArray(args) ? args.join(" ") : (typeof args === "string" ? args : "");
+  let fullQuery = (text || safeArgs || m.body || "").toLowerCase();
   
   if (fullQuery.includes("on")) {
     global.autoBgmStatus = true;
@@ -69,11 +71,11 @@ Sparky({
     // Direct check for text switch without prefix
     if (bodyText === "autobgm on" || bodyText === ".autobgm on" || bodyText === "setautobgm on") {
       global.autoBgmStatus = true;
-      return m.reply("✅ Auto-BGM is now **ENABLED**!");
+      return await m.reply("✅ Auto-BGM is now **ENABLED**!");
     }
     if (bodyText === "autobgm off" || bodyText === ".autobgm off" || bodyText === "setautobgm off") {
       global.autoBgmStatus = false;
-      return m.reply("❌ Auto-BGM is now **DISABLED**!");
+      return await m.reply("❌ Auto-Bgm is now **DISABLED**!");
     }
 
     // Jar status off asel tar audio yenar nahi
@@ -109,7 +111,7 @@ Sparky({
         jpegThumbnail: imageBuffer,
         contextInfo: {
           externalAdReply: {
-            title: "RAHUL-AI 🎵",
+            title: "RAHUL-AI",
             body: "Playing Background Music",
             mediaType: 2,
             thumbnail: imageBuffer,
