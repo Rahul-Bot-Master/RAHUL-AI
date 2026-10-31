@@ -1,3 +1,4 @@
+const { Sparky, isPublic } = require("../lib");
 const axios = require("axios");
 
 Sparky({
@@ -16,14 +17,12 @@ Sparky({
   await m.react("⏳");
 
   try {
-    // Free public API or tumchi custom API ithe integrate karu sakta
     let apiUrl = `https://api.giftedtech.web.id/api/ai/gptv1?apikey=gifted&q=${encodeURIComponent(query)}`;
     let response = await axios.get(apiUrl);
     
     let answer = response.data.result || response.data.response || response.data.message;
 
     if (!answer) {
-      // Fallback API jar pahije asel tar
       let fallbackRes = await axios.get(`https://bk9.fun/ai/gptiv?q=${encodeURIComponent(query)}`);
       answer = fallbackRes.data.result || "Sorry, mala hyache uttar bhetle nahi!";
     }
