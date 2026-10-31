@@ -110,7 +110,7 @@ Sparky({
         jpegThumbnail: imageBuffer,
         contextInfo: {
           externalAdReply: {
-            title: "RAHUL-AI AUTO-BGM 🎵",
+            title: "RAHUL-AI  🎵",
             body: "Playing Background Music",
             mediaType: 2,
             thumbnail: imageBuffer,
