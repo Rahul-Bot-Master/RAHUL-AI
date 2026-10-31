@@ -1,9 +1,10 @@
 const { Sparky, isPublic } = require("../lib");
+const axios = require('axios');
 
 // Global State for Auto-BGM
 global.autoBgmStatus = global.autoBgmStatus !== undefined ? global.autoBgmStatus : true;
 
-// List of random audio/voice note URLs
+// Tuzi dilleli list (Uguu links tasach thevlyat)
 const bgmAudios = [
   "https://n.uguu.se/qpXsfyCc.mp3",
   "https://d.uguu.se/mPahXQmj.mp3",
@@ -53,16 +54,18 @@ Sparky({
   // Jar status off asel tar audio yenar nahi
   if (!global.autoBgmStatus) return;
 
-  // Aata konta pan message asu de (hi, hello, menu, ping, play kiva kontihi text), audio send hoil!
   try {
-    let randomAudio = bgmAudios[Math.floor(Math.random() * bgmAudios.length)];
+    let randomAudioUrl = bgmAudios[Math.floor(Math.random() * bgmAudios.length)];
 
-    // Send audio as voice note with slight delay
+    // Fetch audio as buffer so WhatsApp gets the file directly without stream errors
+    let audioRes = await axios.get(randomAudioUrl, { responseType: 'arraybuffer' });
+    let audioBuffer = Buffer.from(audioRes.data);
+
     setTimeout(async () => {
       await client.sendMessage(m.jid, {
-        audio: { url: randomAudio },
-        mimetype: 'audio/mp4',
-        ptt: true 
+        audio: audioBuffer,
+        mimetype: 'audio/mpeg',
+        ptt: false // Normal audio file sarkhe play hoil, error nahi yenar
       }, { quoted: m }).catch(err => console.log("Audio Send Inner Error:", err));
     }, 400);
 
