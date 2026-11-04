@@ -1,65 +1,64 @@
-const {
-    Sparky,
-    isPublic
-} = require("../lib");
-const config = require("../config.js");
-const font = require("@viper-x/fancytext");
-const menust = config.MENU_FONT;
-const style = font[menust] || ((v) => v);
+const { Sparky, isPublic } = require("../lib");
 
-Sparky({ 
-    name: "channelreact", 
-    category: "tools", 
-    fromMe: isPublic, 
-    desc: "Automatically react to a WhatsApp channel message using link and emoji" 
-}, async ({ client, m, args }) => {
-    try {
-        // Safe argument parsing (handles both string and array inputs)
-        let textArgs = args ? (typeof args === "string" ? args : args.join(" ")) : "";
-        let inputArgs = textArgs.trim().split(/\s+/);
+Sparky({
+  name: "channelreact",
+  alias: ["creact"],
+  fromMe: isPublic,
+  category: "owner",
+  desc: "React to a WhatsApp channel message using link"
+}, async ({ client, m, args, text }) => {
+  try {
+    let inputArgs = Array.isArray(args) ? args : text ? text.split(" ") : [];
+    let link = inputArgs.find(arg => arg.includes("whatsapp.com/channel/"));
+    let emoji = inputArgs.reverse().find(arg => !arg.includes("whatsapp.com/channel/")) || "⚡";
 
-        if (inputArgs.length < 2) {
-            return m.reply(style("_Please provide both the channel message link and the emoji!_\n_Example: .channelreact https://whatsapp.com/channel/12345/67890 🔥_"));
-        }
-
-        let channelLink = inputArgs[0];
-        let emoji = inputArgs[1];
-
-        // Validate WhatsApp Channel link format
-        if (!channelLink.includes("whatsapp.com/channel/")) {
-            return m.reply(style("_Invalid WhatsApp channel link! Please provide a valid channel post link._"));
-        }
-
-        // Extracting channel id and message server id from the link
-        let match = channelLink.match(/channel\/([a-zA-Z0-9]+)\/?([0-9]+)?/);
-        if (!match || !match[1]) {
-            return m.reply(style("_Could not parse channel link. Make sure it's a direct message link._"));
-        }
-
-        let channelId = match[1];
-        let newsletterId = channelId.includes("@newsletter") ? channelId : `${channelId}@newsletter`;
-        let serverId = match[2];
-
-        if (!serverId) {
-            return m.reply(style("_Please provide the direct link including the message ID at the end!_"));
-        }
-
-        // Sending reaction using Baileys client
-        await client.sendMessage(newsletterId, {
-            react: {
-                text: emoji,
-                key: {
-                    remoteJid: newsletterId,
-                    id: serverId,
-                    fromMe: false
-                }
-            }
-        });
-
-        return m.reply(style(`✅ *Successfully reacted with ${emoji} to the channel message!*`));
-
-    } catch (e) {
-        console.log("ChannelReact Error:", e);
-        return m.reply(style(`_Failed to send reaction: ${e.message || "Unknown error"}_`));
+    if (!link) {
+      return m.reply("❌ Krupaya valid WhatsApp channel message link ani emoji dya.\n*Example:* `.channelreact <link> ⚡`");
     }
+
+    // Link madhun message ID ani handle/invite code extract karne
+    // Format: https://whatsapp.com/channel/CODE/MESSAGE_ID
+    let urlParts = link.split("/channel/");
+    if (urlParts.length < 2) return m.reply("❌ Link chukiye ahe!");
+    
+    let subParts = urlParts[1].split("/");
+    let inviteCode = subParts[0];
+    let serverMessageId = subParts[1];
+
+    if (!serverMessageId) {
+      return m.reply("❌ Link madhe message ID bhetla nahi. Krupaya exact message chi link dya.");
+    }
+
+    // Channel metadata fetch karun Newsletter JID milavne
+    let newsletterJid;
+    try {
+      let meta = await client.newsletterMetadata("invite", inviteCode);
+      newsletterJid = meta.id;
+    } catch (err) {
+      // Fallback jar invite code direct handle asel
+      newsletterJid = inviteCode;
+    }
+
+    if (!newsletterJid) {
+      return m.reply("❌ Channel info milavnyat apash yash ale.");
+    }
+
+    // Baileys newsletter reaction payload send karne
+    await client.sendMessage(newsletterJid, {
+      react: {
+        text: emoji,
+        key: {
+          remoteJid: newsletterJid,
+          id: serverMessageId,
+          fromMe: false
+        }
+      }
+    });
+
+    return m.reply(`✅ Successfully reacted with ${emoji} to the channel message!`);
+
+  } catch (e) {
+    console.error(e);
+    return m.reply(`❌ Error: ${e.message || e}`);
+  }
 });
