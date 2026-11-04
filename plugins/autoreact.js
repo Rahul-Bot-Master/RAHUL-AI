@@ -1,4 +1,4 @@
-Const { Sparky, isPublic } = require("../lib");
+const { Sparky, isPublic } = require("../lib");
 
 // Global States
 global.autoReactStatus = global.autoReactStatus !== undefined ? global.autoReactStatus : true;
@@ -47,7 +47,6 @@ Sparky({
 Sparky({
     name: "autoreact_handler",
     on: "text"
-    // Note: 'fromMe: true' removed so it listens to both your messages and others' messages
 }, async ({ client, m }) => {
     try {
         if (!global.autoReactStatus) return;
