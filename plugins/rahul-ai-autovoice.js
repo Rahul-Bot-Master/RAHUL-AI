@@ -21,7 +21,6 @@ Sparky({on: "text", fromMe: isPublic, name: "rahul-ai-autovoice.js"},
     async ({m, client}) => {
     if (!m) return;
 
-    // Safe text extraction sathi sarv possible properties check karat ahot
     let text = "";
     try {
         text = (m.text || m.body || m.msg?.text || m.message?.conversation || m.message?.extendedTextMessage?.text || "").toLowerCase().trim();
@@ -34,33 +33,34 @@ Sparky({on: "text", fromMe: isPublic, name: "rahul-ai-autovoice.js"},
     // 1. AutoVoice On/Off Command check karne
     if (text === "autovoice on") {
         autoVoiceEnabled = true;
-        await client.sendMessage(m.jid, { text: "✅ Auto-Voice is now *ENABLED*!" }, { quoted: m });
+        await client.sendMessage(m.from || m.jid, { text: "✅ Auto-Voice is now *ENABLED*!" }, { quoted: m });
         return;
     }
     if (text === "autovoice off") {
         autoVoiceEnabled = false;
-        await client.sendMessage(m.jid, { text: "❌ Auto-Voice is now *DISABLED*!" }, { quoted: m });
+        await client.sendMessage(m.from || m.jid, { text: "❌ Auto-Voice is now *DISABLED*!" }, { quoted: m });
         return;
     }
 
     // 2. Jar AutoVoice band asel kinva message status madhun ala asel tar return houn jail
     if (!autoVoiceEnabled) return;
-    if (m.jid && m.jid.includes("status@broadcast")) return; // Status var reply nahi karnar
+    let remoteJid = m.from || m.jid;
+    if (remoteJid && remoteJid.includes("status@broadcast")) return;
 
     // 3. Konta trigger word match hotoy te shodhe
     let matchedWord = Object.keys(voiceMap).find(word => text === word || text.includes(word));
     
-    if (!matchedWord) return; // Jar kontach word match nahi zala tar kahich send honar nahi
+    if (!matchedWord) return;
 
     let selectedAudioUrl = voiceMap[matchedWord];
+    let targetJid = m.from || m.jid;
 
     // 4. Tyach word sathi tharleli voice note pathvne
     try {
-        await client.sendMessage(m.jid, {
+        await client.sendMessage(targetJid, {
             audio: { url: selectedAudioUrl },
             mimetype: 'audio/mp4',
-            ptt: true, // Voice note (PTT) sarkhi disel
-            fileName: 'autovoice.mp3'
+            ptt: true
         }, { quoted: m });
         
     } catch (e) {
