@@ -43,7 +43,7 @@ Scan the QR code using your WhatsApp linked devices to generate your session str
 View and copy custom external plugins for your bot.
 
 <div align="center">
-  <a href="https://gist.github.com/Rahul-Bot-Master/006a539c2881d556e03fa5ad53a8c7db" target="_blank">
+  <a href="https://gist.githubusercontent.com/Rahul-Bot-Master/d40aca76c1f058c911924655c76a17de" target="_blank">
     <img src="https://img.shields.io/badge/📂_VIEW_INSTAGRAM_DL_PLUGIN-ff0055?style=for-the-badge&logo=github&logoColor=00f3ff&color=black&labelColor=111111" alt="View IG Plugin Gist">
   </a>
   
