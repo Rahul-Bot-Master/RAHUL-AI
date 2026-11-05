@@ -55,10 +55,14 @@ Sparky({on: "text", fromMe: isPublic, name: "rahul-ai-autovoice.js"},
     let selectedAudioUrl = voiceMap[matchedWord];
     let targetJid = m.from || m.jid;
 
-    // 4. Tyach word sathi tharleli voice note pathvne
+    // 4. Audio URL fetch karun Buffer madhe convert karun pathvne (relayMessage error fix sathi)
     try {
+        const response = await fetch(selectedAudioUrl);
+        const arrayBuffer = await response.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+
         await client.sendMessage(targetJid, {
-            audio: { url: selectedAudioUrl },
+            audio: buffer,
             mimetype: 'audio/mp4',
             ptt: true
         }, { quoted: m });
