@@ -58,8 +58,6 @@ Sparky({
 ┃ ᴘʟᴇᴀꜱᴇ ᴡᴀɪᴛ ᴀ ᴍᴏᴍᴇɴᴛ
 ┗━━━━━━━━━━━━━━━━━━━━┛`);
 
-    const formData = new FormData();
-
     let ext = 'bin';
     if (mime.includes('video') || mime.includes('mp4')) {
       ext = 'mp4';
@@ -81,17 +79,16 @@ Sparky({
       mime = 'audio/mp3';
     }
 
-    formData.append('files[]', buffer, {
-      filename: `media_${Date.now()}.${ext}`,
-      contentType: mime
-    });
+    // Node.js मधील Buffer ला Blob मध्ये रूपांतरित करत आहे जेणेकरून 'FormData' एरर देणार नाही
+    const blob = new Blob([buffer], { type: mime });
+    const formData = new FormData();
+    formData.append('files[]', blob, `media_${Date.now()}.${ext}`);
 
     const response = await axios.post(
       'https://uguu.se/upload.php',
       formData,
       {
         headers: {
-          ...formData.getHeaders(),
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         },
         maxContentLength: Infinity,
@@ -140,6 +137,7 @@ Sparky({
 ┗━━━━━━━━━━━━━━━━━━━━┛`);
   }
 });
+
 Sparky(
     {
         name: "vv",
