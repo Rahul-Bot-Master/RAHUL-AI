@@ -4,26 +4,142 @@ const googleTTS = require('google-tts-api');
 const config = require('../config.js');
 const lang = getString('converters');
 Sparky({
-    name: "url",
-    fromMe: true,
-    desc: "",
-    category: "converters",
-  }, async ({ args, m }) => {
-    if (!m.quoted) {
-      return m.reply('Reply to an Image/Video/Audio');
-    }
-    try {
-        await m.react('⏫');
-      const mediaBuffer = await m.quoted.download();
-      const mediaUrl = await handleMediaUpload(mediaBuffer);
-      await m.react('✅');
-      m.reply(mediaUrl);
-    } catch (error) {
-        await m.react('❌');
-      m.reply('An error occurred while uploading the media.');
-    }
-  });
+  name: "url",
+  aliases: ["tourl", "upload", "geturl", "uguu"],
+  fromMe: true,
+  desc: "Upload files and get URL",
+  category: "converters",
+}, async ({ args, m }) => {
+  try {
+    const target = m.quoted ? m.quoted : m;
+    let buffer = null;
 
+    try {
+      buffer = await target.download();
+    } catch (e) {
+      console.log("Download target error:", e);
+    }
+
+    if (!buffer) {
+      return m.reply(`┏━━━━━━━━━━━━━━━━━━━━┓
+┃ ᴇʀʀᴏʀ
+┃
+┃ ᴘʟᴇᴀꜱᴇ ʀᴇᴘʟʏ ᴛᴏ ᴏʀ ꜱᴇɴᴅ
+┃ ᴀɴ ɪᴍᴀɢᴇ, ᴠɪᴅᴇᴏ, ᴏʀ ᴀᴜᴅɪᴏ
+┃
+┃ ᴇxᴀᴍᴘʟᴇ: .ᴛᴏᴜʀʟ
+┗━━━━━━━━━━━━━━━━━━━━┛`);
+    }
+
+    // Robust MIME detection for Audio, Voice Notes, Images, Videos, and Documents
+    let mime = target.mimetype || target.msg?.mimetype || target.mediaMessage?.mimetype || '';
+    if (!mime && target.msg) {
+      mime = target.msg.mimetype || '';
+    }
+
+    // Force detect audio / PTT voice notes if mime is missing but audio message exists
+    if (!mime && target.message && (target.message.audioMessage || target.message.videoMessage || target.message.imageMessage || target.message.stickerMessage)) {
+      if (target.message.audioMessage) mime = target.message.audioMessage.mimetype || 'audio/mp4';
+      else if (target.message.videoMessage) mime = target.message.videoMessage.mimetype || 'video/mp4';
+      else if (target.message.imageMessage) mime = target.message.imageMessage.mimetype || 'image/jpeg';
+      else if (target.message.stickerMessage) mime = 'image/webp';
+    }
+    
+    // Fallback check on quoted raw structure
+    if ((!mime || mime === '') && m.quoted) {
+      if (m.quoted.message?.audioMessage) mime = m.quoted.message.audioMessage.mimetype || 'audio/mp4';
+      else if (m.quoted.message?.videoMessage) mime = m.quoted.message.videoMessage.mimetype || 'video/mp4';
+      else if (m.quoted.message?.imageMessage) mime = m.quoted.message.imageMessage.mimetype || 'image/jpeg';
+    }
+
+    await m.reply(`┏━━━━━━━━━━━━━━━━━━━━┓
+┃ ᴜᴘʟᴏᴀᴅɪɴɢ...
+┃
+┃ ᴘʟᴇᴀꜱᴇ ᴡᴀɪᴛ ᴀ ᴍᴏᴍᴇɴᴛ
+┗━━━━━━━━━━━━━━━━━━━━┛`);
+
+    const formData = new FormData();
+
+    let ext = 'bin';
+    if (mime.includes('video') || mime.includes('mp4')) {
+      ext = 'mp4';
+      mime = 'video/mp4';
+    } else if (mime.includes('png')) {
+      ext = 'png';
+      mime = 'image/png';
+    } else if (mime.includes('jpeg') || mime.includes('jpg')) {
+      ext = 'jpg';
+      mime = 'image/jpeg';
+    } else if (mime.includes('audio') || mime.includes('ogg') || mime.includes('mp3') || mime.includes('m4a') || mime.includes('opus')) {
+      ext = 'mp3';
+      mime = 'audio/mp3';
+    } else if (mime.includes('webp')) {
+      ext = 'webp';
+      mime = 'image/webp';
+    } else {
+      ext = 'mp3';
+      mime = 'audio/mp3';
+    }
+
+    formData.append('files[]', buffer, {
+      filename: `media_${Date.now()}.${ext}`,
+      contentType: mime
+    });
+
+    const response = await axios.post(
+      'https://uguu.se/upload.php',
+      formData,
+      {
+        headers: {
+          ...formData.getHeaders(),
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        },
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity
+      }
+    );
+
+    const resData = response.data;
+    let uploadUrl = '';
+
+    if (resData && resData.success && resData.files && resData.files[0]) {
+      uploadUrl = resData.files[0].url;
+    }
+
+    if (!uploadUrl) {
+      throw new Error('Upload failed: Invalid response from server');
+    }
+
+    let fileTypeDisplay = mime.split('/')[0].toUpperCase();
+    if (fileTypeDisplay === 'APPLICATION' || !fileTypeDisplay) fileTypeDisplay = 'AUDIO';
+
+    const fileSizeKB = (buffer.length / 1024).toFixed(2);
+    const fileSizeMB = (buffer.length / (1024 * 1024)).toFixed(2);
+
+    const result = `┏━━━━━━━━━━━━━━━━━━━━┓
+┃ ᴜᴘʟᴏᴀᴅ ꜱᴜᴄᴄᴇꜱꜱꜰᴜ𝚕
+┃
+┃ ᴛʏᴘᴇ: ${fileTypeDisplay}
+┃ ꜱɪᴢᴇ: ${fileSizeKB} ᴋʙ (${fileSizeMB} ᴍʙ)
+┃ ᴜʀʟ: ${uploadUrl}
+┃
+┃ ᴜᴘʟᴏᴀᴅᴇᴅ
+┗━━━━━━━━━━━━━━━━━━━━┛`;
+
+    await m.reply(result);
+
+  } catch (err) {
+    console.error('Tourl Error:', err.response?.data || err.message);
+
+    await m.reply(`┏━━━━━━━━━━━━━━━━━━━━┓
+┃ ᴜᴘʟᴏᴀᴅ ꜰᴀɪʟᴇᴅ
+┃
+┃ ᴇʀʀᴏʀ: ${typeof err.response?.data === 'string' ? err.response.data : (err.response?.data?.message || err.response?.data?.error || err.message)}
+┃
+┃ ᴘʟᴇᴀꜱᴇ ᴛʀʏ ᴀɢᴀɪɴ
+┗━━━━━━━━━━━━━━━━━━━━┛`);
+  }
+});
 Sparky(
     {
         name: "vv",
