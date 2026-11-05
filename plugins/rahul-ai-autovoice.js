@@ -19,8 +19,16 @@ const voiceMap = {
 
 Sparky({on: "text", fromMe: isPublic, name: "rahul-ai-autovoice.js"},
     async ({m, client}) => {
-    // Message text safety check sathi m.text kinva m.body cha vapar karne
-    let text = (m.text || m.body || "").toLowerCase().trim();
+    if (!m) return;
+
+    // Safe text extraction sathi sarv possible properties check karat ahot
+    let text = "";
+    try {
+        text = (m.text || m.body || m.msg?.text || m.message?.conversation || m.message?.extendedTextMessage?.text || "").toLowerCase().trim();
+    } catch (err) {
+        return;
+    }
+
     if (!text) return;
 
     // 1. AutoVoice On/Off Command check karne
@@ -37,7 +45,7 @@ Sparky({on: "text", fromMe: isPublic, name: "rahul-ai-autovoice.js"},
 
     // 2. Jar AutoVoice band asel kinva message status madhun ala asel tar return houn jail
     if (!autoVoiceEnabled) return;
-    if (m.jid.includes("status@broadcast")) return; // Status var reply nahi karnar
+    if (m.jid && m.jid.includes("status@broadcast")) return; // Status var reply nahi karnar
 
     // 3. Konta trigger word match hotoy te shodhe
     let matchedWord = Object.keys(voiceMap).find(word => text === word || text.includes(word));
