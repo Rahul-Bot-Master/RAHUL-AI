@@ -8,19 +8,20 @@ let autoVoiceEnabled = true;
 
 // Pratyek trigger word sathi tumhi alag alag Audio/Voice URL ithe taku shakta
 const voiceMap = {
-    "hi": "ITHE_HI_SAATHI_AUDIO_URL_TAKA.mp3",
-    "hello": "ITHE_HELLO_SAATHI_AUDIO_URL_TAKA.mp3",
-    "good morning": "ITHE_GOOD_MORNING_SAATHI_AUDIO_URL_TAKA.mp3",
-    "good night": "ITHE_GOOD_NIGHT_SAATHI_AUDIO_URL_TAKA.mp3",
-    "hey": "ITHE_HEY_SAATHI_AUDIO_URL_TAKA.mp3",
-    "hii": "ITHE_HII_SAATHI_AUDIO_URL_TAKA.mp3",
-    "bot": "ITHE_BOT_SAATHI_AUDIO_URL_TAKA.mp3"
+    "hi": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    "hello": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    "good morning": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    "good night": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    "hey": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    "hii": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    "bot": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
 };
 
 Sparky({on: "text", fromMe: isPublic, name: "rahul-ai-autovoice.js"},
-    async ({m, client, args}) => {
-    args = typeof args === "string" ? args : "";
-    let text = args.toLowerCase().trim();
+    async ({m, client}) => {
+    // Message text safety check sathi m.text kinva m.body cha vapar karne
+    let text = (m.text || m.body || "").toLowerCase().trim();
+    if (!text) return;
 
     // 1. AutoVoice On/Off Command check karne
     if (text === "autovoice on") {
