@@ -79,24 +79,20 @@ Sparky({
       mime = 'audio/mp3';
     }
 
-    // Node.js मधील Buffer ला Blob मध्ये रूपांतरित करत आहे जेणेकरून 'FormData' एरर देणार नाही
     const blob = new Blob([buffer], { type: mime });
     const formData = new FormData();
     formData.append('files[]', blob, `media_${Date.now()}.${ext}`);
 
-    const response = await axios.post(
-      'https://uguu.se/upload.php',
-      formData,
-      {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-        },
-        maxContentLength: Infinity,
-        maxBodyLength: Infinity
+    // Axios ऐवजी ग्लोबल fetch API वापरले आहे
+    const response = await fetch('https://uguu.se/upload.php', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
       }
-    );
+    });
 
-    const resData = response.data;
+    const resData = await response.json();
     let uploadUrl = '';
 
     if (resData && resData.success && resData.files && resData.files[0]) {
@@ -126,12 +122,12 @@ Sparky({
     await m.reply(result);
 
   } catch (err) {
-    console.error('Tourl Error:', err.response?.data || err.message);
+    console.error('Tourl Error:', err.message);
 
     await m.reply(`┏━━━━━━━━━━━━━━━━━━━━┓
 ┃ ᴜᴘʟᴏᴀᴅ ꜰᴀɪʟᴇᴅ
 ┃
-┃ ᴇʀʀᴏʀ: ${typeof err.response?.data === 'string' ? err.response.data : (err.response?.data?.message || err.response?.data?.error || err.message)}
+┃ ᴇʀʀᴏʀ: ${err.message}
 ┃
 ┃ ᴘʟᴇᴀꜱᴇ ᴛʀʏ ᴀɢᴀɪɴ
 ┗━━━━━━━━━━━━━━━━━━━━┛`);
