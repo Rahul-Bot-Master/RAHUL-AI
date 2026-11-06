@@ -466,18 +466,18 @@ Sparky({
       if (ytUrl) {
         try { await m.react('⬇️'); } catch (e) {}
         
-        // Video download and send
+        // 1. Video Download & Send
         try {
-          const videoResult = await ytv(ytUrl);
-          await m.sendMsg(m.jid, videoResult, { quoted: m }, "video");
+          const videoUrl = await ytv(ytUrl);
+          await client.sendMessage(m.jid, { video: { url: videoUrl }, mimetype: "video/mp4" }, { quoted: m });
         } catch (err) {
           console.log("AutoDL Video Error:", err);
         }
 
-        // Audio download and send
+        // 2. Audio Download & Send (Playable Audio fix)
         try {
-          const audioResult = await yta(ytUrl);
-          await m.sendMsg(m.jid, audioResult, { quoted: m }, "audio");
+          const audioUrl = await yta(ytUrl);
+          await client.sendMessage(m.jid, { audio: { url: audioUrl }, mimetype: "audio/mp4", ptt: false }, { quoted: m });
         } catch (err) {
           console.log("AutoDL Audio Error:", err);
         }
