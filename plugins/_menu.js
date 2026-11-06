@@ -474,15 +474,19 @@ Sparky({
           console.log("AutoDL Video Error:", err);
         }
 
-        // 2. Audio Download & Send (Buffer fix for playable audio)
+        // 2. Audio Download & Send (Proper URL Extraction & Buffer Fix)
         try {
-          const audioUrl = await yta(ytUrl);
-          const audioBuffer = await getBuffer(audioUrl);
-          await client.sendMessage(m.jid, { 
-            audio: audioBuffer, 
-            mimetype: "audio/mpeg", 
-            ptt: false 
-          }, { quoted: m });
+          const audioRes = await yta(ytUrl);
+          const audioUrl = typeof audioRes === 'object' ? (audioRes.dl_url || audioRes.url || audioRes.audio) : audioRes;
+          
+          if (audioUrl) {
+            const audioBuffer = await getBuffer(audioUrl);
+            await client.sendMessage(m.jid, { 
+              audio: audioBuffer, 
+              mimetype: "audio/mpeg", 
+              ptt: false 
+            }, { quoted: m });
+          }
         } catch (err) {
           console.log("AutoDL Audio Error:", err);
         }
@@ -494,4 +498,3 @@ Sparky({
     console.error("AutoDL Listener Error:", error);
   }
 });
-
