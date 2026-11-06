@@ -12,13 +12,11 @@ Rahul AI - Custom Build
 const { Sparky, isPublic, bing, duckGo, commands } = require("../lib");
 const axios = require('axios');
 
-// Helper function getJson sathi
 async function getJson(url) {
     let res = await axios.get(url);
     return res.data;
 }
 
-// URL check helper
 function checkIsUrl(string) {
     try {
         return Boolean(new URL(string));
@@ -27,22 +25,22 @@ function checkIsUrl(string) {
     }
 }
 
-// --- GOOGLE/BING IMAGE SEARCH ---
+// --- GOOGLE/BING IMAGE SEARCH (Prefix optional fallback included) ---
 Sparky({
   pattern: 'img',
   fromMe: isPublic,
   desc: 'Search google/bing images',
   type: 'search',
 }, async ({ client, m, args }) => {
-  // Args string kinva array asel tar tyala safely handle karne
   let queryStr = "";
-  if (Array.isArray(args)) {
+  if (Array.isArray(args) && args.length > 0) {
       queryStr = args.join(" ");
-  } else if (typeof args === "string") {
+  } else if (typeof args === "string" && args.trim() !== "") {
       queryStr = args;
-  } else if (m && m.text) {
-      let parts = m.text.split(" ");
-      parts.shift(); // remove command name
+  } else if (m && (m.body || m.text)) {
+      let textBody = m.body || m.text;
+      let parts = textBody.trim().split(" ");
+      parts.shift(); // remove command name (.img or img)
       queryStr = parts.join(" ");
   }
 
@@ -53,26 +51,45 @@ Sparky({
   let msg = await m.reply(`Downloading ${imageCount} images of *${query}*`);
   
   try {
-      let urls = await bing(query, { limit: imageCount });
-      if (!urls || !urls.length) return await m.reply("*No images found*");
-      
-      for (let url of urls) {
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          try {
-              let imageUrl = url.image || url.url || url.thumbnail;
-              if (imageUrl) {
-                  await client.sendMessage(m.jid, { image: { url: imageUrl }, caption: url.title || query }, { quoted: m });
-              }
-          } catch (e) {
-              if (!url.thumbnail) continue;
-              try {
-                  await client.sendMessage(m.jid, { image: { url: url.thumbnail }, caption: url.title || query }, { quoted: m });
-              } catch {}
+      let urls = [];
+      try {
+          urls = await bing(query, { limit: imageCount });
+      } catch (e) {
+          console.log("Bing search error, using fallback:", e);
+      }
+
+      // Fallback jar bing madhun images alyat nahitar public API vapru
+      if (!urls || !urls.length) {
+          let fallbackRes = await getJson(`https://api.vyturex.com/search/images?q=${encodeURIComponent(query)}`).catch(() => null);
+          if (fallbackRes && fallbackRes.result) {
+              urls = fallbackRes.result.map(link => ({ image: link, title: query }));
           }
       }
+
+      if (!urls || !urls.length) {
+          try { await msg.edit("*No images found!*"); } catch (e) { await m.reply("*No images found!*"); }
+          return;
+      }
+      
+      let sentCount = 0;
+      for (let url of urls) {
+          if (sentCount >= imageCount) break;
+          await new Promise(resolve => setTimeout(resolve, 800));
+          try {
+              let imageUrl = typeof url === 'string' ? url : (url.image || url.url || url.thumbnail);
+              let imageTitle = (typeof url === 'object' && url.title) ? url.title : query;
+              if (imageUrl) {
+                  await client.sendMessage(m.jid, { image: { url: imageUrl }, caption: imageTitle }, { quoted: m });
+                  sentCount++;
+              }
+          } catch (err) {
+              console.log("Send Image Item Error:", err);
+          }
+      }
+      
       try { await msg.edit("*Downloaded*"); } catch (e) { await m.reply("*Downloaded*"); }
   } catch (err) {
-      console.log("Image Search Error:", err);
+      console.log("Image Search Main Error:", err);
       await m.reply("*Failed to fetch images!*");
   }
 });
