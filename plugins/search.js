@@ -34,8 +34,19 @@ Sparky({
   desc: 'Search google/bing images',
   type: 'search',
 }, async ({ client, m, args }) => {
-  let queryStr = args ? args.join(" ") : "";
-  let [query, count] = queryStr.split(',').map(item => item.trim());
+  // Args string kinva array asel tar tyala safely handle karne
+  let queryStr = "";
+  if (Array.isArray(args)) {
+      queryStr = args.join(" ");
+  } else if (typeof args === "string") {
+      queryStr = args;
+  } else if (m && m.text) {
+      let parts = m.text.split(" ");
+      parts.shift(); // remove command name
+      queryStr = parts.join(" ");
+  }
+
+  let [query, count] = queryStr.split(',').map(item => item ? item.trim() : "");
   let imageCount = count ? parseInt(count) : 5;
   
   if (!query) return await m.reply("*Need a Query*\n_Example: .img ironman, 5_");
@@ -48,11 +59,14 @@ Sparky({
       for (let url of urls) {
           await new Promise(resolve => setTimeout(resolve, 1000));
           try {
-              await client.sendMessage(m.jid, { image: { url: url.image }, caption: url.title }, { quoted: m });
+              let imageUrl = url.image || url.url || url.thumbnail;
+              if (imageUrl) {
+                  await client.sendMessage(m.jid, { image: { url: imageUrl }, caption: url.title || query }, { quoted: m });
+              }
           } catch (e) {
               if (!url.thumbnail) continue;
               try {
-                  await client.sendMessage(m.jid, { image: { url: url.thumbnail }, caption: url.title }, { quoted: m });
+                  await client.sendMessage(m.jid, { image: { url: url.thumbnail }, caption: url.title || query }, { quoted: m });
               } catch {}
           }
       }
@@ -71,7 +85,7 @@ Sparky({
     type: "search",
     desc: "Xnxx searcher"
 }, async ({ m, args }) => {
-    let match = args ? args.join(" ") : "";
+    let match = Array.isArray(args) ? args.join(" ") : (args || "");
     if (!match || checkIsUrl(match)) return await m.reply('_Please provide a valid query_');
     try {
         const apiBase = "https://api.vyturex.com/"; 
@@ -91,7 +105,7 @@ Sparky({
     type: "search",
     desc: "DuckDuckGo searcher"
 }, async ({ m, args }) => {
-  let match = args ? args.join(" ") : "";
+  let match = Array.isArray(args) ? args.join(" ") : (args || "");
   if (!match) return await m.reply("*Need a query to search*\n_Example: .duckgo who is iron man_");
   
   try {
@@ -112,7 +126,7 @@ Sparky({
     type: "search",
     desc: "DuckDuckGo searcher alias"
 }, async ({ m, args }) => {
-  let match = args ? args.join(" ") : "";
+  let match = Array.isArray(args) ? args.join(" ") : (args || "");
   if (!match) return await m.reply("*Need a query to search*\n_Example: .dg who is iron man_");
   
   try {
