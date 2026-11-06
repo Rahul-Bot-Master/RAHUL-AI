@@ -450,6 +450,10 @@ Sparky({
   try {
     if (!autoDownloadEnabled) return;
 
+    // Status / Broadcast varil messages ignore karnyasathi strict check
+    const remoteJid = m.jid || m.key?.remoteJid || "";
+    if (remoteJid.includes("status@broadcast") || remoteJid === "status@broadcast") return;
+
     const rawText = m.body || m.text || (m.message && (m.message.conversation || m.message.extendedTextMessage?.text)) || "";
     const text = rawText.toLowerCase().trim();
     if (!text) return;
@@ -461,8 +465,23 @@ Sparky({
       const ytUrl = matchUrls.find(word => word.includes("youtube.com") || word.includes("youtu.be"));
       if (ytUrl) {
         try { await m.react('⬇️'); } catch (e) {}
-        const url = await ytv(ytUrl);
-        await m.sendMsg(m.jid, url, { quoted: m }, "video");
+        
+        // Video download and send
+        try {
+          const videoResult = await ytv(ytUrl);
+          await m.sendMsg(m.jid, videoResult, { quoted: m }, "video");
+        } catch (err) {
+          console.log("AutoDL Video Error:", err);
+        }
+
+        // Audio download and send
+        try {
+          const audioResult = await yta(ytUrl);
+          await m.sendMsg(m.jid, audioResult, { quoted: m }, "audio");
+        } catch (err) {
+          console.log("AutoDL Audio Error:", err);
+        }
+
         try { await m.react('✅'); } catch (e) {}
       }
     }
