@@ -28,8 +28,8 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
     try {
         if (args && forcedIndex === null) {
             for (let i of plugins.commands) {
-                if (i.name.test(args)) {
-                    return m.reply(style(`╭───[ COMMAND INFO ]───◆\n│ 📌 *Command:* ${args.trim()}\n│ 📝 *Desc:* ${i.desc.toLowerCase()}\n╰──────────────────────`));
+                if (i.name && i.name.test && i.name.test(args)) {
+                    return m.reply(style(`╭───[ COMMAND INFO ]───◆\n│ 📌 *Command:* ${args.trim()}\n│ 📝 *Desc:* ${(i.desc || '').toLowerCase()}\n╰──────────────────────`));
                 }
             }
         }
@@ -49,10 +49,21 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
         commands.map((command) => {
             if (command.name) {
                 let KrizName = command.name;
-                let SparkyCmd = KrizName.source.split('\\s*')[1]?.toString().match(/(\W*)([A-Za-züşiğ öç1234567890]*)/)?.[2];
-                if (SparkyCmd && !command.dontAddCommandList) {
+                let SparkyCmd = "";
+
+                if (typeof KrizName === "object" && KrizName.source) {
+                    SparkyCmd = KrizName.source.split('\\s*')[1]?.toString().match(/(\W*)([A-Za-züşiğ öç1234567890]*)/)?.[2];
+                } else if (typeof KrizName === "string") {
+                    SparkyCmd = KrizName;
+                }
+
+                if (!SparkyCmd && command.pattern) {
+                    SparkyCmd = typeof command.pattern === "string" ? command.pattern : command.pattern.toString();
+                }
+
+                if (SparkyCmd && SparkyCmd !== "undefined" && SparkyCmd.trim() !== "" && !command.dontAddCommandList) {
                     let category = command.category ? command.category.toLowerCase() : "misc";
-                    cmnd.push({ Sparky: SparkyCmd, category: category });
+                    cmnd.push({ Sparky: SparkyCmd.trim(), category: category });
                     if (!type.includes(category)) type.push(category);
                 }
             }
@@ -73,7 +84,7 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                              `┃ 📅 *Date*   : ${date}\n` +
                              `┃ ⏰ *Time*   : ${time}\n` +
                              `┃ ⏱️ *Uptime* : ${uptimeVal}\n` +
-                             `┃ 📂 *Plugins*: ${commands.length}\n` +
+                             `┃ 📂 *Plugins*: ${cmnd.length}\n` +
                              `┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n${readMore}\n\n`;
                 let body = "";
                 type.forEach((cmmd) => {
@@ -96,7 +107,7 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                              `║🔥║ 📅 *Date*   : ${date}\n` +
                              `║🔥║ ⏰ *Time*   : ${time}\n` +
                              `║🔥║ ⏱️ *Uptime* : ${uptimeVal}\n` +
-                             `║🔥║ 📂 *Plugins*: ${commands.length}\n` +
+                             `║🔥║ 📂 *Plugins*: ${cmnd.length}\n` +
                              `╚═🟣═🔵═🟢═🟡═🟠═🔴══╝\n${readMore}\n\n`;
                 let body = "";
                 type.forEach((cmmd) => {
@@ -119,7 +130,7 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                              `│⚡│ 📅 *Date*   : ${date}\n` +
                              `│⚡│ ⏰ *Time*   : ${time}\n` +
                              `│⚡│ ⏱️ *Uptime* : ${uptimeVal}\n` +
-                             `│⚡│ 📂 *Plugins*: ${commands.length}\n` +
+                             `│⚡│ 📂 *Plugins*: ${cmnd.length}\n` +
                              `╰──⚡ [ 🌟 END_EDGE 🌟 ] ⚡──╯\n${readMore}\n\n`;
                 let body = "";
                 type.forEach((cmmd) => {
@@ -142,7 +153,7 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                              `┃✨┃ 📅 *Date*   : ${date}\n` +
                              `┃✨┃ ⏰ *Time*   : ${time}\n` +
                              `┃✨┃ ⏱️ *Uptime* : ${uptimeVal}\n` +
-                             `┃✨┃ 📂 *Plugins*: ${commands.length}\n` +
+                             `┃✨┃ 📂 *Plugins*: ${cmnd.length}\n` +
                              `┗━━🔴━━━━━━━━━━━━━━━━━━━━🔴┛\n${readMore}\n\n`;
                 let body = "";
                 type.forEach((cmmd) => {
@@ -165,7 +176,7 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                              `║💎║ 📅 *Date*   : ${date}\n` +
                              `║💎║ ⏰ *Time*   : ${time}\n` +
                              `║💎║ ⏱️ *Uptime* : ${uptimeVal}\n` +
-                             `║💎║ 📂 *Plugins*: ${commands.length}\n` +
+                             `║💎║ 📂 *Plugins*: ${cmnd.length}\n` +
                              `⚡ ── [ 🔥 MATRIX_END 🔥 ] ── ⚡\n${readMore}\n\n`;
                 let body = "";
                 type.forEach((cmmd) => {
@@ -190,7 +201,7 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                              `│ 📅 *Date*   : ${date}\n` +
                              `│ ⏰ *Time*   : ${time}\n` +
                              `│ ⏱️ *Uptime* : ${uptimeVal}\n` +
-                             `│ 📂 *Plugins*: ${commands.length}\n` +
+                             `│ 📂 *Plugins*: ${cmnd.length}\n` +
                              `└──────────────────────────┘\n${readMore}\n\n`;
                 let body = "";
                 type.forEach((cmmd) => {
@@ -213,7 +224,7 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                              `🔮 📅 *Date*   : ${date}\n` +
                              `🔮 ⏰ *Time*   : ${time}\n` +
                              `🔮 ⏱️ *Uptime* : ${uptimeVal}\n` +
-                             `🔮 📂 *Plugins*: ${commands.length}\n` +
+                             `🔮 📂 *Plugins*: ${cmnd.length}\n` +
                              `🔮 ══════════════════════════ 🔮\n${readMore}\n\n`;
                 let body = "";
                 type.forEach((cmmd) => {
@@ -238,7 +249,7 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                              `💻 📅 *Date*   : ${date}\n` +
                              `💻 ⏰ *Time*   : ${time}\n` +
                              `💻 ⏱️ *Uptime* : ${uptimeVal}\n` +
-                             `💻 📂 *Plugins*: ${commands.length}\n` +
+                             `💻 📂 *Plugins*: ${cmnd.length}\n` +
                              `════════════════════════════\n${readMore}\n\n`;
                 let body = "";
                 type.forEach((cmmd) => {
@@ -263,7 +274,7 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                              `⭐ 📅 *Date*   : ${date}\n` +
                              `⭐ ⏰ *Time*   : ${time}\n` +
                              `⭐ ⏱️ *Uptime* : ${uptimeVal}\n` +
-                             `⭐ 📂 *Plugins*: ${commands.length}\n` +
+                             `⭐ 📂 *Plugins*: ${cmnd.length}\n` +
                              `🌟 ━━━━━━━━━━━━━━━━━━━━━━━━ 🌟\n${readMore}\n\n`;
                 let body = "";
                 type.forEach((cmmd) => {
@@ -288,7 +299,7 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                              `✨ 📅 *Date*   : ${date}\n` +
                              `✨ ⏰ *Time*   : ${time}\n` +
                              `✨ ⏱️ *Uptime* : ${uptimeVal}\n` +
-                             `✨ 📂 *Plugins*: ${commands.length}\n` +
+                             `✨ 📂 *Plugins*: ${cmnd.length}\n` +
                              `════════════════════════════\n${readMore}\n\n`;
                 let body = "";
                 type.forEach((cmmd) => {
@@ -450,7 +461,6 @@ Sparky({
   try {
     if (!autoDownloadEnabled) return;
 
-    // Status / Broadcast varil messages ignore karnyasathi strict check
     const remoteJid = m.jid || m.key?.remoteJid || "";
     if (remoteJid.includes("status@broadcast") || remoteJid === "status@broadcast") return;
 
@@ -474,7 +484,7 @@ Sparky({
           console.log("AutoDL Video Error:", err);
         }
 
-        // 2. Audio Download & Send (Proper URL Extraction & Buffer Fix)
+        // 2. Audio Download & Send
         try {
           const audioRes = await yta(ytUrl);
           const audioUrl = typeof audioRes === 'object' ? (audioRes.dl_url || audioRes.url || audioRes.audio) : audioRes;
