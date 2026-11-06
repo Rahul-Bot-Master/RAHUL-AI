@@ -10,7 +10,13 @@ Rahul AI - Custom Build
 ------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 const { Sparky, isPublic, bing, duckGo, commands } = require("../lib");
-const { IronMan, getJson, isUrl } = require('./client/');
+const axios = require('axios'); // getJson sathi axios use kela ahe
+
+// Helper function getJson sathi
+async function getJson(url) {
+    let res = await axios.get(url);
+    return res.data;
+}
 
 // --- GOOGLE/BING IMAGE SEARCH ---
 Sparky({
@@ -54,7 +60,9 @@ Sparky({
     let match = args ? args.join(" ") : "";
     if (!match || isUrl(match)) return await m.reply('_Please provide a valid query_');
     try {
-        const data = await getJson(api + `search/xnxx?q=${encodeURIComponent(match)}`);
+        // Jar api base url define nasel tar direct public API use karu shaktoos
+        const apiBase = global.api || "https://api.vyturex.com/"; // default fallback
+        const data = await getJson(apiBase + `search/xnxx?q=${encodeURIComponent(match)}`);
         if (!data || !data.result) return await m.reply("*No results found!*");
         await m.reply(data.result.map(item => `*💎 Title:* ${item.title}\n*🔗 Link:* ${item.link}\n\n`).join(""));
     } catch (err) {
