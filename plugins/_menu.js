@@ -213,7 +213,6 @@ Sparky({
 });
 
 // --- AUTODL ON/OFF COMMAND ---
-let autoDownloadEnabled = true;
 Sparky({
   name: "autodl",
   fromMe: isPublic,
@@ -266,9 +265,9 @@ Sparky({
           const audioUrl = typeof audioRes === 'object' ? (audioRes.dl_url || audioRes.url || audioRes.audio) : audioRes;
           
           if (audioUrl) {
-            const audioButton = await getBuffer(audioUrl);
+            const audioBuffer = await getBuffer(audioUrl);
             await client.sendMessage(m.jid, { 
-              audio: audioButton, 
+              audio: audioBuffer, 
               mimetype: "audio/mpeg", 
               ptt: false 
             }, { quoted: m });
