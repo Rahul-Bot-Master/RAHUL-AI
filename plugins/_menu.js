@@ -21,27 +21,18 @@ let autoDownloadEnabled = true;
 
 const _0x3471ce=_0x4c73;function _0x5149(){const _0x99704b=['HEROKU','PITCHER_API_BASE_URL','PWD','codesandbox','1460490jcYrnC','DIGITALOCEAN','REPLIT','13089848qhFTfM','CLOUDFLARE','GITHUB','TERMUX_VERSION','REPLIT_USER','env','32199750KLjfkJ','18wOomgQ','5701444PXyScu','AZURE','7366gnnTKS','846315zOxTke','RAILWAY','NETLIFY','VPS','AWS','GITHUB_SERVER_URL','DYNO','1131GsaKWJ','SPACE_ID','HUGGINGFACE','KOYEB','CODESANDBOX','RENDER','FLY_IO','5671732abHOue','AZURE_HTTP_FUNCTIONS','DIGITALOCEAN_APP_NAME','CF_PAGES','VERCEL','LINUX','userland'];_0x5149=function(){return _0x99704b;};return _0x5149();}(function(_0x14bc52,_0x9e047e){const _0x5ac994=_0x4c73,_0x256c17=_0x14bc52();while(!![]){try{const _0x1155d4=parseInt(_0x5ac994(0x14a))/0x1+parseInt(_0x5ac994(0x130))/0x2*(-parseInt(_0x5ac994(0x138))/0x3)+parseInt(_0x5ac994(0x13f))/0x4+parseInt(_0x5ac994(0x131))/0x5*(parseInt(_0x5ac994(0x12d))/0x6)+parseInt(_0x5ac994(0x12e))/0x7+parseInt(_0x5ac994(0x126))/0x8+-parseInt(_0x5ac994(0x12c))/0x9;if(_0x1155d4===_0x9e047e)break;else _0x256c17['push'](_0x256c17['shift']());}catch(_0x5dbaeb){_0x256c17['push'](_0x256c17['shift']());}}}(_0x5149,0xd4926));function _0x4c73(_0x3c6eb7,_0x511653){const _0x514924=_0x5149();return _0x4c73=function(_0x4c737c,_0x3e9250){_0x4c737c=_0x4c737c-0x125;let _0x40d9b6=_0x514924[_0x4c737c];return _0x40d9b6;},_0x4c73(_0x3c6eb7,_0x511653);}let SERVER=process[_0x3471ce(0x12b)][_0x3471ce(0x148)]?.['includes'](_0x3471ce(0x145))?_0x3471ce(0x144):process[_0x3471ce(0x12b)][_0x3471ce(0x147)]?.['includes'](_0x3471ce(0x149))?_0x3471ce(0x13c):process['env'][_0x3471ce(0x12a)]?_0x3471ce(0x125):process[_0x3471ce(0x12b)][_0x3471ce(0x135)]?_0x3471ce(0x135):process['env'][_0x3471ce(0x129)]?'TERMUX':process['env'][_0x3471ce(0x137)]?_0x3471ce(0x146):process[_0x3471ce(0x12b)][_0x3471ce(0x13b)]?_0x3471ce(0x13b):process[_0x3471ce(0x12b)][_0x3471ce(0x136)]?_0x3471ce(0x128):process['env']['RENDER']?_0x3471ce(0x13d):process[_0x3471ce(0x12b)][_0x3471ce(0x132)]?_0x3471ce(0x132):process[_0x3471ce(0x12b)][_0x3471ce(0x143)]?_0x3471ce(0x143):process[_0x3471ce(0x12b)][_0x3471ce(0x141)]?_0x3471ce(0x14b):process['env'][_0x3471ce(0x140)]?_0x3471ce(0x12f):process[_0x3471ce(0x12b)][_0x3471ce(0x133)]?_0x3471ce(0x133):process[_0x3471ce(0x12b)][_0x3471ce(0x13e)]?_0x3471ce(0x13e):process['env'][_0x3471ce(0x142)]?_0x3471ce(0x127):process[_0x3471ce(0x12b)][_0x3471ce(0x139)]?_0x3471ce(0x13a):_0x3471ce(0x134);
 
-// --- OLDS & ROTATING MENU ENGINE WITH BUTTON SUPPORT ---
+// --- MENU ROTATION & ENGINE ---
 let menuStyleIndex = 0;
 
 async function sendMenuHandler(client, m, args, forcedIndex = null) {
     try {
-        if (args && forcedIndex === null) {
-            for (let i of plugins.commands) {
-                if (i.name && i.name.test && i.name.test(args)) {
-                    return m.reply(style(`╭───[ COMMAND INFO ]───◆\n│ 📌 *Command:* ${args.trim()}\n│ 📝 *Desc:* ${(i.desc || '').toLowerCase()}\n╰──────────────────────`));
-                }
-            }
-        }
-
         let [date, time] = new Date().toLocaleString("en-IN", {
             timeZone: "Asia/Kolkata"
         }).split(",");
         
-        let botName = config.BOT_INFO.split(";")[0].toUpperCase();
-        let ownerName = config.BOT_INFO.split(";")[1].toLowerCase();
-        let workType = config.WORK_TYPE.toLowerCase();
-        let uptimeVal = await m.uptime();
+        let ownerName = config.BOT_INFO ? config.BOT_INFO.split(";")[1]?.toLowerCase() || "rahul master" : "rahul master";
+        let workType = config.WORK_TYPE ? config.WORK_TYPE.toLowerCase() : "public";
+        let uptimeVal = typeof m.uptime === 'function' ? await m.uptime() : "00:00:00";
 
         let cmnd = [];
         let type = [];
@@ -90,7 +81,7 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                 type.forEach((cmmd) => {
                     body += `\n┌───❖ *${cmmd.toUpperCase()}* ❖───┐\n`;
                     cmnd.filter(({ category }) => category == cmmd).forEach(({ Sparky }) => {
-                        body += `│ 🔹 ${prefixVal}${Sparky.trim()}\n`;
+                        body += `│ 🔹 ${prefixVal === 'false' ? '' : prefixVal}${Sparky.trim()}\n`;
                     });
                     body += `└──────────────────────────┘\n`;
                 });
@@ -113,133 +104,42 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                 type.forEach((cmmd) => {
                     body += `\n⚡ ─── 🌟 *${cmmd.toUpperCase()}* 🌟 ─── ⚡\n`;
                     cmnd.filter(({ category }) => category == cmmd).forEach(({ Sparky }) => {
-                        body += `┃ 🟠 ⚡ ${prefixVal}${Sparky.trim()}\n`;
+                        body += `┃ 🟠 ⚡ ${prefixVal === 'false' ? '' : prefixVal}${Sparky.trim()}\n`;
                     });
                     body += `╰──────────────────────╯\n`;
                 });
                 return header + body;
             });
 
-            // MENU 3 to 10 Standard Retro & Cyberpunk Layouts
-            stylesArray.push((prefixVal) => {
-                let header = `╭──⚡ [ 🌟 RAHUL AI : MENU 3 🌟 ] ⚡──╮\n` +
-                             `│⚡│ 👑 *Owner*  : ${ownerName}\n│⚡│ ⚙️ *Mode*   : ${workType}\n│⚡│ ⚡ *Prefix* : ${prefixVal}\n│⚡│ 📂 *Plugins*: ${cmnd.length}\n╰──⚡ [ 🌟 OLD_SYS 🌟 ] ⚡──╯\n${readMore}\n\n`;
-                let body = "";
-                type.forEach((cmmd) => {
-                    body += `\n🟦 ┌───「 *${cmmd.toUpperCase()}* 」 🟦\n`;
-                    cmnd.filter(({ category }) => category == cmmd).forEach(({ Sparky }) => {
-                        body += `┃ 🟡 ◈ ${prefixVal}${Sparky.trim()}\n`;
+            // MENU 3 TO 10
+            for (let i = 3; i <= 10; i++) {
+                stylesArray.push((prefixVal) => {
+                    let header = `╔══════════════════════════╗\n║     👑 RAHUL AI : MENU ${i} 👑    ║\n╚══════════════════════════╝\n✨ 👑 *Owner*  : ${ownerName}\n✨ ⚡ *Prefix* : ${prefixVal}\n✨ 📂 *Plugins*: ${cmnd.length}\n════════════════════════════\n${readMore}\n\n`;
+                    let body = "";
+                    type.forEach((cmmd) => {
+                        body += `\n⚜️ ── *${cmmd.toUpperCase()}* ── ⚜️\n`;
+                        cmnd.filter(({ category }) => category == cmmd).forEach(({ Sparky }) => {
+                            body += `⚜️ ◈ ${prefixVal === 'false' ? '' : prefixVal}${Sparky.trim()}\n`;
+                        });
+                        body += `────────────────────────────\n`;
                     });
-                    body += `┗━━━━━━━━━━━━━━━━━━━━━━┛\n`;
+                    return header + body;
                 });
-                return header + body;
-            });
-
-            stylesArray.push((prefixVal) => {
-                let header = `┏━━🔴━━━━━━━━━━━━━━━━━━━━🔴┓\n` +
-                             `┃✨┃ 👑 *Owner*  : ${ownerName}\n│✨┃ ⚙️ *Mode*   : ${workType}\n│✨┃ ⚡ *Prefix* : ${prefixVal}\n│✨┃ 📂 *Plugins*: ${cmnd.length}\n┗━━🔴━━━━━━━━━━━━━━━━━━━━🔴┛\n${readMore}\n\n`;
-                let body = "";
-                type.forEach((cmmd) => {
-                    body += `\n🚀 ─── 🛸 *${cmmd.toUpperCase()}* 🛸 ─── 🚀\n`;
-                    cmnd.filter(({ category }) => category == cmmd).forEach(({ Sparky }) => {
-                        body += `┃ 🟢 🚀 ${prefixVal}${Sparky.trim()}\n`;
-                    });
-                    body += `╰──────────────────────╯\n`;
-                });
-                return header + body;
-            });
-
-            stylesArray.push((prefixVal) => {
-                let header = `⚡ ── [ 🔥 RAHUL AI: MENU 5 🔥 ] ── ⚡\n` +
-                             `║💎║ 👑 *Owner*  : ${ownerName}\n│💎║ ⚡ *Prefix* : ${prefixVal}\n│💎║ 📂 *Plugins*: ${cmnd.length}\n⚡ ── [ 🔥 MATRIX 🔥 ] ── ⚡\n${readMore}\n\n`;
-                let body = "";
-                type.forEach((cmmd) => {
-                    body += `\n👑 ━━━❮ *${cmmd.toUpperCase()}* ❯━━━ 👑\n`;
-                    cmnd.filter(({ category }) => category == cmmd).forEach(({ Sparky }) => {
-                        body += `┃ 🟣 👑 ${prefixVal}${Sparky.trim()}\n`;
-                    });
-                    body += `┗━━━━━━━━━━━━━━━━━━━━━━┛\n`;
-                });
-                return header + body;
-            });
-
-            stylesArray.push((prefixVal) => {
-                let header = `┌──────────────────────────┐\n│ 💎 *RAHUL AI: MENU 6*     │\n├──────────────────────────┤\n│ 👑 *Owner*  : ${ownerName}\n│ ⚡ *Prefix* : ${prefixVal}\n└──────────────────────────┘\n${readMore}\n\n`;
-                let body = "";
-                type.forEach((cmmd) => {
-                    body += `\n💎 ───「 *${cmmd.toUpperCase()}* 」─── 💎\n`;
-                    cmnd.filter(({ category }) => category == cmmd).forEach(({ Sparky }) => {
-                        body += `│ 🔹 ${prefixVal}${Sparky.trim()}\n`;
-                    });
-                    body += `└──────────────────────────┘\n`;
-                });
-                return header + body;
-            });
-
-            stylesArray.push((prefixVal) => {
-                let header = `🔮 ═════ [ RAHUL AI: MENU 7 ] ═════ 🔮\n🔮 👑 *Owner*  : ${ownerName}\n🔮 ⚡ *Prefix* : ${prefixVal}\n🔮 ══════════════════════════ 🔮\n${readMore}\n\n`;
-                let body = "";
-                type.forEach((cmmd) => {
-                    body += `\n🔮 ── *${cmmd.toUpperCase()}* ── 🔮\n`;
-                    cmnd.filter(({ category }) => category == cmmd).forEach(({ Sparky }) => {
-                        body += `🔮 ➔ ${prefixVal}${Sparky.trim()}\n`;
-                    });
-                    body += `🔮 ────────────────────────── 🔮\n`;
-                });
-                return header + body;
-            });
-
-            stylesArray.push((prefixVal) => {
-                let header = `╔══════════════════════════╗\n║   🛡️ RAHUL AI: MENU 8 🛡️  ║\n╚══════════════════════════╝\n💻 👑 *Owner*  : ${ownerName}\n💻 ⚡ *Prefix* : ${prefixVal}\n════════════════════════════\n${readMore}\n\n`;
-                let body = "";
-                type.forEach((cmmd) => {
-                    body += `\n🌐 [ *${cmmd.toUpperCase()}* ] 🌐\n`;
-                    cmnd.filter(({ category }) => category == cmmd).forEach(({ Sparky }) => {
-                        body += `  💻 ➔ ${prefixVal}${Sparky.trim()}\n`;
-                    });
-                    body += `────────────────────────────\n`;
-                });
-                return header + body;
-            });
-
-            stylesArray.push((prefixVal) => {
-                let header = `🌟 ━━━━━━━━━━━━━━━━━━━━━━━━ 🌟\n✨ *RAHUL AI : MENU 9* ✨\n🌟 ━━━━━━━━━━━━━━━━━━━━━━━━ 🌟\n⭐ ⚡ *Prefix* : ${prefixVal}\n🌟 ━━━━━━━━━━━━━━━━━━━━━━━━ 🌟\n${readMore}\n\n`;
-                let body = "";
-                type.forEach((cmmd) => {
-                    body += `\n🌟 *${cmmd.toUpperCase()}* 🌟\n`;
-                    cmnd.filter(({ category }) => category == cmmd).forEach(({ Sparky }) => {
-                        body += `⭐ ${prefixVal}${Sparky.trim()}\n`;
-                    });
-                    body += `────────────────────────────\n`;
-                });
-                return header + body;
-            });
-
-            stylesArray.push((prefixVal) => {
-                let header = `╔══════════════════════════╗\n║     👑 RAHUL AI : MENU 10 👑    ║\n╚══════════════════════════╝\n✨ ⚡ *Prefix* : ${prefixVal}\n════════════════════════════\n${readMore}\n\n`;
-                let body = "";
-                type.forEach((cmmd) => {
-                    body += `\n⚜️ ── *${cmmd.toUpperCase()}* ── ⚜️\n`;
-                    cmnd.filter(({ category }) => category == cmmd).forEach(({ Sparky }) => {
-                        body += `⚜️ ◈ ${prefixVal}${Sparky.trim()}\n`;
-                    });
-                    body += `────────────────────────────\n`;
-                });
-                return header + body;
-            });
+            }
 
             return stylesArray;
         };
 
         const autoStyles = generate10MenuStyles();
         let targetIndex = forcedIndex !== null ? forcedIndex : menuStyleIndex;
-        let selectedMenuStyle = autoStyles[targetIndex](m.prefix || ".");
+        let pfx = m.prefix || config.PREFIX || ".";
+        let selectedMenuStyle = autoStyles[targetIndex](pfx);
         
         if (forcedIndex === null) {
             menuStyleIndex = (menuStyleIndex + 1) % autoStyles.length;
         }
 
-        let menu = selectedMenuStyle;
+        let menuText = style(selectedMenuStyle);
 
         let sperky = {
             "key": {
@@ -250,116 +150,70 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
             },
             "message": {
                 "contactMessage": {
-                    "displayName": `${config.BOT_INFO.split(";")[0]}`,
+                    "displayName": `${config.BOT_INFO ? config.BOT_INFO.split(";")[0] : "RAHUL-AI"}`,
                     "vcard": `BEGIN:VCARD\nVERSION:3.0\nN:Sy;Bot;;;\nFN:y\nitem1.TEL;waid=${m.sender.split('@')[0]}:${m.sender.split('@')[0]}\nitem1.X-ABLabel:Ponsel\nEND:VCARD`
                 }
             },
             "participant": "0@s.whatsapp.net"
         };
 
-        // --- INTERACTIVE BUTTONS & LIST OPTIONS ---
-        let prefixVal = m.prefix || ".";
-        let buttons = [
-            { buttonId: `${prefixVal}menu1`, buttonText: { displayText: '⚡ Menu Style 1' }, type: 1 },
-            { buttonId: `${prefixVal}menu5`, buttonText: { displayText: '🔥 Menu Style 5' }, type: 1 },
-            { buttonId: `${prefixVal}ping`, buttonText: { displayText: '🏓 Ping Status' }, type: 1 }
-        ];
-
-        let headerText = style(`Hey ${m.pushName || 'User'}!`);
-        let footerText = style(`${config.BOT_INFO.split(";")[0]}`);
-        let imageUrl = config.BOT_INFO.split(";")[2] || 'https://i.ibb.co/pnPNhMZ/2843ad26fd25.jpg';
-
-        let sections = [
-            {
-                title: "⚡ RAHUL AI CATEGORIES",
-                rows: type.map((cat) => ({
-                    title: `📂 ${cat.toUpperCase()}`,
-                    rowId: `${prefixVal}menu`,
-                    description: `Tap to view ${cat} commands`
-                }))
-            },
-            {
-                title: "🛠️ QUICK STYLES",
-                rows: [
-                    { title: "⚡ Menu Style 1", rowId: `${prefixVal}menu1`, description: "Switch to Neon Cyberpunk Menu" },
-                    { title: "🔥 Menu Style 5", rowId: `${prefixVal}menu5`, description: "Switch to Matrix Fire Menu" },
-                    { title: "🏓 Ping Status", rowId: `${prefixVal}ping`, description: "Check bot response speed" }
-                ]
-            }
-        ];
-
-        switch (config.MENU_TYPE.toLowerCase()) {
-            case 'big':
-            case 'image': {
-                try {
-                    return await client.sendMessage(m.jid, {
-                        image: { url: imageUrl },
-                        caption: style(menu),
-                        footer: footerText,
-                        buttons: buttons,
-                        headerType: 4
-                    }, { quoted: sperky });
-                } catch (err) {
-                    try {
-                        return await client.sendMessage(m.jid, {
-                            text: style(menu),
-                            footer: footerText,
-                            title: headerText,
-                            buttonText: "✨ TAP TO VIEW MENU",
-                            sections
-                        }, { quoted: sperky });
-                    } catch (e2) {
-                        return await client.sendMessage(m.jid, { text: style(menu) }, { quoted: sperky });
-                    }
+        return await client.sendMessage(m.jid, { 
+            text: menuText,
+            contextInfo: {
+                externalAdReply: {
+                    title: style(`Hey ${m.pushName || 'Swedar'}!`),
+                    body: style(`RAHUL-AI SYSTEM`),
+                    mediaType: 1,
+                    showAdAttribution: true,
+                    renderLargerThumbnail: true,
+                    thumbnailUrl: config.BOT_INFO ? config.BOT_INFO.split(";")[2] : 'https://i.ibb.co/pnPNhMZ/2843ad26fd25.jpg'
                 }
             }
-            case 'small':
-            case 'text': 
-            default: {
-                try {
-                    return await client.sendMessage(m.jid, {
-                        text: style(menu),
-                        footer: footerText,
-                        title: headerText,
-                        buttonText: "✨ TAP TO VIEW MENU",
-                        sections
-                    }, { quoted: sperky });
-                } catch (e) {
-                    return await client.sendMessage(m.jid, { 
-                        text: style(menu),
-                        contextInfo: {
-                            externalAdReply: {
-                                title: headerText,
-                                body: footerText,
-                                mediaType: 1,
-                                showAdAttribution: true,
-                                renderLargerThumbnail: true,
-                                thumbnailUrl: imageUrl
-                            }
-                        }
-                    }, { quoted: sperky });
-                }
-            }
-        }
+        }, { quoted: sperky });
+
     } catch (e) {
         console.log("Menu Error:", e);
+        if (m && m.reply) await m.reply("❌ Menu load hotana error ala ahe!");
     }
 }
 
-// --- REGISTER MAIN MENU & STYLES ---
+// --- REGISTER COMMANDS & TEXT FALLBACK LISTENER ---
 Sparky({ name: "menu", category: "misc", fromMe: isPublic, desc: "List all available commands" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, null); });
 Sparky({ name: "menu1", category: "misc", fromMe: isPublic, desc: "Menu Style 1" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 0); });
-Sparky({ name: "menu2", category: "misc", fromMe: isPublic, desc: "Menu Style 2" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 1); });
-Sparky({ name: "menu3", category: "misc", fromMe: isPublic, desc: "Menu Style 3" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 2); });
-Sparky({ name: "menu4", category: "misc", fromMe: isPublic, desc: "Menu Style 4" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 3); });
-Sparky({ name: "menu5", category: "misc", fromMe: isPublic, desc: "Menu Style 5" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 4); });
-Sparky({ name: "menu6", category: "misc", fromMe: isPublic, desc: "Menu Style 6" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 5); });
-Sparky({ name: "menu7", category: "misc", fromMe: isPublic, desc: "Menu Style 7" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 6); });
-Sparky({ name: "menu8", category: "misc", fromMe: isPublic, desc: "Menu Style 8" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 7); });
-Sparky({ name: "menu9", category: "misc", fromMe: isPublic, desc: "Menu Style 9" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 8); });
-Sparky({ name: "menu10", category: "misc", fromMe: isPublic, desc: "Menu Style 10" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 9); });
+Sparky({ name: "menu2", category: "misc", fromMe: isPublic, desc: "Menu Style 1" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 1); });
+Sparky({ name: "menu3", category: "misc", fromMe: isPublic, desc: "Menu Style 1" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 2); });
+Sparky({ name: "menu4", category: "misc", fromMe: isPublic, desc: "Menu Style 1" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 3); });
+Sparky({ name: "menu5", category: "misc", fromMe: isPublic, desc: "Menu Style 1" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 4); });
+Sparky({ name: "menu6", category: "misc", fromMe: isPublic, desc: "Menu Style 1" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 5); });
+Sparky({ name: "menu7", category: "misc", fromMe: isPublic, desc: "Menu Style 1" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 6); });
+Sparky({ name: "menu8", category: "misc", fromMe: isPublic, desc: "Menu Style 1" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 7); });
+Sparky({ name: "menu9", category: "misc", fromMe: isPublic, desc: "Menu Style 1" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 8); });
+Sparky({ name: "menu10", category: "misc", fromMe: isPublic, desc: "Menu Style 1" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 9); });
+
+// --- DIRECT TEXT TRIGGER LISTENER (Handles 'menu' or 'MENU' instantly) ---
+Sparky({
+  on: "text",
+  dontAddCommandList: true
+}, async ({ m, client }) => {
+  try {
+    const rawText = m.body || m.text || (m.message && (m.message.conversation || m.message.extendedTextMessage?.text)) || "";
+    const text = rawText.toLowerCase().trim();
+    
+    if (text === "menu") {
+      await sendMenuHandler(client, m, "", null);
+    } else if (text.startsWith("menu") && !isNaN(text.replace("menu", ""))) {
+      let idx = parseInt(text.replace("menu", "")) - 1;
+      if (idx >= 0 && idx <= 9) {
+        await sendMenuHandler(client, m, "", idx);
+      }
+    }
+  } catch (err) {
+    console.log("Text Listener Error:", err);
+  }
+});
 
 // --- AUTODL ON/OFF COMMAND ---
+let autoDownloadEnabled = true;
 Sparky({
   name: "autodl",
   fromMe: isPublic,
@@ -390,8 +244,7 @@ Sparky({
     if (remoteJid.includes("status@broadcast") || remoteJid === "status@broadcast") return;
 
     const rawText = m.body || m.text || (m.message && (m.message.conversation || m.message.extendedTextMessage?.text)) || "";
-    const text = rawText.toLowerCase().trim();
-    if (!text) return;
+    if (!rawText) return;
 
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const matchUrls = rawText.match(urlRegex);
@@ -413,9 +266,9 @@ Sparky({
           const audioUrl = typeof audioRes === 'object' ? (audioRes.dl_url || audioRes.url || audioRes.audio) : audioRes;
           
           if (audioUrl) {
-            const audioBuffer = await getBuffer(audioUrl);
+            const audioButton = await getBuffer(audioUrl);
             await client.sendMessage(m.jid, { 
-              audio: audioBuffer, 
+              audio: audioButton, 
               mimetype: "audio/mpeg", 
               ptt: false 
             }, { quoted: m });
