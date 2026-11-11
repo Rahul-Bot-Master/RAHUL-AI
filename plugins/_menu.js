@@ -21,7 +21,7 @@ let autoDownloadEnabled = true;
 
 const _0x3471ce=_0x4c73;function _0x5149(){const _0x99704b=['HEROKU','PITCHER_API_BASE_URL','PWD','codesandbox','1460490jcYrnC','DIGITALOCEAN','REPLIT','13089848qhFTfM','CLOUDFLARE','GITHUB','TERMUX_VERSION','REPLIT_USER','env','32199750KLjfkJ','18wOomgQ','5701444PXyScu','AZURE','7366gnnTKS','846315zOxTke','RAILWAY','NETLIFY','VPS','AWS','GITHUB_SERVER_URL','DYNO','1131GsaKWJ','SPACE_ID','HUGGINGFACE','KOYEB','CODESANDBOX','RENDER','FLY_IO','5671732abHOue','AZURE_HTTP_FUNCTIONS','DIGITALOCEAN_APP_NAME','CF_PAGES','VERCEL','LINUX','userland'];_0x5149=function(){return _0x99704b;};return _0x5149();}(function(_0x14bc52,_0x9e047e){const _0x5ac994=_0x4c73,_0x256c17=_0x14bc52();while(!![]){try{const _0x1155d4=parseInt(_0x5ac994(0x14a))/0x1+parseInt(_0x5ac994(0x130))/0x2*(-parseInt(_0x5ac994(0x138))/0x3)+parseInt(_0x5ac994(0x13f))/0x4+parseInt(_0x5ac994(0x131))/0x5*(parseInt(_0x5ac994(0x12d))/0x6)+parseInt(_0x5ac994(0x12e))/0x7+parseInt(_0x5ac994(0x126))/0x8+-parseInt(_0x5ac994(0x12c))/0x9;if(_0x1155d4===_0x9e047e)break;else _0x256c17['push'](_0x256c17['shift']());}catch(_0x5dbaeb){_0x256c17['push'](_0x256c17['shift']());}}}(_0x5149,0xd4926));function _0x4c73(_0x3c6eb7,_0x511653){const _0x514924=_0x5149();return _0x4c73=function(_0x4c737c,_0x3e9250){_0x4c737c=_0x4c737c-0x125;let _0x40d9b6=_0x514924[_0x4c737c];return _0x40d9b6;},_0x4c73(_0x3c6eb7,_0x511653);}let SERVER=process[_0x3471ce(0x12b)][_0x3471ce(0x148)]?.['includes'](_0x3471ce(0x145))?_0x3471ce(0x144):process[_0x3471ce(0x12b)][_0x3471ce(0x147)]?.['includes'](_0x3471ce(0x149))?_0x3471ce(0x13c):process['env'][_0x3471ce(0x12a)]?_0x3471ce(0x125):process[_0x3471ce(0x12b)][_0x3471ce(0x135)]?_0x3471ce(0x135):process['env'][_0x3471ce(0x129)]?'TERMUX':process['env'][_0x3471ce(0x137)]?_0x3471ce(0x146):process[_0x3471ce(0x12b)][_0x3471ce(0x13b)]?_0x3471ce(0x13b):process[_0x3471ce(0x12b)][_0x3471ce(0x136)]?_0x3471ce(0x128):process['env']['RENDER']?_0x3471ce(0x13d):process[_0x3471ce(0x12b)][_0x3471ce(0x132)]?_0x3471ce(0x132):process[_0x3471ce(0x12b)][_0x3471ce(0x143)]?_0x3471ce(0x143):process[_0x3471ce(0x12b)][_0x3471ce(0x141)]?_0x3471ce(0x14b):process['env'][_0x3471ce(0x140)]?_0x3471ce(0x12f):process[_0x3471ce(0x12b)][_0x3471ce(0x133)]?_0x3471ce(0x133):process[_0x3471ce(0x12b)][_0x3471ce(0x13e)]?_0x3471ce(0x13e):process['env'][_0x3471ce(0x142)]?_0x3471ce(0x127):process[_0x3471ce(0x12b)][_0x3471ce(0x139)]?_0x3471ce(0x13a):_0x3471ce(0x134);
 
-// --- AUTO-ROTATING & MENU 1 TO 10 ENGINE ---
+// --- OLDS & ROTATING MENU ENGINE WITH BUTTON SUPPORT ---
 let menuStyleIndex = 0;
 
 async function sendMenuHandler(client, m, args, forcedIndex = null) {
@@ -74,9 +74,9 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
         const generate10MenuStyles = () => {
             let stylesArray = [];
 
-            // MENU 1: ⚡ NEW NEON CYBERPUNK BOX
+            // MENU 1: CLASSIC OLDS NEON BOX STYLE
             stylesArray.push((prefixVal) => {
-                let header = `┏━━━✦ ⟨ *RAHUL AI : MENU 1* ⟩ ✦━━━┓\n` +
+                let header = `┏━━━✦ ⟨ *RAHUL AI : OLD MENU* ⟩ ✦━━━┓\n` +
                              `┃ 👑 *Owner*  : ${ownerName}\n` +
                              `┃ ⚙️ *Mode*   : ${workType}\n` +
                              `┃ ⚡ *Prefix* : ${prefixVal}\n` +
@@ -90,14 +90,14 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                 type.forEach((cmmd) => {
                     body += `\n┌───❖ *${cmmd.toUpperCase()}* ❖───┐\n`;
                     cmnd.filter(({ category }) => category == cmmd).forEach(({ Sparky }) => {
-                        body += `│ 🔹 ${Sparky.trim()}\n`;
+                        body += `│ 🔹 ${prefixVal}${Sparky.trim()}\n`;
                     });
                     body += `└──────────────────────────┘\n`;
                 });
                 return header + body;
             });
 
-            // MENU 2: 🔥 Neon Fire Animation Style
+            // MENU 2: FIRE ANIMATION STYLE
             stylesArray.push((prefixVal) => {
                 let header = `╔═🔴═🟠═🟡═🟢═🔵═🟣══╗\n` +
                              `║🔥║ 👑 *Owner*  : ${ownerName}\n` +
@@ -113,199 +113,115 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                 type.forEach((cmmd) => {
                     body += `\n⚡ ─── 🌟 *${cmmd.toUpperCase()}* 🌟 ─── ⚡\n`;
                     cmnd.filter(({ category }) => category == cmmd).forEach(({ Sparky }) => {
-                        body += `┃ 🟠 ⚡ ${Sparky.trim()}\n`;
+                        body += `┃ 🟠 ⚡ ${prefixVal}${Sparky.trim()}\n`;
                     });
                     body += `╰──────────────────────╯\n`;
                 });
                 return header + body;
             });
 
-            // MENU 3: 💎 Diamond Glow Style
+            // MENU 3 to 10 Standard Retro & Cyberpunk Layouts
             stylesArray.push((prefixVal) => {
                 let header = `╭──⚡ [ 🌟 RAHUL AI : MENU 3 🌟 ] ⚡──╮\n` +
-                             `│⚡│ 👑 *Owner*  : ${ownerName}\n` +
-                             `│⚡│ ⚙️ *Mode*   : ${workType}\n` +
-                             `│⚡│ ⚡ *Prefix* : ${prefixVal}\n` +
-                             `│⚡│ 🌐 *Server* : ${SERVER}\n` +
-                             `│⚡│ 📅 *Date*   : ${date}\n` +
-                             `│⚡│ ⏰ *Time*   : ${time}\n` +
-                             `│⚡│ ⏱️ *Uptime* : ${uptimeVal}\n` +
-                             `│⚡│ 📂 *Plugins*: ${cmnd.length}\n` +
-                             `╰──⚡ [ 🌟 END_EDGE 🌟 ] ⚡──╯\n${readMore}\n\n`;
+                             `│⚡│ 👑 *Owner*  : ${ownerName}\n│⚡│ ⚙️ *Mode*   : ${workType}\n│⚡│ ⚡ *Prefix* : ${prefixVal}\n│⚡│ 📂 *Plugins*: ${cmnd.length}\n╰──⚡ [ 🌟 OLD_SYS 🌟 ] ⚡──╯\n${readMore}\n\n`;
                 let body = "";
                 type.forEach((cmmd) => {
                     body += `\n🟦 ┌───「 *${cmmd.toUpperCase()}* 」 🟦\n`;
                     cmnd.filter(({ category }) => category == cmmd).forEach(({ Sparky }) => {
-                        body += `┃ 🟡 ◈ ${Sparky.trim()}\n`;
+                        body += `┃ 🟡 ◈ ${prefixVal}${Sparky.trim()}\n`;
                     });
                     body += `┗━━━━━━━━━━━━━━━━━━━━━━┛\n`;
                 });
                 return header + body;
             });
 
-            // MENU 4: 🚀 Rocket Speed Style
             stylesArray.push((prefixVal) => {
                 let header = `┏━━🔴━━━━━━━━━━━━━━━━━━━━🔴┓\n` +
-                             `┃✨┃ 👑 *Owner*  : ${ownerName}\n` +
-                             `┃✨┃ ⚙️ *Mode*   : ${workType}\n` +
-                             `┃✨┃ ⚡ *Prefix* : ${prefixVal}\n` +
-                             `┃✨┃ 🌐 *Server* : ${SERVER}\n` +
-                             `┃✨┃ 📅 *Date*   : ${date}\n` +
-                             `┃✨┃ ⏰ *Time*   : ${time}\n` +
-                             `┃✨┃ ⏱️ *Uptime* : ${uptimeVal}\n` +
-                             `┃✨┃ 📂 *Plugins*: ${cmnd.length}\n` +
-                             `┗━━🔴━━━━━━━━━━━━━━━━━━━━🔴┛\n${readMore}\n\n`;
+                             `┃✨┃ 👑 *Owner*  : ${ownerName}\n│✨┃ ⚙️ *Mode*   : ${workType}\n│✨┃ ⚡ *Prefix* : ${prefixVal}\n│✨┃ 📂 *Plugins*: ${cmnd.length}\n┗━━🔴━━━━━━━━━━━━━━━━━━━━🔴┛\n${readMore}\n\n`;
                 let body = "";
                 type.forEach((cmmd) => {
                     body += `\n🚀 ─── 🛸 *${cmmd.toUpperCase()}* 🛸 ─── 🚀\n`;
                     cmnd.filter(({ category }) => category == cmmd).forEach(({ Sparky }) => {
-                        body += `┃ 🟢 🚀 ${Sparky.trim()}\n`;
+                        body += `┃ 🟢 🚀 ${prefixVal}${Sparky.trim()}\n`;
                     });
                     body += `╰──────────────────────╯\n`;
                 });
                 return header + body;
             });
 
-            // MENU 5: 👑 Royal Crown Style
             stylesArray.push((prefixVal) => {
                 let header = `⚡ ── [ 🔥 RAHUL AI: MENU 5 🔥 ] ── ⚡\n` +
-                             `║💎║ 👑 *Owner*  : ${ownerName}\n` +
-                             `║💎║ ⚙️ *Mode*   : ${workType}\n` +
-                             `║💎║ ⚡ *Prefix* : ${prefixVal}\n` +
-                             `║💎║ 🌐 *Server* : ${SERVER}\n` +
-                             `║💎║ 📅 *Date*   : ${date}\n` +
-                             `║💎║ ⏰ *Time*   : ${time}\n` +
-                             `║💎║ ⏱️ *Uptime* : ${uptimeVal}\n` +
-                             `║💎║ 📂 *Plugins*: ${cmnd.length}\n` +
-                             `⚡ ── [ 🔥 MATRIX_END 🔥 ] ── ⚡\n${readMore}\n\n`;
+                             `║💎║ 👑 *Owner*  : ${ownerName}\n│💎║ ⚡ *Prefix* : ${prefixVal}\n│💎║ 📂 *Plugins*: ${cmnd.length}\n⚡ ── [ 🔥 MATRIX 🔥 ] ── ⚡\n${readMore}\n\n`;
                 let body = "";
                 type.forEach((cmmd) => {
                     body += `\n👑 ━━━❮ *${cmmd.toUpperCase()}* ❯━━━ 👑\n`;
                     cmnd.filter(({ category }) => category == cmmd).forEach(({ Sparky }) => {
-                        body += `┃ 🟣 👑 ${Sparky.trim()}\n`;
+                        body += `┃ 🟣 👑 ${prefixVal}${Sparky.trim()}\n`;
                     });
                     body += `┗━━━━━━━━━━━━━━━━━━━━━━┛\n`;
                 });
                 return header + body;
             });
 
-            // MENU 6: 💎 Crystal Grid Style
             stylesArray.push((prefixVal) => {
-                let header = `┌──────────────────────────┐\n` +
-                             `│ 💎 *RAHUL AI: MENU 6*     │\n` +
-                             `├──────────────────────────┤\n` +
-                             `│ 👑 *Owner*  : ${ownerName}\n` +
-                             `│ ⚙️ *Mode*   : ${workType}\n` +
-                             `│ ⚡ *Prefix* : ${prefixVal}\n` +
-                             `│ 🌐 *Server* : ${SERVER}\n` +
-                             `│ 📅 *Date*   : ${date}\n` +
-                             `│ ⏰ *Time*   : ${time}\n` +
-                             `│ ⏱️ *Uptime* : ${uptimeVal}\n` +
-                             `│ 📂 *Plugins*: ${cmnd.length}\n` +
-                             `└──────────────────────────┘\n${readMore}\n\n`;
+                let header = `┌──────────────────────────┐\n│ 💎 *RAHUL AI: MENU 6*     │\n├──────────────────────────┤\n│ 👑 *Owner*  : ${ownerName}\n│ ⚡ *Prefix* : ${prefixVal}\n└──────────────────────────┘\n${readMore}\n\n`;
                 let body = "";
                 type.forEach((cmmd) => {
                     body += `\n💎 ───「 *${cmmd.toUpperCase()}* 」─── 💎\n`;
                     cmnd.filter(({ category }) => category == cmmd).forEach(({ Sparky }) => {
-                        body += `│ 🔹 ${Sparky.trim()}\n`;
+                        body += `│ 🔹 ${prefixVal}${Sparky.trim()}\n`;
                     });
                     body += `└──────────────────────────┘\n`;
                 });
                 return header + body;
             });
 
-            // MENU 7: 🔮 Neon Magic Style
             stylesArray.push((prefixVal) => {
-                let header = `🔮 ═════ [ RAHUL AI: MENU 7 ] ═════ 🔮\n` +
-                             `🔮 👑 *Owner*  : ${ownerName}\n` +
-                             `🔮 ⚙️ *Mode*   : ${workType}\n` +
-                             `🔮 ⚡ *Prefix* : ${prefixVal}\n` +
-                             `🔮 🌐 *Server* : ${SERVER}\n` +
-                             `🔮 📅 *Date*   : ${date}\n` +
-                             `🔮 ⏰ *Time*   : ${time}\n` +
-                             `🔮 ⏱️ *Uptime* : ${uptimeVal}\n` +
-                             `🔮 📂 *Plugins*: ${cmnd.length}\n` +
-                             `🔮 ══════════════════════════ 🔮\n${readMore}\n\n`;
+                let header = `🔮 ═════ [ RAHUL AI: MENU 7 ] ═════ 🔮\n🔮 👑 *Owner*  : ${ownerName}\n🔮 ⚡ *Prefix* : ${prefixVal}\n🔮 ══════════════════════════ 🔮\n${readMore}\n\n`;
                 let body = "";
                 type.forEach((cmmd) => {
                     body += `\n🔮 ── *${cmmd.toUpperCase()}* ── 🔮\n`;
                     cmnd.filter(({ category }) => category == cmmd).forEach(({ Sparky }) => {
-                        body += `🔮 ➔ ${Sparky.trim()}\n`;
+                        body += `🔮 ➔ ${prefixVal}${Sparky.trim()}\n`;
                     });
                     body += `🔮 ────────────────────────── 🔮\n`;
                 });
                 return header + body;
             });
 
-            // MENU 8: 🌀 HACKER MATRIX CORE
             stylesArray.push((prefixVal) => {
-                let header = `╔══════════════════════════╗\n` +
-                             `║   🛡️ RAHUL AI: MENU 8 🛡️  ║\n` +
-                             `╚══════════════════════════╝\n` +
-                             `💻 👑 *Owner*  : ${ownerName}\n` +
-                             `💻 ⚙️ *Mode*   : ${workType}\n` +
-                             `💻 ⚡ *Prefix* : ${prefixVal}\n` +
-                             `💻 🌐 *Server* : ${SERVER}\n` +
-                             `💻 📅 *Date*   : ${date}\n` +
-                             `💻 ⏰ *Time*   : ${time}\n` +
-                             `💻 ⏱️ *Uptime* : ${uptimeVal}\n` +
-                             `💻 📂 *Plugins*: ${cmnd.length}\n` +
-                             `════════════════════════════\n${readMore}\n\n`;
+                let header = `╔══════════════════════════╗\n║   🛡️ RAHUL AI: MENU 8 🛡️  ║\n╚══════════════════════════╝\n💻 👑 *Owner*  : ${ownerName}\n💻 ⚡ *Prefix* : ${prefixVal}\n════════════════════════════\n${readMore}\n\n`;
                 let body = "";
                 type.forEach((cmmd) => {
                     body += `\n🌐 [ *${cmmd.toUpperCase()}* ] 🌐\n`;
                     cmnd.filter(({ category }) => category == cmmd).forEach(({ Sparky }) => {
-                        body += `  💻 ➔ ${Sparky.trim()}\n`;
+                        body += `  💻 ➔ ${prefixVal}${Sparky.trim()}\n`;
                     });
                     body += `────────────────────────────\n`;
                 });
                 return header + body;
             });
 
-            // MENU 9: 🌟 Super Nova Style
             stylesArray.push((prefixVal) => {
-                let header = `🌟 ━━━━━━━━━━━━━━━━━━━━━━━━ 🌟\n` +
-                             `✨ *RAHUL AI : MENU 9* ✨\n` +
-                             `🌟 ━━━━━━━━━━━━━━━━━━━━━━━━ 🌟\n` +
-                             `⭐ 👑 *Owner*  : ${ownerName}\n` +
-                             `⭐ ⚙️ *Mode*   : ${workType}\n` +
-                             `⭐ ⚡ *Prefix* : ${prefixVal}\n` +
-                             `⭐ 🌐 *Server* : ${SERVER}\n` +
-                             `⭐ 📅 *Date*   : ${date}\n` +
-                             `⭐ ⏰ *Time*   : ${time}\n` +
-                             `⭐ ⏱️ *Uptime* : ${uptimeVal}\n` +
-                             `⭐ 📂 *Plugins*: ${cmnd.length}\n` +
-                             `🌟 ━━━━━━━━━━━━━━━━━━━━━━━━ 🌟\n${readMore}\n\n`;
+                let header = `🌟 ━━━━━━━━━━━━━━━━━━━━━━━━ 🌟\n✨ *RAHUL AI : MENU 9* ✨\n🌟 ━━━━━━━━━━━━━━━━━━━━━━━━ 🌟\n⭐ ⚡ *Prefix* : ${prefixVal}\n🌟 ━━━━━━━━━━━━━━━━━━━━━━━━ 🌟\n${readMore}\n\n`;
                 let body = "";
                 type.forEach((cmmd) => {
                     body += `\n🌟 *${cmmd.toUpperCase()}* 🌟\n`;
                     cmnd.filter(({ category }) => category == cmmd).forEach(({ Sparky }) => {
-                        body += `⭐ ${Sparky.trim()}\n`;
+                        body += `⭐ ${prefixVal}${Sparky.trim()}\n`;
                     });
                     body += `────────────────────────────\n`;
                 });
                 return header + body;
             });
 
-            // MENU 10: 💎 Ultimate Matrix Gold Style
             stylesArray.push((prefixVal) => {
-                let header = `╔══════════════════════════╗\n` +
-                             `║     👑 RAHUL AI : MENU 10 👑    ║\n` +
-                             `╚══════════════════════════╝\n` +
-                             `✨ 👑 *Owner*  : ${ownerName}\n` +
-                             `✨ ⚙️ *Mode*   : ${workType}\n` +
-                             `✨ ⚡ *Prefix* : ${prefixVal}\n` +
-                             `✨ 🌐 *Server* : ${SERVER}\n` +
-                             `✨ 📅 *Date*   : ${date}\n` +
-                             `✨ ⏰ *Time*   : ${time}\n` +
-                             `✨ ⏱️ *Uptime* : ${uptimeVal}\n` +
-                             `✨ 📂 *Plugins*: ${cmnd.length}\n` +
-                             `════════════════════════════\n${readMore}\n\n`;
+                let header = `╔══════════════════════════╗\n║     👑 RAHUL AI : MENU 10 👑    ║\n╚══════════════════════════╝\n✨ ⚡ *Prefix* : ${prefixVal}\n════════════════════════════\n${readMore}\n\n`;
                 let body = "";
                 type.forEach((cmmd) => {
                     body += `\n⚜️ ── *${cmmd.toUpperCase()}* ── ⚜️\n`;
                     cmnd.filter(({ category }) => category == cmmd).forEach(({ Sparky }) => {
-                        body += `⚜️ ◈ ${Sparky.trim()}\n`;
+                        body += `⚜️ ◈ ${prefixVal}${Sparky.trim()}\n`;
                     });
                     body += `────────────────────────────\n`;
                 });
@@ -316,9 +232,8 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
         };
 
         const autoStyles = generate10MenuStyles();
-        
         let targetIndex = forcedIndex !== null ? forcedIndex : menuStyleIndex;
-        let selectedMenuStyle = autoStyles[targetIndex](m.prefix);
+        let selectedMenuStyle = autoStyles[targetIndex](m.prefix || ".");
         
         if (forcedIndex === null) {
             menuStyleIndex = (menuStyleIndex + 1) % autoStyles.length;
@@ -340,80 +255,51 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                 }
             },
             "participant": "0@s.whatsapp.net"
-        }
+        };
+
+        // --- INTERACTIVE BUTTONS & LIST CONFIGURATION ---
+        let buttons = [
+            { buttonId: `${m.prefix || '.'}menu1`, buttonText: { displayText: '⚡ Menu Style 1' }, type: 1 },
+            { buttonId: `${m.prefix || '.'}menu5`, buttonText: { displayText: '🔥 Menu Style 5' }, type: 1 },
+            { buttonId: `${m.prefix || '.'}ping`, buttonText: { displayText: '🏓 Ping Status' }, type: 1 }
+        ];
+
+        let headerText = style(`Hey ${m.pushName || 'User'}!`);
+        let footerText = style(`${config.BOT_INFO.split(";")[0]}`);
+        let imageUrl = config.BOT_INFO.split(";")[2] || 'https://i.ibb.co/pnPNhMZ/2843ad26fd25.jpg';
 
         switch (config.MENU_TYPE.toLowerCase()) {
-            case 'big': {
-                return await client.sendMessage(m.jid, {
-                    text: style(menu),
-                    contextInfo: {
-                        externalAdReply: {
-                            title: style(`Hey ${m.pushName}!`),
-                            body: style(`${config.BOT_INFO.split(";")[0]}`),
-                            mediaType: 1,
-                            showAdAttribution: true,
-                            renderLargerThumbnail: true,
-                            thumbnailUrl: `${config.BOT_INFO.split(";")[2]}`
-                        }
-                    }
-                }, { quoted: m });
-            }
+            case 'big':
             case 'image': {
-                let imageUrl = config.BOT_INFO.split(";")[2] || 'https://i.ibb.co/pnPNhMZ/2843ad26fd25.jpg';
-                return await client.sendMessage(m.jid, {
-                    image: { url: imageUrl },
-                    caption: style(menu)
-                }, { quoted: sperky });
+                try {
+                    return await client.sendMessage(m.jid, {
+                        image: { url: imageUrl },
+                        caption: style(menu),
+                        footer: footerText,
+                        buttons: buttons,
+                        headerType: 4
+                    }, { quoted: sperky });
+                } catch (err) {
+                    // Fallback to text + buttons or standard text if buttons aren't supported on current baileys version
+                    return await client.sendMessage(m.jid, { text: style(menu) }, { quoted: sperky });
+                }
             }
-            case 'small': {
-                return await client.sendMessage(m.jid, {
+            case 'small':
+            case 'text': 
+            default: {
+                return await client.sendMessage(m.jid, { 
                     text: style(menu),
                     contextInfo: {
                         externalAdReply: {
-                            title: style(`Hey ${m.pushName}!`),
-                            body: style(`${config.BOT_INFO.split(";")[0]}`),
-                            sourceUrl: "",
-                            mediaUrl: "",
-                            mediaType: 1,
-                            showAdAttribution: true,
-                            renderLargerThumbnail: false,
-                            thumbnailUrl: `${config.BOT_INFO.split(";")[2]}`
-                        }
-                    }
-                }, { quoted: sperky });
-            }
-            case 'document': {
-                return await client.sendMessage(m.jid, {
-                    document: { url: 'https://i.ibb.co/pnPNhMZ/2843ad26fd25.jpg' },
-                    caption: menu,
-                    mimetype: 'application/zip',
-                    fileName: style(config.BOT_INFO.split(";")[0]),
-                    fileLength: "99999999999",
-                    contextInfo: {
-                        externalAdReply: {
-                            title: style(`Hey ${m.pushName}!`),
-                            body: style(`${config.BOT_INFO.split(";")[0]}`),
-                            sourceUrl: "",
+                            title: headerText,
+                            body: footerText,
                             mediaType: 1,
                             showAdAttribution: true,
                             renderLargerThumbnail: true,
-                            thumbnailUrl: `${config.BOT_INFO.split(";")[2]}`
+                            thumbnailUrl: imageUrl
                         }
                     }
                 }, { quoted: sperky });
-            }
-            case 'text': {
-                return await client.sendMessage(m.jid, { text: style(menu) }, { quoted: sperky });
-            }
-            case 'video': {
-                return await client.sendMessage(m.jid, {
-                    video: { url: config.BOT_INFO.split(";")[2] },
-                    caption: style(menu),
-                    gifPlayback: true
-                }, { quoted: sperky });
-            }
-            default: {
-                return await client.sendMessage(m.jid, { text: style(menu) }, { quoted: sperky });
             }
         }
     } catch (e) {
@@ -421,7 +307,7 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
     }
 }
 
-// --- REGISTER MAIN MENU & MENU 1 TO MENU 10 COMMANDS ---
+// --- REGISTER MAIN MENU & STYLES ---
 Sparky({ name: "menu", category: "misc", fromMe: isPublic, desc: "List all available commands" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, null); });
 Sparky({ name: "menu1", category: "misc", fromMe: isPublic, desc: "Menu Style 1" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 0); });
 Sparky({ name: "menu2", category: "misc", fromMe: isPublic, desc: "Menu Style 2" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args, 1); });
@@ -476,7 +362,6 @@ Sparky({
       if (ytUrl) {
         try { await m.react('⬇️'); } catch (e) {}
         
-        // 1. Video Download & Send
         try {
           const videoUrl = await ytv(ytUrl);
           await client.sendMessage(m.jid, { video: { url: videoUrl }, mimetype: "video/mp4" }, { quoted: m });
@@ -484,7 +369,6 @@ Sparky({
           console.log("AutoDL Video Error:", err);
         }
 
-        // 2. Audio Download & Send
         try {
           const audioRes = await yta(ytUrl);
           const audioUrl = typeof audioRes === 'object' ? (audioRes.dl_url || audioRes.url || audioRes.audio) : audioRes;
