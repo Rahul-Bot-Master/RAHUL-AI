@@ -257,16 +257,36 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
             "participant": "0@s.whatsapp.net"
         };
 
-        // --- INTERACTIVE BUTTONS & LIST CONFIGURATION ---
+        // --- INTERACTIVE BUTTONS & LIST OPTIONS ---
+        let prefixVal = m.prefix || ".";
         let buttons = [
-            { buttonId: `${m.prefix || '.'}menu1`, buttonText: { displayText: '⚡ Menu Style 1' }, type: 1 },
-            { buttonId: `${m.prefix || '.'}menu5`, buttonText: { displayText: '🔥 Menu Style 5' }, type: 1 },
-            { buttonId: `${m.prefix || '.'}ping`, buttonText: { displayText: '🏓 Ping Status' }, type: 1 }
+            { buttonId: `${prefixVal}menu1`, buttonText: { displayText: '⚡ Menu Style 1' }, type: 1 },
+            { buttonId: `${prefixVal}menu5`, buttonText: { displayText: '🔥 Menu Style 5' }, type: 1 },
+            { buttonId: `${prefixVal}ping`, buttonText: { displayText: '🏓 Ping Status' }, type: 1 }
         ];
 
         let headerText = style(`Hey ${m.pushName || 'User'}!`);
         let footerText = style(`${config.BOT_INFO.split(";")[0]}`);
         let imageUrl = config.BOT_INFO.split(";")[2] || 'https://i.ibb.co/pnPNhMZ/2843ad26fd25.jpg';
+
+        let sections = [
+            {
+                title: "⚡ RAHUL AI CATEGORIES",
+                rows: type.map((cat) => ({
+                    title: `📂 ${cat.toUpperCase()}`,
+                    rowId: `${prefixVal}menu`,
+                    description: `Tap to view ${cat} commands`
+                }))
+            },
+            {
+                title: "🛠️ QUICK STYLES",
+                rows: [
+                    { title: "⚡ Menu Style 1", rowId: `${prefixVal}menu1`, description: "Switch to Neon Cyberpunk Menu" },
+                    { title: "🔥 Menu Style 5", rowId: `${prefixVal}menu5`, description: "Switch to Matrix Fire Menu" },
+                    { title: "🏓 Ping Status", rowId: `${prefixVal}ping`, description: "Check bot response speed" }
+                ]
+            }
+        ];
 
         switch (config.MENU_TYPE.toLowerCase()) {
             case 'big':
@@ -280,26 +300,45 @@ async function sendMenuHandler(client, m, args, forcedIndex = null) {
                         headerType: 4
                     }, { quoted: sperky });
                 } catch (err) {
-                    // Fallback to text + buttons or standard text if buttons aren't supported on current baileys version
-                    return await client.sendMessage(m.jid, { text: style(menu) }, { quoted: sperky });
+                    try {
+                        return await client.sendMessage(m.jid, {
+                            text: style(menu),
+                            footer: footerText,
+                            title: headerText,
+                            buttonText: "✨ TAP TO VIEW MENU",
+                            sections
+                        }, { quoted: sperky });
+                    } catch (e2) {
+                        return await client.sendMessage(m.jid, { text: style(menu) }, { quoted: sperky });
+                    }
                 }
             }
             case 'small':
             case 'text': 
             default: {
-                return await client.sendMessage(m.jid, { 
-                    text: style(menu),
-                    contextInfo: {
-                        externalAdReply: {
-                            title: headerText,
-                            body: footerText,
-                            mediaType: 1,
-                            showAdAttribution: true,
-                            renderLargerThumbnail: true,
-                            thumbnailUrl: imageUrl
+                try {
+                    return await client.sendMessage(m.jid, {
+                        text: style(menu),
+                        footer: footerText,
+                        title: headerText,
+                        buttonText: "✨ TAP TO VIEW MENU",
+                        sections
+                    }, { quoted: sperky });
+                } catch (e) {
+                    return await client.sendMessage(m.jid, { 
+                        text: style(menu),
+                        contextInfo: {
+                            externalAdReply: {
+                                title: headerText,
+                                body: footerText,
+                                mediaType: 1,
+                                showAdAttribution: true,
+                                renderLargerThumbnail: true,
+                                thumbnailUrl: imageUrl
+                            }
                         }
-                    }
-                }, { quoted: sperky });
+                    }, { quoted: sperky });
+                }
             }
         }
     } catch (e) {
