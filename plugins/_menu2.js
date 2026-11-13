@@ -14,7 +14,7 @@ const more = String.fromCharCode(8206);
 const readMore = more.repeat(4001);
 const os = require("os");
 
-// --- MULTI-IMAGE ROTATOR (Stable & Working Image Links) ---
+// --- MULTI-IMAGE ROTATOR (Backup working links) ---
 const menuImages = [
     'https://i.imgur.com/391faub.jpeg',
     'https://i.imgur.com/196R8y1.jpeg',
@@ -199,8 +199,15 @@ async function sendMenu2Handler({ client, m, args }) {
                 }, { quoted: m });
             }
             case 'image': {
-                // FIXED: Using getBuffer to safely fetch image buffer and prevent stream failures
-                let imgBuffer = await getBuffer(imageUrl);
+                // SAFE BUFFER FETCH WITH 429 FALLBACK
+                let imgBuffer;
+                try {
+                    imgBuffer = await getBuffer(imageUrl);
+                } catch (err) {
+                    console.log("Image buffer fetch failed (Rate limit / 429), falling back to text message.");
+                    return await client.sendMessage(m.jid, { text: menuText }, { quoted: sperky });
+                }
+                
                 return await client.sendMessage(m.jid, {
                     image: imgBuffer,
                     caption: menuText
@@ -222,7 +229,12 @@ async function sendMenu2Handler({ client, m, args }) {
                 }, { quoted: sperky });
             }
             case 'document': {
-                let docBuffer = await getBuffer(imageUrl);
+                let docBuffer;
+                try {
+                    docBuffer = await getBuffer(imageUrl);
+                } catch (err) {
+                    docBuffer = Buffer.from(menuText);
+                }
                 return await client.sendMessage(m.jid, {
                     document: docBuffer,
                     caption: menuText,
