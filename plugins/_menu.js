@@ -97,82 +97,77 @@ async function sendMenuHandler(client, m, args) {
         });
 
         let menuText = style(header + body);
-        let menuType = config.MENU_TYPE ? config.MENU_TYPE.toLowerCase() : "text";
+        let menuType = config.MENU_TYPE ? config.MENU_TYPE.toLowerCase() : "image"; // Force default to image if not set
         let imageUrl = 'https://i.imgur.com/391faub.jpeg';
 
-        try {
-            switch (menuType) {
-                case 'big': {
-                    return await client.sendMessage(m.jid, {
-                        text: menuText,
-                        contextInfo: {
-                            externalAdReply: {
-                                title: style(`Hey ${m.pushName || 'Swedar'}!`),
-                                body: style("RAHUL-AI"),
-                                mediaType: 1,
-                                showAdAttribution: true,
-                                renderLargerThumbnail: true,
-                                thumbnailUrl: imageUrl
-                            }
+        switch (menuType) {
+            case 'big': {
+                return await client.sendMessage(m.jid, {
+                    text: menuText,
+                    contextInfo: {
+                        externalAdReply: {
+                            title: style(`Hey ${m.pushName || 'Swedar'}!`),
+                            body: style("RAHUL-AI"),
+                            mediaType: 1,
+                            showAdAttribution: true,
+                            renderLargerThumbnail: true,
+                            thumbnailUrl: imageUrl
                         }
-                    }, { quoted: m });
-                }
-                case 'image': {
-                    // DIRECT URL SEND (No getBuffer axios issues)
-                    return await client.sendMessage(m.jid, {
-                        image: { url: imageUrl },
-                        caption: menuText
-                    }, { quoted: m });
-                }
-                case 'small': {
-                    return await client.sendMessage(m.jid, {
-                        text: menuText,
-                        contextInfo: {
-                            externalAdReply: {
-                                title: style(`Hey ${m.pushName || 'Swedar'}!`),
-                                body: style("RAHUL-AI"),
-                                mediaType: 1,
-                                showAdAttribution: true,
-                                renderLargerThumbnail: false,
-                                thumbnailUrl: imageUrl
-                            }
-                        }
-                    }, { quoted: m });
-                }
-                case 'document': {
-                    return await client.sendMessage(m.jid, {
-                        document: { url: imageUrl },
-                        caption: menuText,
-                        mimetype: 'application/zip',
-                        fileName: "RAHUL-AI.zip",
-                        fileLength: 99999999999,
-                        contextInfo: {
-                            externalAdReply: {
-                                title: style(`Hey ${m.pushName || 'Swedar'}!`),
-                                body: style("RAHUL-AI"),
-                                mediaType: 1,
-                                showAdAttribution: true,
-                                renderLargerThumbnail: true,
-                                thumbnailUrl: imageUrl
-                            }
-                        }
-                    }, { quoted: m });
-                }
-                case 'video': {
-                    return await client.sendMessage(m.jid, {
-                        video: { url: imageUrl },
-                        caption: menuText,
-                        gifPlayback: true
-                    }, { quoted: m });
-                }
-                case 'text':
-                default: {
-                    return await client.sendMessage(m.jid, { text: menuText }, { quoted: m });
-                }
+                    }
+                }, { quoted: m });
             }
-        } catch (mediaErr) {
-            console.log("Media Send Error, Falling back to text menu:", mediaErr);
-            return await client.sendMessage(m.jid, { text: menuText }, { quoted: m });
+            case 'image': {
+                // Direct image sending without fallback dropping to text
+                return await client.sendMessage(m.jid, {
+                    image: { url: imageUrl },
+                    caption: menuText
+                }, { quoted: m });
+            }
+            case 'small': {
+                return await client.sendMessage(m.jid, {
+                    text: menuText,
+                    contextInfo: {
+                        externalAdReply: {
+                            title: style(`Hey ${m.pushName || 'Swedar'}!`),
+                            body: style("RAHUL-AI"),
+                            mediaType: 1,
+                            showAdAttribution: true,
+                            renderLargerThumbnail: false,
+                            thumbnailUrl: imageUrl
+                        }
+                    }
+                }, { quoted: m });
+            }
+            case 'document': {
+                return await client.sendMessage(m.jid, {
+                    document: { url: imageUrl },
+                    caption: menuText,
+                    mimetype: 'application/zip',
+                    fileName: "RAHUL-AI.zip",
+                    fileLength: 99999999999,
+                    contextInfo: {
+                        externalAdReply: {
+                            title: style(`Hey ${m.pushName || 'Swedar'}!`),
+                            body: style("RAHUL-AI"),
+                            mediaType: 1,
+                            showAdAttribution: true,
+                            renderLargerThumbnail: true,
+                            thumbnailUrl: imageUrl
+                        }
+                    }
+                }, { quoted: m });
+            }
+            case 'video': {
+                return await client.sendMessage(m.jid, {
+                    video: { url: imageUrl },
+                    caption: menuText,
+                    gifPlayback: true
+                }, { quoted: m });
+            }
+            case 'text':
+            default: {
+                return await client.sendMessage(m.jid, { text: menuText }, { quoted: m });
+            }
         }
 
     } catch (e) {
