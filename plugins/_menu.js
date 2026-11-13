@@ -109,7 +109,7 @@ async function sendMenuHandler(client, m, args) {
         };
 
         let menuType = config.MENU_TYPE ? config.MENU_TYPE.toLowerCase() : "text";
-        let imageUrl = config.BOT_INFO ? config.BOT_INFO.split(";")[2] || 'https://i.ibb.co/pnPNhMZ/2843ad26fd25.jpg' : 'https://i.ibb.co/pnPNhMZ/2843ad26fd25.jpg';
+        let imageUrl = config.BOT_INFO ? config.BOT_INFO.split(";")[2] || 'https://n.uguu.se/dRMhpzhU.jpg' : 'https://n.uguu.se/dRMhpzhU.jpg';
 
         try {
             switch (menuType) {
@@ -194,6 +194,24 @@ async function sendMenuHandler(client, m, args) {
 
 // --- REGISTER SINGLE MENU COMMAND ---
 Sparky({ name: "menu", category: "misc", fromMe: isPublic, desc: "List all available commands" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args); });
+
+// --- SETVAR / SETMENU COMMAND (Changes menu type dynamically) ---
+Sparky({
+  name: "setvar",
+  category: "misc",
+  fromMe: isPublic,
+  desc: "Change menu style type (big, small, image, document, video, text)"
+}, async ({ m, args }) => {
+  const type = (args || "").toLowerCase().trim();
+  const validTypes = ["big", "small", "image", "document", "video", "text"];
+  
+  if (!validTypes.includes(type)) {
+    return await m.reply(`❌ Invalid menu type!\nVapra: _.setvar big_, _.setvar small_, _.setvar image_, _.setvar document_, _.setvar video_, or _.setvar text_`);
+  }
+  
+  config.MENU_TYPE = type;
+  return await m.reply(`✅ Menu type successfully changed to: *${type}*`);
+});
 
 // --- DIRECT TEXT TRIGGER LISTENER (Handles 'menu' or 'MENU' instantly) ---
 Sparky({
