@@ -102,7 +102,6 @@ function generateUniqueMenuV2(ownerName, prefixVal, workType, ramUsage, date, ti
         }
     ];
 
-    // Pick a completely random layout style on every execution
     const randomSelector = stylesLibrary[Math.floor(Math.random() * stylesLibrary.length)];
     return randomSelector();
 }
@@ -164,7 +163,6 @@ async function sendMenu2Handler(client, m, args) {
 
         let prefixVal = m.prefix || config.PREFIX || ".";
 
-        // Generates a brand new unique random style layout on every run!
         let menuText = generateUniqueMenuV2(ownerName, prefixVal, workType, ramUsage, date, time, uptimeVal, cmnd, type, commandsList);
         let imageUrl = getRandomMenuImage();
         let menuType = config.MENU_TYPE ? config.MENU_TYPE.toLowerCase() : "big";
@@ -269,39 +267,4 @@ Sparky({ name: "ping", category: "misc", fromMe: isPublic, desc: "Check bot resp
     const end = new Date().getTime();
     const speed = end - start;
     return await m.reply(`*Response Speed:* ${speed}ms 🚀`);
-});
-
-// --- SETVAR COMMAND FOR MENU TYPE ---
-Sparky({
-  name: "setvar",
-  category: "misc",
-  fromMe: isPublic,
-  desc: "Change menu style type dynamically (big, small, image, document, video, text)"
-}, async ({ m, args }) => {
-  const type = (args || "").toLowerCase().trim();
-  const validTypes = ["big", "small", "image", "document", "video", "text"];
-  
-  if (!validTypes.includes(type)) {
-    return await m.reply(`❌ Invalid menu type!\nVapra: _.setvar big_, _.setvar small_, _.setvar image_, _.setvar document_, _.setvar video_, or _.setvar text_`);
-  }
-  
-  config.MENU_TYPE = type;
-  return await m.reply(`✅ Menu type successfully changed to: *${type}*`);
-});
-
-// --- DIRECT TEXT TRIGGER FOR 'menu2' ---
-Sparky({
-  on: "text",
-  dontAddCommandList: true
-}, async ({ m, client }) => {
-  try {
-    const rawText = m.body || m.text || (m.message && (m.message.conversation || m.message.extendedTextMessage?.text)) || "";
-    const text = rawText.toLowerCase().trim();
-    
-    if (text === "menu2") {
-      await sendMenu2Handler(client, m, "");
-    }
-  } catch (err) {
-    console.log("Text Listener Error:", err);
-  }
 });
