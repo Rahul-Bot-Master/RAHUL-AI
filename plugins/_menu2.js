@@ -107,13 +107,15 @@ function generateUniqueMenuV2(ownerName, prefixVal, workType, ramUsage, date, ti
 }
 
 // --- PREMIUM MENU 2 HANDLER ---
-async function sendMenu2Handler(client, m, args) {
+async function sendMenu2Handler({ client, m, args }) {
     try {
-        if (args) {
+        let queryArgs = Array.isArray(args) ? args.join(" ") : (args || "");
+        
+        if (queryArgs.trim()) {
             for (let i of plugins.commands) {
-                if (i.name && i.name.test && i.name.test(args)) {
-                    let cmdInfo = `════════════════════════════════\n📌 COMMAND : ${args.trim()}\n📝 DETAILS : ${(i.desc || '').toLowerCase()}\n════════════════════════════════`;
-                    return m.reply(cmdInfo);
+                if (i.name && i.name.test && i.name.test(queryArgs)) {
+                    let cmdInfo = `════════════════════════════════\n📌 COMMAND : ${queryArgs.trim()}\n📝 DETAILS : ${(i.desc || '').toLowerCase()}\n════════════════════════════════`;
+                    return await m.reply(cmdInfo);
                 }
             }
         }
@@ -251,13 +253,13 @@ async function sendMenu2Handler(client, m, args) {
 
     } catch (e) {
         console.log("Menu2 Error:", e);
-        if (m && m.reply) await m.reply("❌ Menu 2 load hotana error ala ahe!");
+        if (m && m.reply) await m.reply("❌ Menu 2 load hotana error ala ahe! Error: " + e.message);
     }
 }
 
 // --- REGISTER MENU2 COMMAND ---
-Sparky({ name: "menu2", category: "misc", fromMe: isPublic, desc: "List multi-layout dynamic menu" }, async ({ client, m, args }) => { 
-    await sendMenu2Handler(client, m, args); 
+Sparky({ name: "menu2", category: "misc", fromMe: isPublic, desc: "List multi-layout dynamic menu" }, async (context) => { 
+    await sendMenu2Handler(context); 
 });
 
 // --- PING / SPEEDTEST COMMAND ---
