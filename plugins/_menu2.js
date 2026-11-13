@@ -184,27 +184,30 @@ async function sendMenu2Handler({ client, m, args }) {
 
         switch (menuType) {
             case 'big': {
-                return await client.sendMessage(m.jid, {
-                    text: menuText,
-                    contextInfo: {
-                        externalAdReply: {
-                            title: `Hey ${m.pushName || 'Rahul'}!`,
-                            body: "RAHUL-AI NEXUS V2",
-                            mediaType: 1,
-                            showAdAttribution: true,
-                            renderLargerThumbnail: true,
-                            thumbnailUrl: imageUrl
+                try {
+                    return await client.sendMessage(m.jid, {
+                        text: menuText,
+                        contextInfo: {
+                            externalAdReply: {
+                                title: `Hey ${m.pushName || 'Rahul'}!`,
+                                body: "RAHUL-AI NEXUS V2",
+                                mediaType: 1,
+                                showAdAttribution: true,
+                                renderLargerThumbnail: true,
+                                thumbnailUrl: imageUrl
+                            }
                         }
-                    }
-                }, { quoted: m });
+                    }, { quoted: m });
+                } catch (err) {
+                    return await client.sendMessage(m.jid, { text: menuText }, { quoted: m });
+                }
             }
             case 'image': {
-                // SAFE BUFFER FETCH WITH 429 FALLBACK
                 let imgBuffer;
                 try {
                     imgBuffer = await getBuffer(imageUrl);
                 } catch (err) {
-                    console.log("Image buffer fetch failed (Rate limit / 429), falling back to text message.");
+                    console.log("Image buffer fetch failed (Rate limit / 429 / 404), falling back to text message.");
                     return await client.sendMessage(m.jid, { text: menuText }, { quoted: sperky });
                 }
                 
@@ -214,19 +217,23 @@ async function sendMenu2Handler({ client, m, args }) {
                 }, { quoted: sperky });
             }
             case 'small': {
-                return await client.sendMessage(m.jid, {
-                    text: menuText,
-                    contextInfo: {
-                        externalAdReply: {
-                            title: `Hey ${m.pushName || 'Rahul'}!`,
-                            body: "RAHUL-AI NEXUS V2",
-                            mediaType: 1,
-                            showAdAttribution: true,
-                            renderLargerThumbnail: false,
-                            thumbnailUrl: imageUrl
+                try {
+                    return await client.sendMessage(m.jid, {
+                        text: menuText,
+                        contextInfo: {
+                            externalAdReply: {
+                                title: `Hey ${m.pushName || 'Rahul'}!`,
+                                body: "RAHUL-AI NEXUS V2",
+                                mediaType: 1,
+                                showAdAttribution: true,
+                                renderLargerThumbnail: false,
+                                thumbnailUrl: imageUrl
+                            }
                         }
-                    }
-                }, { quoted: sperky });
+                    }, { quoted: sperky });
+                } catch (err) {
+                    return await client.sendMessage(m.jid, { text: menuText }, { quoted: sperky });
+                }
             }
             case 'document': {
                 let docBuffer;
@@ -254,11 +261,16 @@ async function sendMenu2Handler({ client, m, args }) {
                 }, { quoted: sperky });
             }
             case 'video': {
-                return await client.sendMessage(m.jid, {
-                    video: { url: imageUrl },
-                    caption: menuText,
-                    gifPlayback: true
-                }, { quoted: sperky });
+                try {
+                    return await client.sendMessage(m.jid, {
+                        video: { url: imageUrl },
+                        caption: menuText,
+                        gifPlayback: true
+                    }, { quoted: sperky });
+                } catch (err) {
+                    console.log("Video URL failed with 404 or error, falling back to text message.");
+                    return await client.sendMessage(m.jid, { text: menuText }, { quoted: sperky });
+                }
             }
             case 'text':
             default: {
