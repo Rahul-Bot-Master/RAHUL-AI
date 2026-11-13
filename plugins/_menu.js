@@ -118,21 +118,11 @@ async function sendMenuHandler(client, m, args) {
                     }, { quoted: m });
                 }
                 case 'image': {
-                    let imgBuffer;
-                    try {
-                        imgBuffer = await getBuffer(imageUrl);
-                    } catch (err) {
-                        imgBuffer = null;
-                    }
-                    
-                    if (imgBuffer) {
-                        return await client.sendMessage(m.jid, {
-                            image: imgBuffer,
-                            caption: menuText
-                        }, { quoted: m });
-                    } else {
-                        return await client.sendMessage(m.jid, { text: menuText }, { quoted: m });
-                    }
+                    // DIRECT URL SEND (No getBuffer axios issues)
+                    return await client.sendMessage(m.jid, {
+                        image: { url: imageUrl },
+                        caption: menuText
+                    }, { quoted: m });
                 }
                 case 'small': {
                     return await client.sendMessage(m.jid, {
@@ -150,14 +140,8 @@ async function sendMenuHandler(client, m, args) {
                     }, { quoted: m });
                 }
                 case 'document': {
-                    let docBuffer;
-                    try {
-                        docBuffer = await getBuffer(imageUrl);
-                    } catch (err) {
-                        docBuffer = Buffer.from(menuText);
-                    }
                     return await client.sendMessage(m.jid, {
-                        document: docBuffer,
+                        document: { url: imageUrl },
                         caption: menuText,
                         mimetype: 'application/zip',
                         fileName: "RAHUL-AI.zip",
