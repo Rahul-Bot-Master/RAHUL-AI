@@ -14,11 +14,11 @@ const more = String.fromCharCode(8206);
 const readMore = more.repeat(4001);
 const os = require("os");
 
-// --- MULTI-IMAGE ROTATOR (3 Custom Images) ---
+// --- MULTI-IMAGE ROTATOR (Stable & Working Image Links) ---
 const menuImages = [
-    'https://d.uguu.se/hhbeXEcH.jpg',
-    'https://d.uguu.se/RhhoOBfa.jpg',
-    'https://h.uguu.se/vJvVMHCQ.jpg'
+    'https://i.imgur.com/391faub.jpeg',
+    'https://i.imgur.com/196R8y1.jpeg',
+    'https://i.imgur.com/2Y5R78o.jpeg'
 ];
 
 function getRandomMenuImage() {
@@ -199,8 +199,9 @@ async function sendMenu2Handler({ client, m, args }) {
                 }, { quoted: m });
             }
             case 'image': {
+                let imgBuffer = await getBuffer(imageUrl).catch(() => imageUrl);
                 return await client.sendMessage(m.jid, {
-                    image: { url: imageUrl },
+                    image: typeof imgBuffer === 'string' ? { url: imgBuffer } : imgBuffer,
                     caption: menuText
                 }, { quoted: sperky });
             }
