@@ -25,13 +25,13 @@ function getRandomMenuImage() {
     return menuImages[Math.floor(Math.random() * menuImages.length)];
 }
 
-// --- PREMIUM MENU 2 HANDLER ---
+// --- BRAND NEW UNIQUE MENU 2 HANDLER ---
 async function sendMenu2Handler(client, m, args) {
     try {
         if (args) {
             for (let i of plugins.commands) {
                 if (i.name && i.name.test && i.name.test(args)) {
-                    let cmdInfo = `╭───[ COMMAND INFO ]───◆\n│ 📌 *Command:* ${args.trim()}\n│ 📝 *Desc:* ${(i.desc || '').toLowerCase()}\n╰──────────────────────`;
+                    let cmdInfo = `══════════════════════\n📌 COMMAND : ${args.trim()}\n📝 DESC    : ${(i.desc || '').toLowerCase()}\n══════════════════════`;
                     return m.reply(cmdInfo);
                 }
             }
@@ -80,25 +80,27 @@ async function sendMenu2Handler(client, m, args) {
 
         let prefixVal = m.prefix || config.PREFIX || ".";
 
-        // --- CLEAN NORMAL TEXT HEADER ---
-        let header = `┏━━━✦ ⟨ RAHUL-AI ULTIMATE ⟩ ✦━━━┓\n` +
-                     `┃ 👑 Owner  : ${ownerName}\n` +
-                     `┃ ⚡ Prefix : ${prefixVal}\n` +
-                     `┃ ⚙️ Mode   : ${workType}\n` +
-                     `┃ 📊 RAM    : ${ramUsage}\n` +
-                     `┃ 📅 Date   : ${date}\n` +
-                     `┃ ⏰ Time   : ${time}\n` +
-                     `┃ ⏱️ Uptime : ${uptimeVal}\n` +
-                     `┃ 📂 Plugins: ${cmnd.length}\n` +
-                     `┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n${readMore}\n\n`;
+        // --- BRAND NEW UNIQUE LAYOUT HEADER ---
+        let header = `==============================\n` +
+                     `      [ RAHUL-AI V2 HUB ]     \n` +
+                     `==============================\n` +
+                     `> Owner  : ${ownerName}\n` +
+                     `> Prefix : ${prefixVal}\n` +
+                     `> Mode   : ${workType}\n` +
+                     `> RAM    : ${ramUsage}\n` +
+                     `> Date   : ${date}\n` +
+                     `> Time   : ${time}\n` +
+                     `> Uptime : ${uptimeVal}\n` +
+                     `> Total  : ${cmnd.length} Plugins\n` +
+                     `==============================\n${readMore}\n\n`;
 
         let body = "";
         type.forEach((cmmd) => {
-            body += `\n┌───❖ ${cmmd.toUpperCase()} ❖───┐\n`;
+            body += `\n[ CATEGORY: ${cmmd.toUpperCase()} ]\n`;
             cmnd.filter(({ category }) => category == cmmd).forEach(({ Sparky }) => {
-                body += `│ 🔹 ${prefixVal === 'false' ? '' : prefixVal}${Sparky.trim()}\n`;
+                body += ` → ${prefixVal === 'false' ? '' : prefixVal}${Sparky.trim()}\n`;
             });
-            body += `└──────────────────────────┘\n`;
+            body += `------------------------------\n`;
         });
 
         let menuText = header + body;
@@ -125,7 +127,7 @@ async function sendMenu2Handler(client, m, args) {
                     contextInfo: {
                         externalAdReply: {
                             title: `Hey ${m.pushName || 'Rahul'}!`,
-                            body: "RAHUL-AI SMART BOT",
+                            body: "RAHUL-AI V2 HUB",
                             mediaType: 1,
                             showAdAttribution: true,
                             renderLargerThumbnail: true,
@@ -146,7 +148,7 @@ async function sendMenu2Handler(client, m, args) {
                     contextInfo: {
                         externalAdReply: {
                             title: `Hey ${m.pushName || 'Rahul'}!`,
-                            body: "RAHUL-AI SMART BOT",
+                            body: "RAHUL-AI V2 HUB",
                             mediaType: 1,
                             showAdAttribution: true,
                             renderLargerThumbnail: false,
@@ -160,12 +162,12 @@ async function sendMenu2Handler(client, m, args) {
                     document: { url: imageUrl },
                     caption: menuText,
                     mimetype: 'application/zip',
-                    fileName: "RAHUL-AI-MENU.zip",
+                    fileName: "RAHUL-AI-MENU2.zip",
                     fileLength: "99999999999",
                     contextInfo: {
                         externalAdReply: {
                             title: `Hey ${m.pushName || 'Rahul'}!`,
-                            body: "RAHUL-AI SMART BOT",
+                            body: "RAHUL-AI V2 HUB",
                             mediaType: 1,
                             showAdAttribution: true,
                             renderLargerThumbnail: true,
@@ -194,7 +196,7 @@ async function sendMenu2Handler(client, m, args) {
 }
 
 // --- REGISTER MENU2 COMMAND ---
-Sparky({ name: "menu2", category: "misc", fromMe: isPublic, desc: "List premium long menu" }, async ({ client, m, args }) => { 
+Sparky({ name: "menu2", category: "misc", fromMe: isPublic, desc: "List alternative menu layout" }, async ({ client, m, args }) => { 
     await sendMenu2Handler(client, m, args); 
 });
 
