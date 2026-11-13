@@ -97,19 +97,16 @@ async function sendMenuHandler(client, m, args) {
                 "participants": "0@s.s.whatsapp.net",
                 "remoteJid": "status@broadcast",
                 "fromMe": false,
-                "id": "Hey!"
+                "id": "RAHUL-AI"
             },
             "message": {
-                "contactMessage": {
-                    "displayName": `${config.BOT_INFO ? config.BOT_INFO.split(";")[0] : "RAHUL-AI"}`,
-                    "vcard": `BEGIN:VCARD\nVERSION:3.0\nN:Sy;Bot;;;\nFN:y\nitem1.TEL;waid=${m.sender.split('@')[0]}:${m.sender.split('@')[0]}\nitem1.X-ABLabel:Ponsel\nEND:VCARD`
-                }
+                "conversation": "RAHUL AI BOT MENU"
             },
             "participant": "0@s.whatsapp.net"
         };
 
         let menuType = config.MENU_TYPE ? config.MENU_TYPE.toLowerCase() : "text";
-        let imageUrl = config.BOT_INFO ? config.BOT_INFO.split(";")[2] || 'https://n.uguu.se/dRMhpzhU.jpg' : 'https://n.uguu.se/dRMhpzhU.jpg';
+        let imageUrl = 'https://n.uguu.se/dRMhpzhU.jpg';
 
         try {
             switch (menuType) {
@@ -119,7 +116,7 @@ async function sendMenuHandler(client, m, args) {
                         contextInfo: {
                             externalAdReply: {
                                 title: style(`Hey ${m.pushName || 'Swedar'}!`),
-                                body: style(`${config.BOT_INFO ? config.BOT_INFO.split(";")[0] : "RAHUL-AI"}`),
+                                body: style("RAHUL-AI"),
                                 mediaType: 1,
                                 showAdAttribution: true,
                                 renderLargerThumbnail: true,
@@ -140,7 +137,7 @@ async function sendMenuHandler(client, m, args) {
                         contextInfo: {
                             externalAdReply: {
                                 title: style(`Hey ${m.pushName || 'Swedar'}!`),
-                                body: style(`${config.BOT_INFO ? config.BOT_INFO.split(";")[0] : "RAHUL-AI"}`),
+                                body: style("RAHUL-AI"),
                                 mediaType: 1,
                                 showAdAttribution: true,
                                 renderLargerThumbnail: false,
@@ -154,12 +151,12 @@ async function sendMenuHandler(client, m, args) {
                         document: { url: imageUrl },
                         caption: menuText,
                         mimetype: 'application/zip',
-                        fileName: style(config.BOT_INFO ? config.BOT_INFO.split(";")[0] : "RAHUL-AI"),
+                        fileName: style("RAHUL-AI"),
                         fileLength: "99999999999",
                         contextInfo: {
                             externalAdReply: {
                                 title: style(`Hey ${m.pushName || 'Swedar'}!`),
-                                body: style(`${config.BOT_INFO ? config.BOT_INFO.split(";")[0] : "RAHUL-AI"}`),
+                                body: style("RAHUL-AI"),
                                 mediaType: 1,
                                 showAdAttribution: true,
                                 renderLargerThumbnail: true,
@@ -181,7 +178,6 @@ async function sendMenuHandler(client, m, args) {
                 }
             }
         } catch (mediaErr) {
-            // SAFE FALLBACK: If any media/image type fails to send, send standard text menu instantly
             console.log("Media Send Error, Falling back to text menu:", mediaErr);
             return await client.sendMessage(m.jid, { text: menuText }, { quoted: sperky });
         }
