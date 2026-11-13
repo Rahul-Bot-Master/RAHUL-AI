@@ -25,8 +25,11 @@ function getRandomMenuImage() {
     return menuImages[Math.floor(Math.random() * menuImages.length)];
 }
 
-// --- ULTIMATE DYNAMIC V2 LAYOUT ENGINE ---
-function generateUniqueMenuV2(ownerName, prefixVal, workType, ramUsage, date, time, uptimeVal, cmnd, type, commandsList) {
+// --- GLOBAL AUTO-BIO TRACKER ---
+let autoBioInterval = null;
+
+// --- ULTIMATE DYNAMIC V2 LAYOUT ENGINE (Added Autobio Status) ---
+function generateUniqueMenuV2(ownerName, prefixVal, workType, ramUsage, date, time, uptimeVal, autobioStatus, cmnd, type, commandsList) {
     const stylesLibrary = [
         // Layout Style A: Cyber Grid Matrix
         () => {
@@ -37,6 +40,7 @@ function generateUniqueMenuV2(ownerName, prefixVal, workType, ramUsage, date, ti
                     ` ❖ Trigger  : ${prefixVal}\n` +
                     ` ❖ Network  : ${workType}\n` +
                     ` ❖ Memory   : ${ramUsage}\n` +
+                    ` ❖ Auto-Bio : ${autobioStatus}\n` +
                     ` ❖ Calendar : ${date}\n` +
                     ` ❖ Clock    : ${time}\n` +
                     ` ❖ Runtime  : ${uptimeVal}\n` +
@@ -62,6 +66,7 @@ function generateUniqueMenuV2(ownerName, prefixVal, workType, ramUsage, date, ti
                     ` ◈ Prefix   : ${prefixVal}\n` +
                     ` ◈ Status   : ${workType}\n` +
                     ` ◈ RAM Stat : ${ramUsage}\n` +
+                    ` ◈ Auto-Bio : ${autobioStatus}\n` +
                     ` ◈ Today    : ${date}\n` +
                     ` ◈ Current  : ${time}\n` +
                     ` ◈ Uptime   : ${uptimeVal}\n` +
@@ -86,6 +91,7 @@ function generateUniqueMenuV2(ownerName, prefixVal, workType, ramUsage, date, ti
                     ` • Prefix : ${prefixVal}\n` +
                     ` • Mode   : ${workType}\n` +
                     ` • RAM    : ${ramUsage}\n` +
+                    ` • Bio    : ${autobioStatus}\n` +
                     ` • Date   : ${date}\n` +
                     ` • Time   : ${time}\n` +
                     ` • Active : ${uptimeVal}\n` +
@@ -125,6 +131,7 @@ async function sendMenu2Handler(client, m, args) {
         let ownerName = config.BOT_INFO ? config.BOT_INFO.split(";")[1]?.toLowerCase() || "rahul master" : "rahul master";
         let workType = config.WORK_TYPE ? config.WORK_TYPE.toLowerCase() : "public";
         let uptimeVal = typeof m.uptime === 'function' ? await m.uptime() : "00:00:00";
+        let autobioStatus = autoBioInterval ? "ON 🟢" : "OFF 🔴";
         
         let totalMem = (os.totalmem() / (1024 * 1024 * 1024)).toFixed(2);
         let freeMem = (os.freemem() / (1024 * 1024 * 1024)).toFixed(2);
@@ -163,7 +170,7 @@ async function sendMenu2Handler(client, m, args) {
 
         let prefixVal = m.prefix || config.PREFIX || ".";
 
-        let menuText = generateUniqueMenuV2(ownerName, prefixVal, workType, ramUsage, date, time, uptimeVal, cmnd, type, commandsList);
+        let menuText = generateUniqueMenuV2(ownerName, prefixVal, workType, ramUsage, date, time, uptimeVal, autobioStatus, cmnd, type, commandsList);
         let imageUrl = getRandomMenuImage();
         let menuType = config.MENU_TYPE ? config.MENU_TYPE.toLowerCase() : "big";
 
@@ -269,9 +276,7 @@ Sparky({ name: "ping", category: "misc", fromMe: isPublic, desc: "Check bot resp
     return await m.reply(`*Response Speed:* ${speed}ms 🚀`);
 });
 
-// --- NEW: AUTO-BIO / PROFILE STATUS UPDATER ---
-let autoBioInterval = null;
-
+// --- AUTO-BIO / PROFILE STATUS UPDATER ---
 Sparky({ name: "autobio", category: "misc", fromMe: isPublic, desc: "Toggle automated live bio updates on the bot profile" }, async ({ m, client, args }) => {
     try {
         const action = (args || "").toLowerCase().trim();
@@ -279,11 +284,27 @@ Sparky({ name: "autobio", category: "misc", fromMe: isPublic, desc: "Toggle auto
         if (action === "on") {
             if (autoBioInterval) clearInterval(autoBioInterval);
 
+            // First time immediate update using client.updateStatus or client.updateProfileStatus
+            try {
+                let d = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
+                let bioText = `🚀 RAHUL-AI Active | ⏰ ${d} | ⚡ Powered by Rahul Master`;
+                if (client.updateStatus) {
+                    await client.updateStatus(bioText);
+                } else if (client.updateProfileStatus) {
+                    await client.updateProfileStatus(bioText);
+                }
+            } catch (e) {
+                console.log("Initial Bio Update Error:", e);
+            }
+
             autoBioInterval = setInterval(async () => {
                 try {
                     let d = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
                     let bioText = `🚀 RAHUL-AI Active | ⏰ ${d} | ⚡ Powered by Rahul Master`;
-                    if (client.updateProfileStatus) {
+                    
+                    if (client.updateStatus) {
+                        await client.updateStatus(bioText);
+                    } else if (client.updateProfileStatus) {
                         await client.updateProfileStatus(bioText);
                     }
                 } catch (e) {
