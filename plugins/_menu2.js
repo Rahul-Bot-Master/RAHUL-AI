@@ -167,73 +167,52 @@ async function sendMenu2Handler({ client, m, args }) {
 
         let menuText = generateUniqueMenuV2(ownerName, prefixVal, workType, ramUsage, date, time, uptimeVal, cmnd, type, commandsList);
         let imageUrl = getRandomMenuImage();
-        let menuType = config.MENU_TYPE ? config.MENU_TYPE.toLowerCase() : "big";
-
-        let sperky = {
-            "key": {
-                "participants": "0@s.s.whatsapp.net",
-                "remoteJid": "status@broadcast",
-                "fromMe": false,
-                "id": "RAHUL-AI-V2"
-            },
-            "message": {
-                "conversation": "RAHUL AI DYNAMIC MENU 2"
-            },
-            "participant": "0@s.whatsapp.net"
-        };
+        let menuType = config.MENU_TYPE ? config.MENU_TYPE.toLowerCase() : "image"; // Defaulting to image so it actually displays an image nicely!
 
         switch (menuType) {
             case 'big': {
-                try {
-                    return await client.sendMessage(m.jid, {
-                        text: menuText,
-                        contextInfo: {
-                            externalAdReply: {
-                                title: `Hey ${m.pushName || 'Rahul'}!`,
-                                body: "RAHUL-AI NEXUS V2",
-                                mediaType: 1,
-                                showAdAttribution: true,
-                                renderLargerThumbnail: true,
-                                thumbnailUrl: imageUrl
-                            }
+                return await client.sendMessage(m.jid, {
+                    text: menuText,
+                    contextInfo: {
+                        externalAdReply: {
+                            title: `Hey ${m.pushName || 'Rahul'}!`,
+                            body: "RAHUL-AI NEXUS V2",
+                            mediaType: 1,
+                            showAdAttribution: true,
+                            renderLargerThumbnail: true,
+                            thumbnailUrl: imageUrl
                         }
-                    }, { quoted: m });
-                } catch (err) {
-                    return await client.sendMessage(m.jid, { text: menuText }, { quoted: m });
-                }
+                    }
+                }, { quoted: m });
             }
             case 'image': {
-                let imgBuffer;
                 try {
-                    imgBuffer = await getBuffer(imageUrl);
+                    let imgBuffer = await getBuffer(imageUrl);
+                    if (imgBuffer) {
+                        return await client.sendMessage(m.jid, {
+                            image: imgBuffer,
+                            caption: menuText
+                        }, { quoted: m });
+                    }
                 } catch (err) {
-                    console.log("Image buffer fetch failed (Rate limit / 429 / 404), falling back to text message.");
-                    return await client.sendMessage(m.jid, { text: menuText }, { quoted: sperky });
+                    console.log("Image buffer load failed, sending text fallback.");
                 }
-                
-                return await client.sendMessage(m.jid, {
-                    image: imgBuffer,
-                    caption: menuText
-                }, { quoted: sperky });
+                return await client.sendMessage(m.jid, { text: menuText }, { quoted: m });
             }
             case 'small': {
-                try {
-                    return await client.sendMessage(m.jid, {
-                        text: menuText,
-                        contextInfo: {
-                            externalAdReply: {
-                                title: `Hey ${m.pushName || 'Rahul'}!`,
-                                body: "RAHUL-AI NEXUS V2",
-                                mediaType: 1,
-                                showAdAttribution: true,
-                                renderLargerThumbnail: false,
-                                thumbnailUrl: imageUrl
-                            }
+                return await client.sendMessage(m.jid, {
+                    text: menuText,
+                    contextInfo: {
+                        externalAdReply: {
+                            title: `Hey ${m.pushName || 'Rahul'}!`,
+                            body: "RAHUL-AI NEXUS V2",
+                            mediaType: 1,
+                            showAdAttribution: true,
+                            renderLargerThumbnail: false,
+                            thumbnailUrl: imageUrl
                         }
-                    }, { quoted: sperky });
-                } catch (err) {
-                    return await client.sendMessage(m.jid, { text: menuText }, { quoted: sperky });
-                }
+                    }
+                }, { quoted: m });
             }
             case 'document': {
                 let docBuffer;
@@ -247,40 +226,25 @@ async function sendMenu2Handler({ client, m, args }) {
                     caption: menuText,
                     mimetype: 'application/zip',
                     fileName: "RAHUL-AI-NEXUS.zip",
-                    fileLength: 99999999999,
-                    contextInfo: {
-                        externalAdReply: {
-                            title: `Hey ${m.pushName || 'Rahul'}!`,
-                            body: "RAHUL-AI NEXUS V2",
-                            mediaType: 1,
-                            showAdAttribution: true,
-                            renderLargerThumbnail: true,
-                            thumbnailUrl: imageUrl
-                        }
-                    }
-                }, { quoted: sperky });
+                    fileLength: 99999999999
+                }, { quoted: m });
             }
             case 'video': {
-                try {
-                    return await client.sendMessage(m.jid, {
-                        video: { url: imageUrl },
-                        caption: menuText,
-                        gifPlayback: true
-                    }, { quoted: sperky });
-                } catch (err) {
-                    console.log("Video URL failed with 404 or error, falling back to text message.");
-                    return await client.sendMessage(m.jid, { text: menuText }, { quoted: sperky });
-                }
+                return await client.sendMessage(m.jid, {
+                    video: { url: imageUrl },
+                    caption: menuText,
+                    gifPlayback: true
+                }, { quoted: m });
             }
             case 'text':
             default: {
-                return await client.sendMessage(m.jid, { text: menuText }, { quoted: sperky });
+                return await client.sendMessage(m.jid, { text: menuText }, { quoted: m });
             }
         }
 
     } catch (e) {
         console.log("Menu2 Error:", e);
-        if (m && m.reply) await m.reply("❌ Menu 2 load hotana error ala ahe! Error: " + e.message);
+        if (m && m.reply) await m.reply("❌ Menu 2 error: " + e.message);
     }
 }
 
