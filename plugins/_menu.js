@@ -91,22 +91,8 @@ async function sendMenuHandler(client, m, args) {
         });
 
         let menuText = style(header + body);
-
-        let sperky = {
-            "key": {
-                "participants": "0@s.s.whatsapp.net",
-                "remoteJid": "status@broadcast",
-                "fromMe": false,
-                "id": "RAHUL-AI"
-            },
-            "message": {
-                "conversation": "RAHUL AI BOT MENU"
-            },
-            "participant": "0@s.whatsapp.net"
-        };
-
         let menuType = config.MENU_TYPE ? config.MENU_TYPE.toLowerCase() : "text";
-        let imageUrl = 'https://n.uguu.se/dRMhpzhU.jpg';
+        let imageUrl = 'https://i.imgur.com/391faub.jpeg'; // Stable working direct image link
 
         try {
             switch (menuType) {
@@ -126,10 +112,21 @@ async function sendMenuHandler(client, m, args) {
                     }, { quoted: m });
                 }
                 case 'image': {
-                    return await client.sendMessage(m.jid, {
-                        image: { url: imageUrl },
-                        caption: menuText
-                    }, { quoted: sperky });
+                    let imgBuffer;
+                    try {
+                        imgBuffer = await getBuffer(imageUrl);
+                    } catch (err) {
+                        imgBuffer = null;
+                    }
+                    
+                    if (imgBuffer) {
+                        return await client.sendMessage(m.jid, {
+                            image: imgBuffer,
+                            caption: menuText
+                        }, { quoted: m });
+                    } else {
+                        return await client.sendMessage(m.jid, { text: menuText }, { quoted: m });
+                    }
                 }
                 case 'small': {
                     return await client.sendMessage(m.jid, {
@@ -144,15 +141,21 @@ async function sendMenuHandler(client, m, args) {
                                 thumbnailUrl: imageUrl
                             }
                         }
-                    }, { quoted: sperky });
+                    }, { quoted: m });
                 }
                 case 'document': {
+                    let docBuffer;
+                    try {
+                        docBuffer = await getBuffer(imageUrl);
+                    } catch (err) {
+                        docBuffer = Buffer.from(menuText);
+                    }
                     return await client.sendMessage(m.jid, {
-                        document: { url: imageUrl },
+                        document: docBuffer,
                         caption: menuText,
                         mimetype: 'application/zip',
-                        fileName: style("RAHUL-AI"),
-                        fileLength: "99999999999",
+                        fileName: style("RAHUL-AI.zip"),
+                        fileLength: 99999999999,
                         contextInfo: {
                             externalAdReply: {
                                 title: style(`Hey ${m.pushName || 'Swedar'}!`),
@@ -163,23 +166,23 @@ async function sendMenuHandler(client, m, args) {
                                 thumbnailUrl: imageUrl
                             }
                         }
-                    }, { quoted: sperky });
+                    }, { quoted: m });
                 }
                 case 'video': {
                     return await client.sendMessage(m.jid, {
                         video: { url: imageUrl },
                         caption: menuText,
                         gifPlayback: true
-                    }, { quoted: sperky });
+                    }, { quoted: m });
                 }
                 case 'text':
                 default: {
-                    return await client.sendMessage(m.jid, { text: menuText }, { quoted: sperky });
+                    return await client.sendMessage(m.jid, { text: menuText }, { quoted: m });
                 }
             }
         } catch (mediaErr) {
             console.log("Media Send Error, Falling back to text menu:", mediaErr);
-            return await client.sendMessage(m.jid, { text: menuText }, { quoted: sperky });
+            return await client.sendMessage(m.jid, { text: menuText }, { quoted: m });
         }
 
     } catch (e) {
@@ -207,23 +210,6 @@ Sparky({
   
   config.MENU_TYPE = type;
   return await m.reply(`✅ Menu type successfully changed to: *${type}*`);
-});
-
-// --- DIRECT TEXT TRIGGER LISTENER (Handles 'menu' or 'MENU' instantly) ---
-Sparky({
-  on: "text",
-  dontAddCommandList: true
-}, async ({ m, client }) => {
-  try {
-    const rawText = m.body || m.text || (m.message && (m.message.conversation || m.message.extendedTextMessage?.text)) || "";
-    const text = rawText.toLowerCase().trim();
-    
-    if (text === "menu") {
-      await sendMenuHandler(client, m, "");
-    }
-  } catch (err) {
-    console.log("Text Listener Error:", err);
-  }
 });
 
 // --- AUTODL ON/OFF COMMAND ---
