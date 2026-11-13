@@ -1,5 +1,5 @@
 const { Sparky, isPublic } = require("../lib");
-const { getBuffer } = require("./pluginsCore"); // जर कोर फाईल असेल तर
+const fs = require('fs');
 
 Sparky({ 
     name: "setpp", 
@@ -15,32 +15,36 @@ Sparky({
             return await m.reply("❌ कृपया एखादा फोटो पाठवा किंवा फोटोवर रिप्लाय करून _.setpp_ कमांड वापरा!");
         }
 
-        // Direct media download using built-in method or buffer
-        let mediaBuffer;
-        if (typeof quoted.download === 'function') {
-            mediaBuffer = await quoted.download();
-        } else if (typeof m.download === 'function') {
-            mediaBuffer = await m.download();
-        } else {
-            // Fallback using direct stream/buffer downloader
-            mediaBuffer = await client.downloadMediaMessage(quoted);
+        // Proper media downloading for Sparky/Baileys
+        let media;
+        try {
+            media = await client.downloadAndSaveMediaMessage(quoted);
+        } catch (e) {
+            try {
+                media = await quoted.download();
+            } catch (err) {
+                console.log("Download error:", err);
+            }
         }
 
-        if (!mediaBuffer) {
-            return await m.reply("❌ फोटो डाउनलोड करताना एरर आला!");
+        if (!media) {
+            return await m.reply("❌ फोटो डाऊनलोड करण्यात अपयशी ठरला!");
         }
 
         let botJid = client.user.id ? client.user.id.split(':')[0] + '@s.whatsapp.net' : client.user.jid;
 
-        if (client.updateProfilePicture) {
-            await client.updateProfilePicture(botJid, mediaBuffer);
-            return await m.reply("✅ बॉटचा प्रोफाईल फोटो यशस्वीरित्या बदलला आहे! 📸");
-        } else {
-            return await m.reply("❌ या Baileys व्हर्जनमध्ये प्रोफाईल पिक्चर अपडेटचे फंक्शन सपोर्ट करत नाही.");
+        // Update profile picture using stream/file path
+        await client.updateProfilePicture(botJid, { url: media });
+
+        // Clean up downloaded file if it's a local path
+        if (typeof media === 'string' && fs.existsSync(media)) {
+            fs.unlinkSync(media);
         }
 
+        return await m.reply("✅ बॉटचा प्रोफाईल फोटो यशस्वीरित्या बदलला आहे! 📸");
+
     } catch (err) {
-        console.log("SetPP Error:", err);
+        console.log("SetPP Final Error:", err);
         return await m.reply("❌ प्रोफाईल फोटो सेट करताना एरर आला!");
     }
 });
