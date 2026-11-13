@@ -1,4 +1,5 @@
 const { Sparky, isPublic } = require("../lib");
+const { getBuffer } = require("./pluginsCore"); // जर कोर फाईल असेल तर
 
 Sparky({ 
     name: "setpp", 
@@ -7,7 +8,6 @@ Sparky({
     desc: "Set or update bot profile picture" 
 }, async ({ m, client }) => {
     try {
-        // Find media from quoted or current message
         let quoted = m.quoted ? m.quoted : m;
         let mime = (quoted.msg || quoted).mimetype || (quoted.message && quoted.message.imageMessage ? 'image/jpeg' : '');
 
@@ -15,22 +15,25 @@ Sparky({
             return await m.reply("❌ कृपया एखादा फोटो पाठवा किंवा फोटोवर रिप्लाय करून _.setpp_ कमांड वापरा!");
         }
 
-        let media;
-        if (typeof client.downloadAndSaveMediaMessage === 'function') {
-            media = await client.downloadAndSaveMediaMessage(quoted);
-        } else if (typeof client.downloadMediaMessage === 'function') {
-            media = await client.downloadMediaMessage(quoted);
+        // Direct media download using built-in method or buffer
+        let mediaBuffer;
+        if (typeof quoted.download === 'function') {
+            mediaBuffer = await quoted.download();
+        } else if (typeof m.download === 'function') {
+            mediaBuffer = await m.download();
+        } else {
+            // Fallback using direct stream/buffer downloader
+            mediaBuffer = await client.downloadMediaMessage(quoted);
         }
 
-        if (!media) {
+        if (!mediaBuffer) {
             return await m.reply("❌ फोटो डाउनलोड करताना एरर आला!");
         }
 
-        // Update profile picture for the bot
         let botJid = client.user.id ? client.user.id.split(':')[0] + '@s.whatsapp.net' : client.user.jid;
 
         if (client.updateProfilePicture) {
-            await client.updateProfilePicture(botJid, { url: media });
+            await client.updateProfilePicture(botJid, mediaBuffer);
             return await m.reply("✅ बॉटचा प्रोफाईल फोटो यशस्वीरित्या बदलला आहे! 📸");
         } else {
             return await m.reply("❌ या Baileys व्हर्जनमध्ये प्रोफाईल पिक्चर अपडेटचे फंक्शन सपोर्ट करत नाही.");
