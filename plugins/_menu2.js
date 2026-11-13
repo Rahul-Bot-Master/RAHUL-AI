@@ -25,7 +25,115 @@ function getRandomMenuImage() {
     return menuImages[Math.floor(Math.random() * menuImages.length)];
 }
 
-// --- BRAND NEW UNIQUE MENU 2 HANDLER ---
+// --- MULTI-LAYOUT GENERATOR (Dynamic Styles/Layouts) ---
+function generateDynamicMenu(ownerName, prefixVal, workType, ramUsage, date, time, uptimeVal, cmnd, type, commandsList) {
+    // 6 Different Unique Layout Templates
+    const layoutStyles = [
+        // Style 1: Cyberpunk Box Layout
+        () => {
+            let h = `╔══════════════════════════╗\n` +
+                    `║     🌟 RAHUL-AI HUB 🌟     ║\n` +
+                    `╚══════════════════════════╝\n` +
+                    ` 👑 Owner  : ${ownerName}\n` +
+                    ` ⚡ Prefix : ${prefixVal}\n` +
+                    ` ⚙️ Mode   : ${workType}\n` +
+                    ` 📊 RAM    : ${ramUsage}\n` +
+                    ` 📅 Date   : ${date}\n` +
+                    ` ⏰ Time   : ${time}\n` +
+                    ` ⏱️ Uptime : ${uptimeVal}\n` +
+                    ` 📂 Total  : ${cmnd.length} Plugins\n` +
+                    `════════════════════════════\n${readMore}\n\n`;
+            let b = "";
+            type.forEach((cmmd) => {
+                b += `\n┏━━━❖ ${cmmd.toUpperCase()} ❖━━━┓\n`;
+                commandsList.filter(c => c.category == cmmd).forEach(c => {
+                    b += `┃ 🔹 ${prefixVal === 'false' ? '' : prefixVal}${c.Sparky}\n`;
+                });
+                b += `┗━━━━━━━━━━━━━━━━━━━┛\n`;
+            });
+            return h + b;
+        },
+
+        // Style 2: Star Neon Layout
+        () => {
+            let h = `★★★★★★★★★★★★★★★★★★★★★★★★\n` +
+                    `    ⚡ RAHUL-AI ULTIMATE ⚡    \n` +
+                    `★★★★★★★★★★★★★★★★★★★★★★★★\n` +
+                    ` ★ Master : ${ownerName}\n` +
+                    ` ★ Prefix : ${prefixVal}\n` +
+                    ` ★ Status : ${workType}\n` +
+                    ` ★ Memory : ${ramUsage}\n` +
+                    ` ★ Date   : ${date}\n` +
+                    ` ★ Time   : ${time}\n` +
+                    ` ★ Uptime : ${uptimeVal}\n` +
+                    ` ★ Plugins: ${cmnd.length}\n` +
+                    `────────────────────────────\n${readMore}\n\n`;
+            let b = "";
+            type.forEach((cmmd) => {
+                b += `\n✦───[ ${cmmd.toUpperCase()} ]───✦\n`;
+                commandsList.filter(c => c.category == cmmd).forEach(c => {
+                    b += `  » ${prefixVal === 'false' ? '' : prefixVal}${c.Sparky}\n`;
+                });
+            });
+            return h + b;
+        },
+
+        // Style 3: Minimalist Arrow Layout
+        () => {
+            let h = `----------------------------\n` +
+                    `     [ RAHUL-AI V2 MENU ]   \n` +
+                    `----------------------------\n` +
+                    ` > Owner  : ${ownerName}\n` +
+                    ` > Prefix : ${prefixVal}\n` +
+                    ` > Mode   : ${workType}\n` +
+                    ` > RAM    : ${ramUsage}\n` +
+                    ` > Date   : ${date}\n` +
+                    ` > Time   : ${time}\n` +
+                    ` > Uptime : ${uptimeVal}\n` +
+                    ` > Count  : ${cmnd.length}\n` +
+                    `----------------------------\n${readMore}\n\n`;
+            let b = "";
+            type.forEach((cmmd) => {
+                b += `\n# CATEGORY -> ${cmmd.toUpperCase()}\n`;
+                commandsList.filter(c => c.category == cmmd).forEach(c => {
+                    b += `   → ${prefixVal === 'false' ? '' : prefixVal}${c.Sparky}\n`;
+                });
+            });
+            return h + b;
+        },
+
+        // Style 4: Modern Bracket Layout
+        () => {
+            let h = `┌──────────────────────────┐\n` +
+                    `│      { RAHUL-AI }        │\n` +
+                    `└──────────────────────────┘\n` +
+                    ` • Owner  : ${ownerName}\n` +
+                    ` • Prefix : ${prefixVal}\n` +
+                    ` • Mode   : ${workType}\n` +
+                    ` • RAM    : ${ramUsage}\n` +
+                    ` • Date   : ${date}\n` +
+                    ` • Time   : ${time}\n` +
+                    ` • Uptime : ${uptimeVal}\n` +
+                    ` • Plugins: ${cmnd.length}\n` +
+                    `────────────────────────────\n${readMore}\n\n`;
+            let b = "";
+            type.forEach((cmmd) => {
+                b += `\n╭───『 ${cmmd.toUpperCase()} 』───╮\n`;
+                commandsList.filter(c => c.category == cmmd).forEach(c => {
+                    b += `│ • ${prefixVal === 'false' ? '' : prefixVal}${c.Sparky}\n`;
+                });
+                b += `╰────────────────────────╯\n`;
+            });
+            return h + b;
+        }
+    ];
+
+    // Randomly select one layout style every time
+    const selectedLayout = layoutStyles[Math.floor(Math.random() * layoutStyles.length)];
+    return selectedLayout();
+}
+
+// --- PREMIUM MENU 2 HANDLER ---
 async function sendMenu2Handler(client, m, args) {
     try {
         if (args) {
@@ -45,13 +153,13 @@ async function sendMenu2Handler(client, m, args) {
         let workType = config.WORK_TYPE ? config.WORK_TYPE.toLowerCase() : "public";
         let uptimeVal = typeof m.uptime === 'function' ? await m.uptime() : "00:00:00";
         
-        // --- SYSTEM STATS (RAM & CPU USAGE) ---
         let totalMem = (os.totalmem() / (1024 * 1024 * 1024)).toFixed(2);
         let freeMem = (os.freemem() / (1024 * 1024 * 1024)).toFixed(2);
         let ramUsage = `${(totalMem - freeMem).toFixed(2)}GB / ${totalMem}GB`;
 
         let cmnd = [];
         let type = [];
+        let commandsList = [];
 
         commands.map((command) => {
             if (command.name) {
@@ -70,7 +178,9 @@ async function sendMenu2Handler(client, m, args) {
 
                 if (SparkyCmd && SparkyCmd !== "undefined" && SparkyCmd.trim() !== "" && !command.dontAddCommandList) {
                     let category = command.category ? command.category.toLowerCase() : "misc";
-                    cmnd.push({ Sparky: SparkyCmd.trim(), category: category });
+                    let cmdNameClean = SparkyCmd.trim();
+                    cmnd.push({ Sparky: cmdNameClean, category: category });
+                    commandsList.push({ Sparky: cmdNameClean, category: category });
                     if (!type.includes(category)) type.push(category);
                 }
             }
@@ -80,30 +190,8 @@ async function sendMenu2Handler(client, m, args) {
 
         let prefixVal = m.prefix || config.PREFIX || ".";
 
-        // --- BRAND NEW UNIQUE LAYOUT HEADER ---
-        let header = `==============================\n` +
-                     `      [ RAHUL-AI V2 HUB ]     \n` +
-                     `==============================\n` +
-                     `> Owner  : ${ownerName}\n` +
-                     `> Prefix : ${prefixVal}\n` +
-                     `> Mode   : ${workType}\n` +
-                     `> RAM    : ${ramUsage}\n` +
-                     `> Date   : ${date}\n` +
-                     `> Time   : ${time}\n` +
-                     `> Uptime : ${uptimeVal}\n` +
-                     `> Total  : ${cmnd.length} Plugins\n` +
-                     `==============================\n${readMore}\n\n`;
-
-        let body = "";
-        type.forEach((cmmd) => {
-            body += `\n[ CATEGORY: ${cmmd.toUpperCase()} ]\n`;
-            cmnd.filter(({ category }) => category == cmmd).forEach(({ Sparky }) => {
-                body += ` → ${prefixVal === 'false' ? '' : prefixVal}${Sparky.trim()}\n`;
-            });
-            body += `------------------------------\n`;
-        });
-
-        let menuText = header + body;
+        // Generates a completely new random layout structure every time menu2 is requested!
+        let menuText = generateDynamicMenu(ownerName, prefixVal, workType, ramUsage, date, time, uptimeVal, cmnd, type, commandsList);
         let imageUrl = getRandomMenuImage();
         let menuType = config.MENU_TYPE ? config.MENU_TYPE.toLowerCase() : "big";
 
@@ -196,7 +284,7 @@ async function sendMenu2Handler(client, m, args) {
 }
 
 // --- REGISTER MENU2 COMMAND ---
-Sparky({ name: "menu2", category: "misc", fromMe: isPublic, desc: "List alternative menu layout" }, async ({ client, m, args }) => { 
+Sparky({ name: "menu2", category: "misc", fromMe: isPublic, desc: "List alternative dynamic menu layout" }, async ({ client, m, args }) => { 
     await sendMenu2Handler(client, m, args); 
 });
 
