@@ -11,36 +11,52 @@ Sparky({
     try {
         const action = (args || "").toLowerCase().trim();
 
+        // Helper function for Baileys Status / Bio Update
+        async function setProfileBio(text) {
+            try {
+                if (client.updateStatus) {
+                    await client.updateStatus(text);
+                } else if (client.updateProfileStatus) {
+                    await client.updateProfileStatus(text);
+                } else if (client.query) {
+                    await client.query({
+                        tag: 'iq',
+                        attr: {
+                            to: 's.whatsapp.net',
+                            type: 'set',
+                            xmlns: 'status'
+                        },
+                        content: [
+                            {
+                                tag: 'status',
+                                attr: {},
+                                content: Buffer.from(text, 'utf-8')
+                            }
+                        ]
+                    });
+                }
+            } catch (err) {
+                console.log("Bio query inner error:", err);
+            }
+        }
+
         if (action === "on") {
             if (autoBioInterval) clearInterval(autoBioInterval);
 
-            // Immediate update check
-            try {
-                let d = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
-                let bioText = `🚀 RAHUL-AI Active | ⏰ ${d} | ⚡ Powered by Rahul Master`;
-                if (client.updateStatus) {
-                    await client.updateStatus(bioText);
-                } else if (client.updateProfileStatus) {
-                    await client.updateProfileStatus(bioText);
-                }
-            } catch (e) {
-                console.log("Initial Bio Update Error:", e);
-            }
+            // Immediate update execution
+            let d = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
+            let bioText = `🚀 RAHUL-AI Active | ⏰ ${d} | ⚡ Powered by Rahul Master`;
+            await setProfileBio(bioText);
 
             autoBioInterval = setInterval(async () => {
                 try {
-                    let d = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
-                    let bioText = `🚀 RAHUL-AI Active | ⏰ ${d} | ⚡ Powered by Rahul Master`;
-                    
-                    if (client.updateStatus) {
-                        await client.updateStatus(bioText);
-                    } else if (client.updateProfileStatus) {
-                        await client.updateProfileStatus(bioText);
-                    }
+                    let dt = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
+                    let currentBio = `🚀 RAHUL-AI Active | ⏰ ${dt} | ⚡ Powered by Rahul Master`;
+                    await setProfileBio(currentBio);
                 } catch (e) {
-                    // Silent catch for profile rate limits
+                    // Silent catch for rate limits
                 }
-            }, 60000); // 1 minute interval
+            }, 60000); // Every 1 minute
 
             return await m.reply("✅ Auto-Bio successfully ON zali ahe! (Pratyek 1 minitane bio update hoil)");
         } 
