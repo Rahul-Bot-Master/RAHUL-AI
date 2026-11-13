@@ -199,9 +199,10 @@ async function sendMenu2Handler({ client, m, args }) {
                 }, { quoted: m });
             }
             case 'image': {
-                let imgBuffer = await getBuffer(imageUrl).catch(() => imageUrl);
+                // FIXED: Using getBuffer to safely fetch image buffer and prevent stream failures
+                let imgBuffer = await getBuffer(imageUrl);
                 return await client.sendMessage(m.jid, {
-                    image: typeof imgBuffer === 'string' ? { url: imgBuffer } : imgBuffer,
+                    image: imgBuffer,
                     caption: menuText
                 }, { quoted: sperky });
             }
@@ -221,12 +222,13 @@ async function sendMenu2Handler({ client, m, args }) {
                 }, { quoted: sperky });
             }
             case 'document': {
+                let docBuffer = await getBuffer(imageUrl);
                 return await client.sendMessage(m.jid, {
-                    document: { url: imageUrl },
+                    document: docBuffer,
                     caption: menuText,
                     mimetype: 'application/zip',
                     fileName: "RAHUL-AI-NEXUS.zip",
-                    fileLength: "99999999999",
+                    fileLength: 99999999999,
                     contextInfo: {
                         externalAdReply: {
                             title: `Hey ${m.pushName || 'Rahul'}!`,
