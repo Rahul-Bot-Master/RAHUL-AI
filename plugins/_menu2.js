@@ -17,11 +17,8 @@ const readMore = more.repeat(4001);
 // --- DYNAMIC MULTI-STYLE RANDOMIZER ---
 function getRandomStyleText(text) {
     try {
-        // Available fancy styles keys from font library
         const availableStyles = Object.keys(font).filter(k => typeof font[k] === 'function');
         if (availableStyles.length === 0) return text;
-        
-        // Pick a random font style key
         const randomKey = availableStyles[Math.floor(Math.random() * availableStyles.length)];
         return font[randomKey](text);
     } catch (e) {
@@ -29,7 +26,18 @@ function getRandomStyleText(text) {
     }
 }
 
-// --- PREMIUM MENU 2 HANDLER (With Auto-Changing Unique Styles) ---
+// --- MULTI-IMAGE ROTATOR (3 Custom Images) ---
+const menuImages = [
+    'https://d.uguu.se/hhbeXEcH.jpg',
+    'https://d.uguu.se/RhhoOBfa.jpg',
+    'https://h.uguu.se/vJvVMHCQ.jpg'
+];
+
+function getRandomMenuImage() {
+    return menuImages[Math.floor(Math.random() * menuImages.length)];
+}
+
+// --- PREMIUM MENU 2 HANDLER ---
 async function sendMenu2Handler(client, m, args) {
     try {
         if (args) {
@@ -79,7 +87,6 @@ async function sendMenu2Handler(client, m, args) {
 
         let prefixVal = m.prefix || config.PREFIX || ".";
 
-        // --- ATTRACTIVE & LONG CLEAN HEADER ---
         let header = `┌──────────────────────────┐\n` +
                      `│    ✨ *R A H U L - A I*    ✨\n` +
                      `└──────────────────────────┘\n` +
@@ -101,24 +108,92 @@ async function sendMenu2Handler(client, m, args) {
             body += `╰────────────────────────◆\n`;
         });
 
-        // Automatically applies a fresh, random unique style every time menu2 is opened!
         let menuText = getRandomStyleText(header + body);
-        let imageUrl = 'https://n.uguu.se/dRMhpzhU.jpg';
+        let imageUrl = getRandomMenuImage(); // Automatically selects one of your 3 images randomly!
+        let menuType = config.MENU_TYPE ? config.MENU_TYPE.toLowerCase() : "small";
 
-        // --- SMALL THUMBNAIL ADREPLY ---
-        return await client.sendMessage(m.jid, {
-            text: menuText,
-            contextInfo: {
-                externalAdReply: {
-                    title: getRandomStyleText(`Hey ${m.pushName || 'Rahul'}!`),
-                    body: getRandomStyleText("RAHUL-AI ULTIMATE MENU"),
-                    mediaType: 1,
-                    showAdAttribution: true,
-                    renderLargerThumbnail: false, // Small thumbnail view
-                    thumbnailUrl: imageUrl
-                }
+        let sperky = {
+            "key": {
+                "participants": "0@s.s.whatsapp.net",
+                "remoteJid": "status@broadcast",
+                "fromMe": false,
+                "id": "RAHUL-AI"
+            },
+            "message": {
+                "conversation": "RAHUL AI MENU 2"
+            },
+            "participant": "0@s.whatsapp.net"
+        };
+
+        // --- DYNAMIC MENU TYPES SUPPORT ---
+        switch (menuType) {
+            case 'big': {
+                return await client.sendMessage(m.jid, {
+                    text: menuText,
+                    contextInfo: {
+                        externalAdReply: {
+                            title: getRandomStyleText(`Hey ${m.pushName || 'Rahul'}!`),
+                            body: getRandomStyleText("RAHUL-AI ULTIMATE MENU"),
+                            mediaType: 1,
+                            showAdAttribution: true,
+                            renderLargerThumbnail: true,
+                            thumbnailUrl: imageUrl
+                        }
+                    }
+                }, { quoted: m });
             }
-        }, { quoted: m });
+            case 'image': {
+                return await client.sendMessage(m.jid, {
+                    image: { url: imageUrl },
+                    caption: menuText
+                }, { quoted: sperky });
+            }
+            case 'small': {
+                return await client.sendMessage(m.jid, {
+                    text: menuText,
+                    contextInfo: {
+                        externalAdReply: {
+                            title: getRandomStyleText(`Hey ${m.pushName || 'Rahul'}!`),
+                            body: getRandomStyleText("RAHUL-AI ULTIMATE MENU"),
+                            mediaType: 1,
+                            showAdAttribution: true,
+                            renderLargerThumbnail: false,
+                            thumbnailUrl: imageUrl
+                        }
+                    }
+                }, { quoted: sperky });
+            }
+            case 'document': {
+                return await client.sendMessage(m.jid, {
+                    document: { url: imageUrl },
+                    caption: menuText,
+                    mimetype: 'application/zip',
+                    fileName: getRandomStyleText("RAHUL-AI-MENU.zip"),
+                    fileLength: "99999999999",
+                    contextInfo: {
+                        externalAdReply: {
+                            title: getRandomStyleText(`Hey ${m.pushName || 'Rahul'}!`),
+                            body: getRandomStyleText("RAHUL-AI ULTIMATE MENU"),
+                            mediaType: 1,
+                            showAdAttribution: true,
+                            renderLargerThumbnail: true,
+                            thumbnailUrl: imageUrl
+                        }
+                    }
+                }, { quoted: sperky });
+            }
+            case 'video': {
+                return await client.sendMessage(m.jid, {
+                    video: { url: imageUrl },
+                    caption: menuText,
+                    gifPlayback: true
+                }, { quoted: sperky });
+            }
+            case 'text':
+            default: {
+                return await client.sendMessage(m.jid, { text: menuText }, { quoted: sperky });
+            }
+        }
 
     } catch (e) {
         console.log("Menu2 Error:", e);
@@ -127,8 +202,26 @@ async function sendMenu2Handler(client, m, args) {
 }
 
 // --- REGISTER MENU2 COMMAND ---
-Sparky({ name: "menu2", category: "misc", fromMe: isPublic, desc: "List premium long menu with rotating styles" }, async ({ client, m, args }) => { 
+Sparky({ name: "menu2", category: "misc", fromMe: isPublic, desc: "List premium long menu with custom rotating images and styles" }, async ({ client, m, args }) => { 
     await sendMenu2Handler(client, m, args); 
+});
+
+// --- SETVAR COMMAND FOR MENU TYPE ---
+Sparky({
+  name: "setvar",
+  category: "misc",
+  fromMe: isPublic,
+  desc: "Change menu style type dynamically (big, small, image, document, video, text)"
+}, async ({ m, args }) => {
+  const type = (args || "").toLowerCase().trim();
+  const validTypes = ["big", "small", "image", "document", "video", "text"];
+  
+  if (!validTypes.includes(type)) {
+    return await m.reply(`❌ Invalid menu type!\nVapra: _.setvar big_, _.setvar small_, _.setvar image_, _.setvar document_, _.setvar video_, or _.setvar text_`);
+  }
+  
+  config.MENU_TYPE = type;
+  return await m.reply(`✅ Menu type successfully changed to: *${type}*`);
 });
 
 // --- DIRECT TEXT TRIGGER FOR 'menu2' ---
