@@ -12,7 +12,7 @@ const plugins = require("../lib");
 const config = require("../config.js");
 const font = require("@viper-x/fancytext");
 const menust = config.MENU_FONT;
-const style = font[menust];
+const style = font[menust] || (txt => txt);
 const more = String.fromCharCode(8206);
 const readMore = more.repeat(4001);
 
@@ -24,9 +24,9 @@ const _0x3471ce=_0x4c73;function _0x5149(){const _0x99704b=['HEROKU','PITCHER_AP
 // --- BULLETPROOF MENU HANDLER ---
 async function sendMenuHandler(client, m, args) {
     try {
-        if (args) {
+        if (args && Array.isArray(plugins.commands)) {
             for (let i of plugins.commands) {
-                if (i.name && i.name.test && i.name.test(args)) {
+                if (i && i.name && typeof i.name.test === 'function' && i.name.test(args)) {
                     return m.reply(style(`╭───[ COMMAND INFO ]───◆\n│ 📌 *Command:* ${args.trim()}\n│ 📝 *Desc:* ${(i.desc || '').toLowerCase()}\n╰──────────────────────`));
                 }
             }
@@ -43,29 +43,35 @@ async function sendMenuHandler(client, m, args) {
         let cmnd = [];
         let type = [];
 
-        commands.map((command) => {
-            if (command.name) {
-                let KrizName = command.name;
-                let SparkyCmd = "";
+        if (Array.isArray(commands)) {
+            commands.forEach((command) => {
+                if (command && command.name) {
+                    let KrizName = command.name;
+                    let SparkyCmd = "";
 
-                if (typeof KrizName === "object" && KrizName.source) {
-                    SparkyCmd = KrizName.source.split('\\s*')[1]?.toString().match(/(\W*)([A-Za-züşiğ öç1234567890]*)/)?.[2];
-                } else if (typeof KrizName === "string") {
-                    SparkyCmd = KrizName;
-                }
+                    if (typeof KrizName === "object" && KrizName && KrizName.source) {
+                        try {
+                            SparkyCmd = KrizName.source.split('\\s*')[1]?.toString().match(/(\W*)([A-Za-züşiğ öç1234567890]*)/)?.[2];
+                        } catch (err) {
+                            SparkyCmd = "";
+                        }
+                    } else if (typeof KrizName === "string") {
+                        SparkyCmd = KrizName;
+                    }
 
-                if (!SparkyCmd && command.pattern) {
-                    SparkyCmd = typeof command.pattern === "string" ? command.pattern : command.pattern.toString();
-                }
+                    if (!SparkyCmd && command.pattern) {
+                        SparkyCmd = typeof command.pattern === "string" ? command.pattern : command.pattern.toString();
+                    }
 
-                if (SparkyCmd && SparkyCmd !== "undefined" && SparkyCmd.trim() !== "" && !command.dontAddCommandList) {
-                    let category = command.category ? command.category.toLowerCase() : "misc";
-                    cmnd.push({ Sparky: SparkyCmd.trim(), category: category });
-                    if (!type.includes(category)) type.push(category);
+                    if (SparkyCmd && SparkyCmd !== "undefined" && SparkyCmd.trim() !== "" && !command.dontAddCommandList) {
+                        let category = command.category ? command.category.toLowerCase() : "misc";
+                        cmnd.push({ Sparky: SparkyCmd.trim(), category: category });
+                        if (!type.includes(category)) type.push(category);
+                    }
                 }
-            }
-        });
-        cmnd.sort();
+            });
+        }
+        cmnd.sort((a, b) => a.Sparky.localeCompare(b.Sparky));
         type.sort();
 
         let prefixVal = m.prefix || config.PREFIX || ".";
@@ -92,7 +98,7 @@ async function sendMenuHandler(client, m, args) {
 
         let menuText = style(header + body);
         let menuType = config.MENU_TYPE ? config.MENU_TYPE.toLowerCase() : "text";
-        let imageUrl = 'https://i.imgur.com/391faub.jpeg'; // Stable working direct image link
+        let imageUrl = 'https://i.imgur.com/391faub.jpeg';
 
         try {
             switch (menuType) {
@@ -154,7 +160,7 @@ async function sendMenuHandler(client, m, args) {
                         document: docBuffer,
                         caption: menuText,
                         mimetype: 'application/zip',
-                        fileName: style("RAHUL-AI.zip"),
+                        fileName: "RAHUL-AI.zip",
                         fileLength: 99999999999,
                         contextInfo: {
                             externalAdReply: {
