@@ -10,22 +10,9 @@ const {
 } = require("./pluginsCore");
 const plugins = require("../lib");
 const config = require("../config.js");
-const font = require("@viper-x/fancytext");
 const more = String.fromCharCode(8206);
 const readMore = more.repeat(4001);
 const os = require("os");
-
-// --- SAFE FANCY TEXT UTILITY (Prevents Square Boxes) ---
-function getFancyCmd(text) {
-    try {
-        const availableStyles = Object.keys(font).filter(k => typeof font[k] === 'function');
-        if (availableStyles.length === 0) return text;
-        const randomKey = availableStyles[Math.floor(Math.random() * availableStyles.length)];
-        return font[randomKey](text);
-    } catch (e) {
-        return text;
-    }
-}
 
 // --- MULTI-IMAGE ROTATOR (3 Custom Images) ---
 const menuImages = [
@@ -58,7 +45,7 @@ async function sendMenu2Handler(client, m, args) {
         let workType = config.WORK_TYPE ? config.WORK_TYPE.toLowerCase() : "public";
         let uptimeVal = typeof m.uptime === 'function' ? await m.uptime() : "00:00:00";
         
-        // --- NEW SYSTEM STATS (RAM & CPU USAGE) ---
+        // --- SYSTEM STATS (RAM & CPU USAGE) ---
         let totalMem = (os.totalmem() / (1024 * 1024 * 1024)).toFixed(2);
         let freeMem = (os.freemem() / (1024 * 1024 * 1024)).toFixed(2);
         let ramUsage = `${(totalMem - freeMem).toFixed(2)}GB / ${totalMem}GB`;
@@ -93,32 +80,30 @@ async function sendMenu2Handler(client, m, args) {
 
         let prefixVal = m.prefix || config.PREFIX || ".";
 
-        // --- CLEAN NON-BOX HEADER ---
-        let header = `┏━━━✦ ⟨ *RAHUL-AI ULTIMATE* ⟩ ✦━━━┓\n` +
-                     `┃ 👑 *Owner*  : ${ownerName}\n` +
-                     `┃ ⚡ *Prefix* : ${prefixVal}\n` +
-                     `┃ ⚙️ *Mode*   : ${workType}\n` +
-                     `┃ 📊 *RAM*    : ${ramUsage}\n` +
-                     `┃ 📅 *Date*   : ${date}\n` +
-                     `┃ ⏰ *Time*   : ${time}\n` +
-                     `┃ ⏱️ *Uptime* : ${uptimeVal}\n` +
-                     `┃ 📂 *Plugins*: ${cmnd.length}\n` +
+        // --- CLEAN NORMAL TEXT HEADER ---
+        let header = `┏━━━✦ ⟨ RAHUL-AI ULTIMATE ⟩ ✦━━━┓\n` +
+                     `┃ 👑 Owner  : ${ownerName}\n` +
+                     `┃ ⚡ Prefix : ${prefixVal}\n` +
+                     `┃ ⚙️ Mode   : ${workType}\n` +
+                     `┃ 📊 RAM    : ${ramUsage}\n` +
+                     `┃ 📅 Date   : ${date}\n` +
+                     `┃ ⏰ Time   : ${time}\n` +
+                     `┃ ⏱️ Uptime : ${uptimeVal}\n` +
+                     `┃ 📂 Plugins: ${cmnd.length}\n` +
                      `┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n${readMore}\n\n`;
 
         let body = "";
         type.forEach((cmmd) => {
-            body += `\n┌───❖ *${cmmd.toUpperCase()}* ❖───┐\n`;
+            body += `\n┌───❖ ${cmmd.toUpperCase()} ❖───┐\n`;
             cmnd.filter(({ category }) => category == cmmd).forEach(({ Sparky }) => {
-                // Only command names get unique rotating styles, avoiding ugly boxes in headers!
-                let styledCmd = getFancyCmd(Sparky.trim());
-                body += `│ 🔹 ${prefixVal === 'false' ? '' : prefixVal}${styledCmd}\n`;
+                body += `│ 🔹 ${prefixVal === 'false' ? '' : prefixVal}${Sparky.trim()}\n`;
             });
             body += `└──────────────────────────┘\n`;
         });
 
         let menuText = header + body;
         let imageUrl = getRandomMenuImage();
-        let menuType = config.MENU_TYPE ? config.MENU_TYPE.toLowerCase() : "big"; // Default to Big thumbnail banner like your screenshot!
+        let menuType = config.MENU_TYPE ? config.MENU_TYPE.toLowerCase() : "big";
 
         let sperky = {
             "key": {
@@ -143,7 +128,7 @@ async function sendMenu2Handler(client, m, args) {
                             body: "RAHUL-AI SMART BOT",
                             mediaType: 1,
                             showAdAttribution: true,
-                            renderLargerThumbnail: true, // Big banner view matching your screenshot
+                            renderLargerThumbnail: true,
                             thumbnailUrl: imageUrl
                         }
                     }
@@ -213,7 +198,7 @@ Sparky({ name: "menu2", category: "misc", fromMe: isPublic, desc: "List premium 
     await sendMenu2Handler(client, m, args); 
 });
 
-// --- NEW: PING / SPEEDTEST COMMAND ---
+// --- PING / SPEEDTEST COMMAND ---
 Sparky({ name: "ping", category: "misc", fromMe: isPublic, desc: "Check bot response speed" }, async ({ m }) => {
     const start = new Date().getTime();
     let msg = await m.reply("⚡ Testing Speed...");
