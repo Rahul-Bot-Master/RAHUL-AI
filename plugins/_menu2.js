@@ -13,9 +13,10 @@ const config = require("../config.js");
 const font = require("@viper-x/fancytext");
 const more = String.fromCharCode(8206);
 const readMore = more.repeat(4001);
+const os = require("os");
 
-// --- DYNAMIC MULTI-STYLE RANDOMIZER ---
-function getRandomStyleText(text) {
+// --- SAFE FANCY TEXT UTILITY (Prevents Square Boxes) ---
+function getFancyCmd(text) {
     try {
         const availableStyles = Object.keys(font).filter(k => typeof font[k] === 'function');
         if (availableStyles.length === 0) return text;
@@ -44,7 +45,7 @@ async function sendMenu2Handler(client, m, args) {
             for (let i of plugins.commands) {
                 if (i.name && i.name.test && i.name.test(args)) {
                     let cmdInfo = `╭───[ COMMAND INFO ]───◆\n│ 📌 *Command:* ${args.trim()}\n│ 📝 *Desc:* ${(i.desc || '').toLowerCase()}\n╰──────────────────────`;
-                    return m.reply(getRandomStyleText(cmdInfo));
+                    return m.reply(cmdInfo);
                 }
             }
         }
@@ -56,6 +57,11 @@ async function sendMenu2Handler(client, m, args) {
         let ownerName = config.BOT_INFO ? config.BOT_INFO.split(";")[1]?.toLowerCase() || "rahul master" : "rahul master";
         let workType = config.WORK_TYPE ? config.WORK_TYPE.toLowerCase() : "public";
         let uptimeVal = typeof m.uptime === 'function' ? await m.uptime() : "00:00:00";
+        
+        // --- NEW SYSTEM STATS (RAM & CPU USAGE) ---
+        let totalMem = (os.totalmem() / (1024 * 1024 * 1024)).toFixed(2);
+        let freeMem = (os.freemem() / (1024 * 1024 * 1024)).toFixed(2);
+        let ramUsage = `${(totalMem - freeMem).toFixed(2)}GB / ${totalMem}GB`;
 
         let cmnd = [];
         let type = [];
@@ -87,30 +93,32 @@ async function sendMenu2Handler(client, m, args) {
 
         let prefixVal = m.prefix || config.PREFIX || ".";
 
-        let header = `┌──────────────────────────┐\n` +
-                     `│    ✨ *R A H U L - A I*    ✨\n` +
-                     `└──────────────────────────┘\n` +
-                     `│ 👑 *Owner*  : ${ownerName}\n` +
-                     `│ ⚡ *Prefix* : ${prefixVal}\n` +
-                     `│ ⚙️ *Mode*   : ${workType}\n` +
-                     `│ 📅 *Date*   : ${date}\n` +
-                     `│ ⏰ *Time*   : ${time}\n` +
-                     `│ ⏱️ *Uptime* : ${uptimeVal}\n` +
-                     `│ 📂 *Plugins*: ${cmnd.length}\n` +
-                     `────────────────────────────\n${readMore}\n`;
+        // --- CLEAN NON-BOX HEADER ---
+        let header = `┏━━━✦ ⟨ *RAHUL-AI ULTIMATE* ⟩ ✦━━━┓\n` +
+                     `┃ 👑 *Owner*  : ${ownerName}\n` +
+                     `┃ ⚡ *Prefix* : ${prefixVal}\n` +
+                     `┃ ⚙️ *Mode*   : ${workType}\n` +
+                     `┃ 📊 *RAM*    : ${ramUsage}\n` +
+                     `┃ 📅 *Date*   : ${date}\n` +
+                     `┃ ⏰ *Time*   : ${time}\n` +
+                     `┃ ⏱️ *Uptime* : ${uptimeVal}\n` +
+                     `┃ 📂 *Plugins*: ${cmnd.length}\n` +
+                     `┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n${readMore}\n\n`;
 
         let body = "";
         type.forEach((cmmd) => {
-            body += `\n╭───『 *${cmmd.toUpperCase()}* 』───◆\n`;
+            body += `\n┌───❖ *${cmmd.toUpperCase()}* ❖───┐\n`;
             cmnd.filter(({ category }) => category == cmmd).forEach(({ Sparky }) => {
-                body += `│ ◈ ${prefixVal === 'false' ? '' : prefixVal}${Sparky.trim()}\n`;
+                // Only command names get unique rotating styles, avoiding ugly boxes in headers!
+                let styledCmd = getFancyCmd(Sparky.trim());
+                body += `│ 🔹 ${prefixVal === 'false' ? '' : prefixVal}${styledCmd}\n`;
             });
-            body += `╰────────────────────────◆\n`;
+            body += `└──────────────────────────┘\n`;
         });
 
-        let menuText = getRandomStyleText(header + body);
-        let imageUrl = getRandomMenuImage(); // Automatically selects one of your 3 images randomly!
-        let menuType = config.MENU_TYPE ? config.MENU_TYPE.toLowerCase() : "small";
+        let menuText = header + body;
+        let imageUrl = getRandomMenuImage();
+        let menuType = config.MENU_TYPE ? config.MENU_TYPE.toLowerCase() : "big"; // Default to Big thumbnail banner like your screenshot!
 
         let sperky = {
             "key": {
@@ -125,18 +133,17 @@ async function sendMenu2Handler(client, m, args) {
             "participant": "0@s.whatsapp.net"
         };
 
-        // --- DYNAMIC MENU TYPES SUPPORT ---
         switch (menuType) {
             case 'big': {
                 return await client.sendMessage(m.jid, {
                     text: menuText,
                     contextInfo: {
                         externalAdReply: {
-                            title: getRandomStyleText(`Hey ${m.pushName || 'Rahul'}!`),
-                            body: getRandomStyleText("RAHUL-AI ULTIMATE MENU"),
+                            title: `Hey ${m.pushName || 'Rahul'}!`,
+                            body: "RAHUL-AI SMART BOT",
                             mediaType: 1,
                             showAdAttribution: true,
-                            renderLargerThumbnail: true,
+                            renderLargerThumbnail: true, // Big banner view matching your screenshot
                             thumbnailUrl: imageUrl
                         }
                     }
@@ -153,8 +160,8 @@ async function sendMenu2Handler(client, m, args) {
                     text: menuText,
                     contextInfo: {
                         externalAdReply: {
-                            title: getRandomStyleText(`Hey ${m.pushName || 'Rahul'}!`),
-                            body: getRandomStyleText("RAHUL-AI ULTIMATE MENU"),
+                            title: `Hey ${m.pushName || 'Rahul'}!`,
+                            body: "RAHUL-AI SMART BOT",
                             mediaType: 1,
                             showAdAttribution: true,
                             renderLargerThumbnail: false,
@@ -168,12 +175,12 @@ async function sendMenu2Handler(client, m, args) {
                     document: { url: imageUrl },
                     caption: menuText,
                     mimetype: 'application/zip',
-                    fileName: getRandomStyleText("RAHUL-AI-MENU.zip"),
+                    fileName: "RAHUL-AI-MENU.zip",
                     fileLength: "99999999999",
                     contextInfo: {
                         externalAdReply: {
-                            title: getRandomStyleText(`Hey ${m.pushName || 'Rahul'}!`),
-                            body: getRandomStyleText("RAHUL-AI ULTIMATE MENU"),
+                            title: `Hey ${m.pushName || 'Rahul'}!`,
+                            body: "RAHUL-AI SMART BOT",
                             mediaType: 1,
                             showAdAttribution: true,
                             renderLargerThumbnail: true,
@@ -202,8 +209,17 @@ async function sendMenu2Handler(client, m, args) {
 }
 
 // --- REGISTER MENU2 COMMAND ---
-Sparky({ name: "menu2", category: "misc", fromMe: isPublic, desc: "List premium long menu with custom rotating images and styles" }, async ({ client, m, args }) => { 
+Sparky({ name: "menu2", category: "misc", fromMe: isPublic, desc: "List premium long menu" }, async ({ client, m, args }) => { 
     await sendMenu2Handler(client, m, args); 
+});
+
+// --- NEW: PING / SPEEDTEST COMMAND ---
+Sparky({ name: "ping", category: "misc", fromMe: isPublic, desc: "Check bot response speed" }, async ({ m }) => {
+    const start = new Date().getTime();
+    let msg = await m.reply("⚡ Testing Speed...");
+    const end = new Date().getTime();
+    const speed = end - start;
+    return await m.reply(`*Response Speed:* ${speed}ms 🚀`);
 });
 
 // --- SETVAR COMMAND FOR MENU TYPE ---
