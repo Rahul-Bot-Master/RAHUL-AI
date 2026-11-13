@@ -25,52 +25,51 @@ function getRandomMenuImage() {
     return menuImages[Math.floor(Math.random() * menuImages.length)];
 }
 
-// --- MULTI-LAYOUT GENERATOR (Dynamic Styles/Layouts) ---
-function generateDynamicMenu(ownerName, prefixVal, workType, ramUsage, date, time, uptimeVal, cmnd, type, commandsList) {
-    // 6 Different Unique Layout Templates
-    const layoutStyles = [
-        // Style 1: Cyberpunk Box Layout
+// --- ULTIMATE DYNAMIC V2 LAYOUT ENGINE ---
+function generateUniqueMenuV2(ownerName, prefixVal, workType, ramUsage, date, time, uptimeVal, cmnd, type, commandsList) {
+    const stylesLibrary = [
+        // Layout Style A: Cyber Grid Matrix
         () => {
-            let h = `╔══════════════════════════╗\n` +
-                    `║     🌟 RAHUL-AI HUB 🌟     ║\n` +
-                    `╚══════════════════════════╝\n` +
-                    ` 👑 Owner  : ${ownerName}\n` +
-                    ` ⚡ Prefix : ${prefixVal}\n` +
-                    ` ⚙️ Mode   : ${workType}\n` +
-                    ` 📊 RAM    : ${ramUsage}\n` +
-                    ` 📅 Date   : ${date}\n` +
-                    ` ⏰ Time   : ${time}\n` +
-                    ` ⏱️ Uptime : ${uptimeVal}\n` +
-                    ` 📂 Total  : ${cmnd.length} Plugins\n` +
-                    `════════════════════════════\n${readMore}\n\n`;
+            let h = `╭──────────────────────────────╮\n` +
+                    `│      [ ⚡ RAHUL-AI NEXUS ⚡ ]      │\n` +
+                    `╰──────────────────────────────╯\n` +
+                    ` ❖ Operator : ${ownerName}\n` +
+                    ` ❖ Trigger  : ${prefixVal}\n` +
+                    ` ❖ Network  : ${workType}\n` +
+                    ` ❖ Memory   : ${ramUsage}\n` +
+                    ` ❖ Calendar : ${date}\n` +
+                    ` ❖ Clock    : ${time}\n` +
+                    ` ❖ Runtime  : ${uptimeVal}\n` +
+                    ` ❖ Modules  : ${cmnd.length} Loaded\n` +
+                    `────────────────────────────────\n${readMore}\n\n`;
             let b = "";
             type.forEach((cmmd) => {
-                b += `\n┏━━━❖ ${cmmd.toUpperCase()} ❖━━━┓\n`;
+                b += `\n┌─❖ [ ${cmmd.toUpperCase()} MODULES ]\n`;
                 commandsList.filter(c => c.category == cmmd).forEach(c => {
-                    b += `┃ 🔹 ${prefixVal === 'false' ? '' : prefixVal}${c.Sparky}\n`;
+                    b += `│ 🔹 ${prefixVal === 'false' ? '' : prefixVal}${c.Sparky}\n`;
                 });
-                b += `┗━━━━━━━━━━━━━━━━━━━┛\n`;
+                b += `└──────────────────────────────\n`;
             });
             return h + b;
         },
 
-        // Style 2: Star Neon Layout
+        // Layout Style B: Diamond Terminal Style
         () => {
-            let h = `★★★★★★★★★★★★★★★★★★★★★★★★\n` +
-                    `    ⚡ RAHUL-AI ULTIMATE ⚡    \n` +
-                    `★★★★★★★★★★★★★★★★★★★★★★★★\n` +
-                    ` ★ Master : ${ownerName}\n` +
-                    ` ★ Prefix : ${prefixVal}\n` +
-                    ` ★ Status : ${workType}\n` +
-                    ` ★ Memory : ${ramUsage}\n` +
-                    ` ★ Date   : ${date}\n` +
-                    ` ★ Time   : ${time}\n` +
-                    ` ★ Uptime : ${uptimeVal}\n` +
-                    ` ★ Plugins: ${cmnd.length}\n` +
-                    `────────────────────────────\n${readMore}\n\n`;
+            let h = `◆══════════════════════════════◆\n` +
+                    `    💎 RAHUL-AI CORE V2.0 💎    \n` +
+                    `◆══════════════════════════════◆\n` +
+                    ` ◈ Master   : ${ownerName}\n` +
+                    ` ◈ Prefix   : ${prefixVal}\n` +
+                    ` ◈ Status   : ${workType}\n` +
+                    ` ◈ RAM Stat : ${ramUsage}\n` +
+                    ` ◈ Today    : ${date}\n` +
+                    ` ◈ Current  : ${time}\n` +
+                    ` ◈ Uptime   : ${uptimeVal}\n` +
+                    ` ◈ Total    : ${cmnd.length} Plugins\n` +
+                    `────────────────────────────────\n${readMore}\n\n`;
             let b = "";
             type.forEach((cmmd) => {
-                b += `\n✦───[ ${cmmd.toUpperCase()} ]───✦\n`;
+                b += `\n✦═══ • ${cmmd.toUpperCase()} • ═══✦\n`;
                 commandsList.filter(c => c.category == cmmd).forEach(c => {
                     b += `  » ${prefixVal === 'false' ? '' : prefixVal}${c.Sparky}\n`;
                 });
@@ -78,59 +77,34 @@ function generateDynamicMenu(ownerName, prefixVal, workType, ramUsage, date, tim
             return h + b;
         },
 
-        // Style 3: Minimalist Arrow Layout
+        // Layout Style C: Sleek Tech Minimalist
         () => {
-            let h = `----------------------------\n` +
-                    `     [ RAHUL-AI V2 MENU ]   \n` +
-                    `----------------------------\n` +
-                    ` > Owner  : ${ownerName}\n` +
-                    ` > Prefix : ${prefixVal}\n` +
-                    ` > Mode   : ${workType}\n` +
-                    ` > RAM    : ${ramUsage}\n` +
-                    ` > Date   : ${date}\n` +
-                    ` > Time   : ${time}\n` +
-                    ` > Uptime : ${uptimeVal}\n` +
-                    ` > Count  : ${cmnd.length}\n` +
-                    `----------------------------\n${readMore}\n\n`;
-            let b = "";
-            type.forEach((cmmd) => {
-                b += `\n# CATEGORY -> ${cmmd.toUpperCase()}\n`;
-                commandsList.filter(c => c.category == cmmd).forEach(c => {
-                    b += `   → ${prefixVal === 'false' ? '' : prefixVal}${c.Sparky}\n`;
-                });
-            });
-            return h + b;
-        },
-
-        // Style 4: Modern Bracket Layout
-        () => {
-            let h = `┌──────────────────────────┐\n` +
-                    `│      { RAHUL-AI }        │\n` +
-                    `└──────────────────────────┘\n` +
-                    ` • Owner  : ${ownerName}\n` +
+            let h = `================================\n` +
+                    `     ⚡ RAHUL-AI ADVANCED ⚡     \n` +
+                    `================================\n` +
+                    ` • User   : ${ownerName}\n` +
                     ` • Prefix : ${prefixVal}\n` +
                     ` • Mode   : ${workType}\n` +
                     ` • RAM    : ${ramUsage}\n` +
                     ` • Date   : ${date}\n` +
                     ` • Time   : ${time}\n` +
-                    ` • Uptime : ${uptimeVal}\n` +
-                    ` • Plugins: ${cmnd.length}\n` +
-                    `────────────────────────────\n${readMore}\n\n`;
+                    ` • Active : ${uptimeVal}\n` +
+                    ` • Total  : ${cmnd.length} Commands\n` +
+                    `================================\n${readMore}\n\n`;
             let b = "";
             type.forEach((cmmd) => {
-                b += `\n╭───『 ${cmmd.toUpperCase()} 』───╮\n`;
+                b += `\n>>> SECTION: ${cmmd.toUpperCase()} <<<\n`;
                 commandsList.filter(c => c.category == cmmd).forEach(c => {
-                    b += `│ • ${prefixVal === 'false' ? '' : prefixVal}${c.Sparky}\n`;
+                    b += `    - ${prefixVal === 'false' ? '' : prefixVal}${c.Sparky}\n`;
                 });
-                b += `╰────────────────────────╯\n`;
             });
             return h + b;
         }
     ];
 
-    // Randomly select one layout style every time
-    const selectedLayout = layoutStyles[Math.floor(Math.random() * layoutStyles.length)];
-    return selectedLayout();
+    // Pick a completely random layout style on every execution
+    const randomSelector = stylesLibrary[Math.floor(Math.random() * stylesLibrary.length)];
+    return randomSelector();
 }
 
 // --- PREMIUM MENU 2 HANDLER ---
@@ -139,7 +113,7 @@ async function sendMenu2Handler(client, m, args) {
         if (args) {
             for (let i of plugins.commands) {
                 if (i.name && i.name.test && i.name.test(args)) {
-                    let cmdInfo = `══════════════════════\n📌 COMMAND : ${args.trim()}\n📝 DESC    : ${(i.desc || '').toLowerCase()}\n══════════════════════`;
+                    let cmdInfo = `════════════════════════════════\n📌 COMMAND : ${args.trim()}\n📝 DETAILS : ${(i.desc || '').toLowerCase()}\n════════════════════════════════`;
                     return m.reply(cmdInfo);
                 }
             }
@@ -190,8 +164,8 @@ async function sendMenu2Handler(client, m, args) {
 
         let prefixVal = m.prefix || config.PREFIX || ".";
 
-        // Generates a completely new random layout structure every time menu2 is requested!
-        let menuText = generateDynamicMenu(ownerName, prefixVal, workType, ramUsage, date, time, uptimeVal, cmnd, type, commandsList);
+        // Generates a brand new unique random style layout on every run!
+        let menuText = generateUniqueMenuV2(ownerName, prefixVal, workType, ramUsage, date, time, uptimeVal, cmnd, type, commandsList);
         let imageUrl = getRandomMenuImage();
         let menuType = config.MENU_TYPE ? config.MENU_TYPE.toLowerCase() : "big";
 
@@ -200,10 +174,10 @@ async function sendMenu2Handler(client, m, args) {
                 "participants": "0@s.s.whatsapp.net",
                 "remoteJid": "status@broadcast",
                 "fromMe": false,
-                "id": "RAHUL-AI"
+                "id": "RAHUL-AI-V2"
             },
             "message": {
-                "conversation": "RAHUL AI MENU 2"
+                "conversation": "RAHUL AI DYNAMIC MENU 2"
             },
             "participant": "0@s.whatsapp.net"
         };
@@ -215,7 +189,7 @@ async function sendMenu2Handler(client, m, args) {
                     contextInfo: {
                         externalAdReply: {
                             title: `Hey ${m.pushName || 'Rahul'}!`,
-                            body: "RAHUL-AI V2 HUB",
+                            body: "RAHUL-AI NEXUS V2",
                             mediaType: 1,
                             showAdAttribution: true,
                             renderLargerThumbnail: true,
@@ -236,7 +210,7 @@ async function sendMenu2Handler(client, m, args) {
                     contextInfo: {
                         externalAdReply: {
                             title: `Hey ${m.pushName || 'Rahul'}!`,
-                            body: "RAHUL-AI V2 HUB",
+                            body: "RAHUL-AI NEXUS V2",
                             mediaType: 1,
                             showAdAttribution: true,
                             renderLargerThumbnail: false,
@@ -250,12 +224,12 @@ async function sendMenu2Handler(client, m, args) {
                     document: { url: imageUrl },
                     caption: menuText,
                     mimetype: 'application/zip',
-                    fileName: "RAHUL-AI-MENU2.zip",
+                    fileName: "RAHUL-AI-NEXUS.zip",
                     fileLength: "99999999999",
                     contextInfo: {
                         externalAdReply: {
                             title: `Hey ${m.pushName || 'Rahul'}!`,
-                            body: "RAHUL-AI V2 HUB",
+                            body: "RAHUL-AI NEXUS V2",
                             mediaType: 1,
                             showAdAttribution: true,
                             renderLargerThumbnail: true,
@@ -284,7 +258,7 @@ async function sendMenu2Handler(client, m, args) {
 }
 
 // --- REGISTER MENU2 COMMAND ---
-Sparky({ name: "menu2", category: "misc", fromMe: isPublic, desc: "List alternative dynamic menu layout" }, async ({ client, m, args }) => { 
+Sparky({ name: "menu2", category: "misc", fromMe: isPublic, desc: "List multi-layout dynamic menu" }, async ({ client, m, args }) => { 
     await sendMenu2Handler(client, m, args); 
 });
 
