@@ -268,3 +268,41 @@ Sparky({ name: "ping", category: "misc", fromMe: isPublic, desc: "Check bot resp
     const speed = end - start;
     return await m.reply(`*Response Speed:* ${speed}ms 🚀`);
 });
+
+// --- NEW: AUTO-BIO / PROFILE STATUS UPDATER ---
+let autoBioInterval = null;
+
+Sparky({ name: "autobio", category: "misc", fromMe: isPublic, desc: "Toggle automated live bio updates on the bot profile" }, async ({ m, client, args }) => {
+    try {
+        const action = (args || "").toLowerCase().trim();
+
+        if (action === "on") {
+            if (autoBioInterval) clearInterval(autoBioInterval);
+
+            autoBioInterval = setInterval(async () => {
+                try {
+                    let d = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
+                    let bioText = `🚀 RAHUL-AI Active | ⏰ ${d} | ⚡ Powered by Rahul Master`;
+                    if (client.updateProfileStatus) {
+                        await client.updateProfileStatus(bioText);
+                    }
+                } catch (e) {
+                    // Silent catch for profile rate limits
+                }
+            }, 60000); // Updates every 1 minute
+
+            return await m.reply("✅ Auto-Bio successfully ON zali ahe! (Pratyek 1 minitane bio update hoil)");
+        } else if (action === "off") {
+            if (autoBioInterval) {
+                clearInterval(autoBioInterval);
+                autoBioInterval = null;
+            }
+            return await m.reply("✅ Auto-Bio successfully OFF zali ahe!");
+        } else {
+            return await m.reply(`*Auto-Bio Status:* ${autoBioInterval ? "ON 🟢" : "OFF 🔴"}\n*Vapra:* _.autobio on_ kinva _.autobio off_`);
+        }
+    } catch (err) {
+        console.log("Autobio Command Error:", err);
+        return await m.reply("❌ Auto-Bio toggle hotana error ala!");
+    }
+});
