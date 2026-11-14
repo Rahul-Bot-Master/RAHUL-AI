@@ -97,7 +97,7 @@ async function sendMenuHandler(client, m, args) {
         });
 
         let menuText = style(header + body);
-        let menuType = config.MENU_TYPE ? config.MENU_TYPE.toLowerCase() : "image"; // Force default to image if not set
+        let menuType = config.MENU_TYPE ? config.MENU_TYPE.toLowerCase() : "image";
         let imageUrl = 'https://i.imgur.com/391faub.jpeg';
 
         switch (menuType) {
@@ -117,11 +117,18 @@ async function sendMenuHandler(client, m, args) {
                 }, { quoted: m });
             }
             case 'image': {
-                // Direct image sending without fallback dropping to text
-                return await client.sendMessage(m.jid, {
-                    image: { url: imageUrl },
-                    caption: menuText
-                }, { quoted: m });
+                try {
+                    let imgBuffer = await getBuffer(imageUrl);
+                    if (imgBuffer) {
+                        return await client.sendMessage(m.jid, {
+                            image: imgBuffer,
+                            caption: menuText
+                        }, { quoted: m });
+                    }
+                } catch (err) {
+                    console.log("Image buffer fetch error, sending text fallback:", err);
+                }
+                return await client.sendMessage(m.jid, { text: menuText }, { quoted: m });
             }
             case 'small': {
                 return await client.sendMessage(m.jid, {
@@ -139,8 +146,14 @@ async function sendMenuHandler(client, m, args) {
                 }, { quoted: m });
             }
             case 'document': {
+                let docBuffer;
+                try {
+                    docBuffer = await getBuffer(imageUrl);
+                } catch (err) {
+                    docBuffer = Buffer.from(menuText);
+                }
                 return await client.sendMessage(m.jid, {
-                    document: { url: imageUrl },
+                    document: docBuffer,
                     caption: menuText,
                     mimetype: 'application/zip',
                     fileName: "RAHUL-AI.zip",
@@ -172,7 +185,7 @@ async function sendMenuHandler(client, m, args) {
 
     } catch (e) {
         console.log("Menu Error:", e);
-        if (m && m.reply) await m.reply("❌ Menu load hotana error ala ahe!");
+        if (m && m.reply) await m.reply("❌ Menu load hotana error ala ahe: " + e.message);
     }
 }
 
