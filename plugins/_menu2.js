@@ -14,11 +14,9 @@ const more = String.fromCharCode(8206);
 const readMore = more.repeat(4001);
 const os = require("os");
 
-// --- MULTI-IMAGE ROTATOR (Backup working links) ---
+// --- MENU IMAGE (Updated with your new link) ---
 const menuImages = [
-    'https://i.imgur.com/391faub.jpeg',
-    'https://i.imgur.com/196R8y1.jpeg',
-    'https://i.imgur.com/2Y5R78o.jpeg'
+    'https://n.uguu.se/STdFjZFjkGat.jpg'
 ];
 
 function getRandomMenuImage() {
@@ -167,9 +165,7 @@ async function sendMenu2Handler({ client, m, args }) {
 
         let menuText = generateUniqueMenuV2(ownerName, prefixVal, workType, ramUsage, date, time, uptimeVal, cmnd, type, commandsList);
         let imageUrl = getRandomMenuImage();
-        
-        // Koyeb var config.MENU_TYPE kahi pan asu de, yithe apan forcefully 'image' set kela ahe!
-        let menuType = "image"; 
+        let menuType = "image"; // Forced to image so it guarantees rendering properly
 
         switch (menuType) {
             case 'big': {
@@ -190,7 +186,6 @@ async function sendMenu2Handler({ client, m, args }) {
             case 'image':
             default: {
                 try {
-                    // Direct URL sending for Koyeb environment stability
                     return await client.sendMessage(m.jid, {
                         image: { url: imageUrl },
                         caption: menuText
