@@ -187,17 +187,22 @@ async function sendMenu2Handler({ client, m, args }) {
             }
             case 'image': {
                 try {
-                    let imgBuffer = await getBuffer(imageUrl);
+                    let imgBuffer = await getBuffer(imageUrl).catch(() => null);
                     if (imgBuffer) {
                         return await client.sendMessage(m.jid, {
                             image: imgBuffer,
                             caption: menuText
                         }, { quoted: m });
+                    } else {
+                        return await client.sendMessage(m.jid, {
+                            image: { url: imageUrl },
+                            caption: menuText
+                        }, { quoted: m });
                     }
                 } catch (err) {
-                    console.log("Image buffer load failed, sending text fallback.");
+                    console.log("Image send failed, falling back to text:", err);
+                    return await client.sendMessage(m.jid, { text: menuText }, { quoted: m });
                 }
-                return await client.sendMessage(m.jid, { text: menuText }, { quoted: m });
             }
             case 'small': {
                 return await client.sendMessage(m.jid, {
