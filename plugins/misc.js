@@ -156,13 +156,20 @@ async ({
         const selectedStyle = freshPingStyles[Math.floor(Math.random() * freshPingStyles.length)];
         const finalPingText = selectedStyle();
 
-        // --- STEP 3: RELIABLE MESSAGE EDIT ---
+        // --- STEP 3: BULLETPROOF MESSAGE EDIT & FALLBACK ---
         const activeClient = client || m.client;
-        if (pingMsg && pingMsg.key && activeClient && typeof activeClient.sendMessage === 'function') {
-            return await activeClient.sendMessage(m.jid, {
-                text: finalPingText,
-                edit: pingMsg.key
-            });
+        const msgKey = pingMsg?.key || pingMsg?.message?.key || (typeof pingMsg === 'object' && pingMsg.id ? pingMsg : null);
+
+        if (msgKey && activeClient && typeof activeClient.sendMessage === 'function') {
+            try {
+                return await activeClient.sendMessage(m.jid, {
+                    text: finalPingText,
+                    edit: msgKey
+                });
+            } catch (err) {
+                // Fallback if edit fails
+                return await m.sendMsg(m.jid, finalPingText, { quoted: m });
+            }
         } else if (pingMsg && typeof pingMsg.edit === 'function') {
             return await pingMsg.edit(finalPingText);
         } else {
@@ -174,7 +181,6 @@ async ({
         m.reply(`⚠️ Error: ${error.message || error}`);
     }
 });
-
 
 Sparky({
 		name: "wame",
