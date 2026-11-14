@@ -32,7 +32,7 @@ function getRandomMenuImage() {
 
 const _0x3471ce=_0x4c73;function _0x5149(){const _0x99704b=['HEROKU','PITCHER_API_BASE_URL','PWD','codesandbox','1460490jcYrnC','DIGITALOCEAN','REPLIT','13089848qhFTfM','CLOUDFLARE','GITHUB','TERMUX_VERSION','REPLIT_USER','env','32199750KLjfkJ','18wOomgQ','5701444PXyScu','AZURE','7366gnnTKS','846315zOxTke','RAILWAY','NETLIFY','VPS','AWS','GITHUB_SERVER_URL','DYNO','1131GsaKWJ','SPACE_ID','HUGGINGFACE','KOYEB','CODESANDBOX','RENDER','FLY_IO','5671732abHOue','AZURE_HTTP_FUNCTIONS','DIGITALOCEAN_APP_NAME','CF_PAGES','VERCEL','LINUX','userland'];_0x5149=function(){return _0x99704b;};return _0x5149();}(function(_0x14bc52,_0x9e047e){const _0x5ac994=_0x4c73,_0x256c17=_0x14bc52();while(!![]){try{const _0x1155d4=parseInt(_0x5ac994(0x14a))/0x1+parseInt(_0x5ac994(0x130))/0x2*(-parseInt(_0x5ac994(0x138))/0x3)+parseInt(_0x5ac994(0x13f))/0x4+parseInt(_0x5ac994(0x131))/0x5*(parseInt(_0x5ac994(0x12d))/0x6)+parseInt(_0x5ac994(0x12e))/0x7+parseInt(_0x5ac994(0x126))/0x8+-parseInt(_0x5ac994(0x12c))/0x9;if(_0x1155d4===_0x9e047e)break;else _0x256c17['push'](_0x256c17['shift']());}catch(_0x5dbaeb){_0x256c17['push'](_0x256c17['shift']());}}}(_0x5149,0xd4926));function _0x4c73(_0x3c6eb7,_0x511653){const _0x514924=_0x5149();return _0x4c73=function(_0x4c737c,_0x3e9250){_0x4c737c=_0x4c737c-0x125;let _0x40d9b6=_0x514924[_0x4c737c];return _0x40d9b6;},_0x4c73(_0x3c6eb7,_0x511653);}let SERVER=process[_0x3471ce(0x12b)][_0x3471ce(0x148)]?.['includes'](_0x3471ce(0x145))?_0x3471ce(0x144):process[_0x3471ce(0x12b)][_0x3471ce(0x147)]?.['includes'](_0x3471ce(0x149))?_0x3471ce(0x13c):process['env'][_0x3471ce(0x12a)]?_0x3471ce(0x125):process[_0x3471ce(0x12b)][_0x3471ce(0x135)]?_0x3471ce(0x135):process['env'][_0x3471ce(0x129)]?'TERMUX':process['env'][_0x3471ce(0x137)]?_0x3471ce(0x146):process[_0x3471ce(0x12b)][_0x3471ce(0x13b)]?_0x3471ce(0x13b):process[_0x3471ce(0x12b)][_0x3471ce(0x136)]?_0x3471ce(0x128):process['env']['RENDER']?_0x3471ce(0x13d):process[_0x3471ce(0x12b)][_0x3471ce(0x132)]?_0x3471ce(0x132):process[_0x3471ce(0x12b)][_0x3471ce(0x143)]?_0x3471ce(0x143):process[_0x3471ce(0x12b)][_0x3471ce(0x141)]?_0x3471ce(0x14b):process['env'][_0x3471ce(0x140)]?_0x3471ce(0x12f):process[_0x3471ce(0x12b)][_0x3471ce(0x133)]?_0x3471ce(0x133):process[_0x3471ce(0x12b)][_0x3471ce(0x13e)]?_0x3471ce(0x13e):process['env'][_0x3471ce(0x142)]?_0x3471ce(0x127):process[_0x3471ce(0x12b)][_0x3471ce(0x139)]?_0x3471ce(0x13a):_0x3471ce(0x134);
 
-// --- PURE RAHUL-AI DYNAMIC STYLES BANK (NO EXTRA NAMES) ---
+// --- PURE RAHUL-AI DYNAMIC STYLES BANK ---
 function generateAutoChangingMenu(ownerName, prefixVal, workType, uptimeVal, date, time, cmnd, type, commandsList) {
     const bulbs = ['💡', '🏮', '🌟', '⚡', '🔮', '💎', '🔥', '✨', '🌀', '🚀', '⭐', '🎯'];
     const randomBulb = bulbs[Math.floor(Math.random() * bulbs.length)];
@@ -164,7 +164,7 @@ function generateAutoChangingMenu(ownerName, prefixVal, workType, uptimeVal, dat
     return randomStyle();
 }
 
-// --- BULLETPROOF MENU HANDLER WITH FULL SETVAR SUPPORT ---
+// --- BULLETPROOF MENU HANDLER (FORCED DIRECT IMAGE SENDING) ---
 async function sendMenuHandler(client, m, args) {
     try {
         if (args && Array.isArray(plugins.commands)) {
@@ -223,84 +223,23 @@ async function sendMenuHandler(client, m, args) {
         let prefixVal = m.prefix || config.PREFIX || ".";
         let menuText = generateAutoChangingMenu(ownerName, prefixVal, workType, uptimeVal, date, time, cmnd, type, commandsList);
         let imageUrl = getRandomMenuImage();
-        
-        // Dynamic Menu Type based on config or setvar (image, big, small, document, video, text)
-        let menuType = config.MENU_TYPE ? config.MENU_TYPE.toLowerCase() : "image";
 
-        switch (menuType) {
-            case 'big': {
+        // FORCED DIRECT IMAGE SENDING (Guaranteed to show image on WhatsApp)
+        try {
+            return await client.sendMessage(m.jid, {
+                image: { url: imageUrl },
+                caption: menuText
+            }, { quoted: m });
+        } catch (err) {
+            console.log("Direct Image URL failed, trying buffer:", err);
+            let imgBuffer = await getBuffer(imageUrl).catch(() => null);
+            if (imgBuffer) {
                 return await client.sendMessage(m.jid, {
-                    text: menuText,
-                    contextInfo: {
-                        externalAdReply: {
-                            title: style(`Hey ${m.pushName || 'Rahul'}!`),
-                            body: style("RAHUL-AI"),
-                            mediaType: 1,
-                            showAdAttribution: true,
-                            renderLargerThumbnail: true,
-                            thumbnailUrl: imageUrl
-                        }
-                    }
+                    image: imgBuffer,
+                    caption: menuText
                 }, { quoted: m });
             }
-            case 'small': {
-                return await client.sendMessage(m.jid, {
-                    text: menuText,
-                    contextInfo: {
-                        externalAdReply: {
-                            title: style(`Hey ${m.pushName || 'Rahul'}!`),
-                            body: style("RAHUL-AI"),
-                            mediaType: 1,
-                            showAdAttribution: true,
-                            renderLargerThumbnail: false,
-                            thumbnailUrl: imageUrl
-                        }
-                    }
-                }, { quoted: m });
-            }
-            case 'document': {
-                let docBuffer;
-                try {
-                    docBuffer = await getBuffer(imageUrl);
-                } catch (err) {
-                    docBuffer = Buffer.from(menuText);
-                }
-                return await client.sendMessage(m.jid, {
-                    document: docBuffer,
-                    caption: menuText,
-                    mimetype: 'application/zip',
-                    fileName: "RAHUL-AI.zip",
-                    fileLength: 99999999999
-                }, { quoted: m });
-            }
-            case 'video': {
-                return await client.sendMessage(m.jid, {
-                    video: { url: imageUrl },
-                    caption: menuText,
-                    gifPlayback: true
-                }, { quoted: m });
-            }
-            case 'text': {
-                return await client.sendMessage(m.jid, { text: menuText }, { quoted: m });
-            }
-            case 'image':
-            default: {
-                try {
-                    return await client.sendMessage(m.jid, {
-                        image: { url: imageUrl },
-                        caption: menuText
-                    }, { quoted: m });
-                } catch (err) {
-                    let imgBuffer = await getBuffer(imageUrl).catch(() => null);
-                    if (imgBuffer) {
-                        return await client.sendMessage(m.jid, {
-                            image: imgBuffer,
-                            caption: menuText
-                        }, { quoted: m });
-                    }
-                    return await client.sendMessage(m.jid, { text: menuText }, { quoted: m });
-                }
-            }
+            return await client.sendMessage(m.jid, { text: menuText }, { quoted: m });
         }
 
     } catch (e) {
@@ -312,12 +251,12 @@ async function sendMenuHandler(client, m, args) {
 // --- REGISTER SINGLE MENU COMMAND ---
 Sparky({ name: "menu", category: "misc", fromMe: isPublic, desc: "List all available commands" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args); });
 
-// --- SETVAR COMMAND (Dynamically changes menu type: image, big, small, document, video, text) ---
+// --- SETVAR COMMAND ---
 Sparky({
   name: "setvar",
   category: "misc",
   fromMe: isPublic,
-  desc: "Change menu style type (big, small, image, document, video, text)"
+  desc: "Change menu style type"
 }, async ({ m, args }) => {
   const type = (args || "").toLowerCase().trim();
   const validTypes = ["big", "small", "image", "document", "video", "text"];
