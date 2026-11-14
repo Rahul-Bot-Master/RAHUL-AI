@@ -8,11 +8,18 @@ const {
 } = require("./pluginsCore");
 const plugins = require("../lib");
 const config = require("../config.js");
+const font = require("@viper-x/fancytext");
+const menust = config.MENU_FONT;
+const style = font[menust] || (txt => txt);
 const more = String.fromCharCode(8206);
 const readMore = more.repeat(4001);
 const os = require("os");
 
+// --- MULTI-IMAGE ROTATOR (All 3 Uguu Links) ---
 const menuImages = [
+    'https://d.uguu.se/pEvawsUymVpD.jpg',
+    'https://n.uguu.se/ChKfLBwqcHwg.jpg',
+    'https://n.uguu.se/tfXfnTlMKDlZ.jpg',
     'https://n.uguu.se/STdFjZFjkGat.jpg'
 ];
 
@@ -20,33 +27,32 @@ function getRandomMenuImage() {
     return menuImages[Math.floor(Math.random() * menuImages.length)];
 }
 
-function generateUniqueMenuV2(ownerName, prefixVal, workType, ramUsage, date, time, uptimeVal, cmnd, type, commandsList) {
-    const stylesLibrary = [
-        () => {
-            let h = `╭──────────────────────────────╮\n` +
-                    `│      [ ⚡ RAHUL-AI NEXUS ⚡ ]      │\n` +
-                    `╰──────────────────────────────╯\n` +
-                    ` ❖ Operator : ${ownerName}\n` +
-                    ` ❖ Trigger  : ${prefixVal}\n` +
-                    ` ❖ Network  : ${workType}\n` +
-                    ` ❖ Memory   : ${ramUsage}\n` +
-                    ` ❖ Calendar : ${date}\n` +
-                    ` ❖ Clock    : ${time}\n` +
-                    ` ❖ Runtime  : ${uptimeVal}\n` +
-                    ` ❖ Modules  : ${cmnd.length} Loaded\n` +
-                    `────────────────────────────────\n${readMore}\n\n`;
-            let b = "";
-            type.forEach((cmmd) => {
-                b += `\n┌─❖ [ ${cmmd.toUpperCase()} MODULES ]\n`;
-                commandsList.filter(c => c.category == cmmd).forEach(c => {
-                    b += `│ 🔹 ${prefixVal === 'false' ? '' : prefixVal}${c.Sparky}\n`;
-                });
-                b += `└──────────────────────────────\n`;
-            });
-            return h + b;
-        }
-    ];
-    return stylesLibrary[0]();
+function generateUniqueMenuV2(ownerName, prefixVal, workType, ramUsage, date, time, uptimeVal, type, commandsList) {
+    const bulbs = ['💡', '🏮', '🌟', '⚡', '🔮', '💎', '🔥', '✨'];
+    const randomBulb = bulbs[Math.floor(Math.random() * bulbs.length)];
+    const dynamicSeed = Math.floor(Math.random() * 2000) + 1000;
+
+    let h = `┏━━━✦ ⟨ *RAHUL-AI MENU v${dynamicSeed}* ⟩ ✦━━━┓\n` +
+                 `┃ ${randomBulb} *Owner*  : ${ownerName}\n` +
+                 `┃ ⚙️ *Mode*   : ${workType}\n` +
+                 `┃ ⚡ *Prefix* : ${prefixVal}\n` +
+                 `┃ 💾 *RAM*    : ${ramUsage}\n` +
+                 `┃ 📅 *Date*   : ${date}\n` +
+                 `┃ ⏰ *Time*   : ${time}\n` +
+                 `┃ ⏱️ *Uptime* : ${uptimeVal}\n` +
+                 `┃ 📂 *Plugins*: 100 Active\n` +
+                 `┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n${readMore}\n\n`;
+
+    let b = "";
+    type.forEach((cmmd) => {
+        b += `\n┌───❖ *${cmmd.toUpperCase()}* ❖───┐\n`;
+        commandsList.filter(c => c.category == cmmd).forEach(c => {
+            b += `│ 🔹 ${prefixVal === 'false' ? '' : prefixVal}${c.Sparky}\n`;
+        });
+        b += `└──────────────────────────┘\n`;
+    });
+
+    return style(h + b);
 }
 
 async function sendMenu2Handler({ client, m, args }) {
@@ -61,26 +67,47 @@ async function sendMenu2Handler({ client, m, args }) {
         
         let totalMem = (os.totalmem() / (1024 * 1024 * 1024)).toFixed(2);
         let freeMem = (os.freemem() / (1024 * 1024 * 1024)).toFixed(2);
-        let ramUsage = `${(totalMem - freeMem).toFixed(2)}GB / ${totalMem}GB`;
+        let ramUsage = `${(totalMem - freeMem).toFixed(2)}GB`;
 
         let cmnd = [];
         let type = [];
         let commandsList = [];
 
-        commands.map((command) => {
-            if (command.name) {
-                let SparkyCmd = typeof command.name === "string" ? command.name : (command.pattern || "");
-                if (SparkyCmd && !command.dontAddCommandList) {
-                    let category = command.category ? command.category.toLowerCase() : "misc";
-                    cmnd.push({ Sparky: SparkyCmd, category: category });
-                    commandsList.push({ Sparky: SparkyCmd, category: category });
-                    if (!type.includes(category)) type.push(category);
+        if (Array.isArray(commands)) {
+            commands.forEach((command) => {
+                if (command && command.name) {
+                    let KrizName = command.name;
+                    let SparkyCmd = "";
+
+                    if (typeof KrizName === "object" && KrizName && KrizName.source) {
+                        try {
+                            SparkyCmd = KrizName.source.split('\\s*')[1]?.toString().match(/(\W*)([A-Za-züşiğ öç1234567890]*)/)?.[2];
+                        } catch (err) {
+                            SparkyCmd = "";
+                        }
+                    } else if (typeof KrizName === "string") {
+                        SparkyCmd = KrizName;
+                    }
+
+                    if (!SparkyCmd && command.pattern) {
+                        SparkyCmd = typeof command.pattern === "string" ? command.pattern : command.pattern.toString();
+                    }
+
+                    if (SparkyCmd && SparkyCmd !== "undefined" && SparkyCmd.trim() !== "" && !command.dontAddCommandList) {
+                        let category = command.category ? command.category.toLowerCase() : "misc";
+                        let cmdNameClean = SparkyCmd.trim();
+                        cmnd.push({ Sparky: cmdNameClean, category: category });
+                        commandsList.push({ Sparky: cmdNameClean, category: category });
+                        if (!type.includes(category)) type.push(category);
+                    }
                 }
-            }
-        });
+            });
+        }
+        cmnd.sort((a, b) => a.Sparky.localeCompare(b.Sparky));
+        type.sort();
 
         let prefixVal = m.prefix || config.PREFIX || ".";
-        let menuText = generateUniqueMenuV2(ownerName, prefixVal, workType, ramUsage, date, time, uptimeVal, cmnd, type, commandsList);
+        let menuText = generateUniqueMenuV2(ownerName, prefixVal, workType, ramUsage, date, time, uptimeVal, type, commandsList);
         let imageUrl = getRandomMenuImage();
 
         try {
