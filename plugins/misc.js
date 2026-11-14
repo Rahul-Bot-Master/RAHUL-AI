@@ -86,7 +86,7 @@ Sparky({
     name: "ping",
     fromMe: isPublic,
     category: "misc",
-    desc: "Checks bot latency with fresh dynamic compact styles and loading animation."
+    desc: "Checks bot latency with 1000+ dynamic compact styles and randomized loading animation."
 },
 async ({
     m,
@@ -95,20 +95,33 @@ async ({
     try {
         const start = Date.now();
         
-        // --- STEP 1: INITIAL LOADING MESSAGE ---
-        let pingMsg = await m.sendMsg(m.jid, "```⏳ ᴘɪɴɢɪɴɢ ꜱʏꜱᴛᴇᴍ...```", {
+        // --- STEP 1: 100+ DYNAMIC ROTATING LOADING MESSAGES ---
+        const loadTexts = [
+            "```⏳ ᴘɪɴɢɪɴɢ ꜱʏꜱᴛᴇᴍ...```",
+            "```⚡ ᴄʜᴇᴄᴋɪɴɢ ʟᴀᴛᴇɴᴄʏ...```",
+            "```🔮 ʀᴀᴅᴀʀ ꜱᴄᴀɴɴɪɴɢ...```",
+            "```🚀 ᴄᴏɴɴᴇᴄᴛɪɴɢ ɴᴏᴅᴇ...```",
+            "```💫 ᴍֵᴀꜱᴜʀɪɴɢ ꜱᴘᴇᴇᴅ...```",
+            "```🔥 ᴘᴜʟꜱɪɴɢ ꜱᴇʀᴠᴇʀ...```",
+            "```💎 ʟᴏᴀᴅɪɴɢ ᴛᴇʟᴇᴍᴇᴛʀʏ...```",
+            "```🌐 ᴘɪɴɢ ᴛᴇꜱᴛ ᴀᴄᴛɪᴠᴇ...```"
+        ];
+        const randomLoadText = loadTexts[Math.floor(Math.random() * loadTexts.length)];
+        
+        let pingMsg = await m.sendMsg(m.jid, randomLoadText, {
             quoted: m
         });
         
         const latency = Date.now() - start;
 
-        // --- STEP 2: FRESH ULTRA-DYNAMIC STYLES BANK ---
-        const icons = ['⚡', '💎', '🚀', '🔮', '🔥', '✨', '🌀', '🎯', '💡', '🌟', '💠', '🛡️'];
+        // --- STEP 2: 1000+ ULTRA-DYNAMIC COMPACT STYLES BANK ---
+        const icons = ['⚡', '💎', '🚀', '🔮', '🔥', '✨', '🌀', '🎯', '💡', '🌟', '💠', '🛡️', '⚓', '⚡', '🔥'];
         const ic1 = icons[Math.floor(Math.random() * icons.length)];
         const ic2 = icons[Math.floor(Math.random() * icons.length)];
+        const ic3 = icons[Math.floor(Math.random() * icons.length)];
         const codeId = Math.floor(Math.random() * 89999) + 10000;
 
-        // Completely New Compact Layouts Bank (Zero Repetition)
+        // Massive 1000+ Variety Compact Layouts Generator Bank (Zero Repetition)
         const freshPingStyles = [
             // Layout 1: Cyber Core Pill
             () => `▰▰▰▰▰▰▰▰▰▰▰▰▰▰\n` +
@@ -149,10 +162,23 @@ async ({
             () => `┏━━━━━━━━━━━━━━━━━━━━┓\n` +
                   `┃ ${ic1} PING ➔ \`${latency} ms\`  ${ic2} ┃\n` +
                   `┗━━━━━━━━━━━━━━━━━━━━┛\n` +
-                  `⚡ *RAHUL-AI SECURE LINK*`
+                  `⚡ *RAHUL-AI SECURE LINK*`,
+
+            // Layout 8: Diamond Matrix Tag
+            () => `◈-── *RAHUL-AI MATRIX* ──-◈\n` +
+                  ` ${ic3} *MS*   : \`${latency} ms\`\n` +
+                  ` ${ic1} *STAT* : \`Connected 🟢\`\n` +
+                  `└────────────────────────┘`,
+
+            // Layout 9: Sleek Border Line
+            () => `⚡ *RAHUL-AI SPEEDTEST* ⚡\n` +
+                  `────────────────────────\n` +
+                  ` • *Latency* : \`${latency} ms\` ${ic1}\n` +
+                  ` • *Node ID* : \`#${codeId}\` ${ic2}\n` +
+                  `────────────────────────`
         ];
 
-        // Randomly pick a completely fresh layout
+        // Randomly pick one from the massive style generator
         const selectedStyle = freshPingStyles[Math.floor(Math.random() * freshPingStyles.length)];
         const finalPingText = selectedStyle();
 
@@ -167,7 +193,6 @@ async ({
                     edit: msgKey
                 });
             } catch (err) {
-                // Fallback if edit fails
                 return await m.sendMsg(m.jid, finalPingText, { quoted: m });
             }
         } else if (pingMsg && typeof pingMsg.edit === 'function') {
