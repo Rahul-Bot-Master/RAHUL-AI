@@ -167,7 +167,9 @@ async function sendMenu2Handler({ client, m, args }) {
 
         let menuText = generateUniqueMenuV2(ownerName, prefixVal, workType, ramUsage, date, time, uptimeVal, cmnd, type, commandsList);
         let imageUrl = getRandomMenuImage();
-        let menuType = config.MENU_TYPE ? config.MENU_TYPE.toLowerCase() : "image"; // Defaulting to image so it actually displays an image nicely!
+        
+        // Koyeb var config.MENU_TYPE kahi pan asu de, yithe apan forcefully 'image' set kela ahe!
+        let menuType = "image"; 
 
         switch (menuType) {
             case 'big': {
@@ -185,22 +187,23 @@ async function sendMenu2Handler({ client, m, args }) {
                     }
                 }, { quoted: m });
             }
-            case 'image': {
+            case 'image':
+            default: {
                 try {
+                    // Direct URL sending for Koyeb environment stability
+                    return await client.sendMessage(m.jid, {
+                        image: { url: imageUrl },
+                        caption: menuText
+                    }, { quoted: m });
+                } catch (err) {
+                    console.log("Image URL send failed, trying buffer:", err);
                     let imgBuffer = await getBuffer(imageUrl).catch(() => null);
                     if (imgBuffer) {
                         return await client.sendMessage(m.jid, {
                             image: imgBuffer,
                             caption: menuText
                         }, { quoted: m });
-                    } else {
-                        return await client.sendMessage(m.jid, {
-                            image: { url: imageUrl },
-                            caption: menuText
-                        }, { quoted: m });
                     }
-                } catch (err) {
-                    console.log("Image send failed, falling back to text:", err);
                     return await client.sendMessage(m.jid, { text: menuText }, { quoted: m });
                 }
             }
@@ -240,10 +243,6 @@ async function sendMenu2Handler({ client, m, args }) {
                     caption: menuText,
                     gifPlayback: true
                 }, { quoted: m });
-            }
-            case 'text':
-            default: {
-                return await client.sendMessage(m.jid, { text: menuText }, { quoted: m });
             }
         }
 
