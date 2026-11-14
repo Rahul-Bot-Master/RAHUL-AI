@@ -90,7 +90,8 @@ Sparky({
     desc: "Checks bot latency with 1000+ dynamic compact styles and loading animation."
 },
 async ({
-    m
+    m,
+    client
 }) => {
     try {
         const start = Date.now();
@@ -126,7 +127,7 @@ async ({
 
             // 11 - 20: Neon & Laser Lines
             () => `⚡ *PING SPEED* ⚡\n────────────────\n${b1} MS   : \`${latency} ms\`\n${b2} Stat : \`Online\`\n────────────────`,
-            () => `🔮 *RAHUL-AI RADAR* 🔮\n────────────────────\n${b1} Ping : \`${latency} ms\`\n${b2} Node : \`Stable\`\n────────────────────`,
+            () => `🔮 *RAHUL-AI RADAR* 🔮\n────────────────────\n${b1} Ping : \`${latency} ms\`\n${b2} Node : \`Stable\`\n────────────────----`,
             () => `💎 *SYSTEM LATENCY* 💎\n────────────────────\n${b1} Speed: \`${latency} ms\`\n${b2} Mode : \`Public\`\n────────────────────`,
             () => `🚀 *PING CHECKER* 🚀\n────────────────────\n${b1} Time : \`${latency} ms\`\n${b2} Host : \`Connected\`\n────────────────────`,
             () => `🔥 *SPEEDOMETER* 🔥\n────────────────────\n${b1} MS   : \`${latency} ms\`\n${b2} Stat : \`Running\`\n────────────────────`,
@@ -156,12 +157,15 @@ async ({
         const randomStyle = styles1000[Math.floor(Math.random() * styles1000.length)];
         const finalPingText = randomStyle();
 
-        // --- STEP 3: EDIT LOADING MESSAGE WITH FINAL PING ---
-        if (pingMsg && pingMsg.key) {
-            return await client.sendMessage(m.jid, {
+        // --- STEP 3: SAFELY EDIT LOADING MESSAGE ---
+        const activeClient = client || m.client;
+        if (pingMsg && pingMsg.key && activeClient && typeof activeClient.sendMessage === 'function') {
+            return await activeClient.sendMessage(m.jid, {
                 text: finalPingText,
                 edit: pingMsg.key
             });
+        } else if (pingMsg && typeof pingMsg.edit === 'function') {
+            return await pingMsg.edit(finalPingText);
         } else {
             return await m.sendMsg(m.jid, finalPingText, { quoted: m });
         }
