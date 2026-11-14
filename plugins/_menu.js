@@ -98,7 +98,7 @@ async function sendMenuHandler(client, m, args) {
 
         let menuText = style(header + body);
         let menuType = config.MENU_TYPE ? config.MENU_TYPE.toLowerCase() : "image";
-        let imageUrl = 'https://i.imgur.com/391faub.jpeg';
+        let imageUrl = 'https://n.uguu.se/STdFjZFjkGat.jpg'; // Updated with your new Uguu direct image link
 
         switch (menuType) {
             case 'big': {
@@ -116,19 +116,24 @@ async function sendMenuHandler(client, m, args) {
                     }
                 }, { quoted: m });
             }
-            case 'image': {
+            case 'image':
+            default: {
                 try {
-                    let imgBuffer = await getBuffer(imageUrl);
+                    return await client.sendMessage(m.jid, {
+                        image: { url: imageUrl },
+                        caption: menuText
+                    }, { quoted: m });
+                } catch (err) {
+                    console.log("Image URL send failed, trying buffer:", err);
+                    let imgBuffer = await getBuffer(imageUrl).catch(() => null);
                     if (imgBuffer) {
                         return await client.sendMessage(m.jid, {
                             image: imgBuffer,
                             caption: menuText
                         }, { quoted: m });
                     }
-                } catch (err) {
-                    console.log("Image buffer fetch error, sending text fallback:", err);
+                    return await client.sendMessage(m.jid, { text: menuText }, { quoted: m });
                 }
-                return await client.sendMessage(m.jid, { text: menuText }, { quoted: m });
             }
             case 'small': {
                 return await client.sendMessage(m.jid, {
@@ -177,8 +182,7 @@ async function sendMenuHandler(client, m, args) {
                     gifPlayback: true
                 }, { quoted: m });
             }
-            case 'text':
-            default: {
+            case 'text': {
                 return await client.sendMessage(m.jid, { text: menuText }, { quoted: m });
             }
         }
