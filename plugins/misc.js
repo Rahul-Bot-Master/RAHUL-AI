@@ -87,7 +87,7 @@ Sparky({
     name: "ping",
     fromMe: isPublic,
     category: "misc",
-    desc: "Checks if the bot is online with 1000+ dynamic edge lighting styles."
+    desc: "Checks bot latency with compact and dynamic styles."
 },
 async ({
     m
@@ -95,66 +95,51 @@ async ({
     try {
         const start = Date.now();
         
-        let pingMsg = await m.sendMsg(m.jid, "```ᴘɪɴɢɪɴɢ ꜱʏꜱᴛᴇᴍ... ⏳```", {
+        let pingMsg = await m.sendMsg(m.jid, "```ᴘɪɴɢ... ⏳```", {
             quoted: m
         });
         
         const latency = Date.now() - start;
 
-        // --- 1000+ ULTRA-DYNAMIC NEW STYLES & LAYOUTS BANK ---
-        const bulbs = ['💡', '🏮', '🌟', '⚡', '🔮', '💎', '🔥', '✨', '🌀', '🚀', '🌈', '💠', '💖', '🎯'];
+        // --- COMPACT & UNIQUE PING STYLES BANK ---
+        const bulbs = ['💡', '🏮', '🌟', '⚡', '🔮', '💎', '🔥', '✨'];
         const b1 = bulbs[Math.floor(Math.random() * bulbs.length)];
         const b2 = bulbs[Math.floor(Math.random() * bulbs.length)];
-        const b3 = bulbs[Math.floor(Math.random() * bulbs.length)];
-        const uniqueSeed = Math.floor(Math.random() * 90000) + 10000;
+        const seed = Math.floor(Math.random() * 9000) + 1000;
 
-        const pingStylesBank = [
-            // Style 1: Cyber-Shield Pulse Box
-            () => `⚡ ⟨⟨ *RAHUL-AI CYBER PING v${uniqueSeed}* ⟩⟩ ⚡\n` +
-                  `├──────────────────────────────\n` +
-                  `│ ${b1} **Ping Speed** : \`${latency} ms\`\n` +
-                  `│ ${b2} **System ID**  : #${uniqueSeed}\n` +
-                  `│ 🌐 **Status**    : \`Online & Secure\`\n` +
-                  `│ 👑 **Operator**  : \`Rahul Master\`\n` +
-                  `└──────────────────────────────\n` +
-                  `🚀 *ᴩᴏᴡᴇʀᴇᴅ ʙʏ ʀᴀʜᴜʟ-ᴀɪ* ${b3}`,
+        const compactPingBank = [
+            // Style 1: Sleek Mini Box
+            () => `╭───────────────╮\n` +
+                  `│  ${b1} *RAHUL-AI*  ${b2}   │\n` +
+                  `├───────────────┤\n` +
+                  `│ ⏱️ Speed : \`${latency} ms\`  │\n` +
+                  `│ 🌐 Status: \`Online\`    │\n` +
+                  `╰───────────────╯`,
 
-            // Style 2: Neon Hexagon Matrix Frame
-            () => `╔══════════════════════════════╗\n` +
-                  `║   ${b1} RAHUL-AI NEON PING #${uniqueSeed} ${b2}   ║\n` +
-                  `╚══════════════════════════════╝\n` +
-                  ` 🌟 *Telemetry & Latency* 🌟\n` +
-                  `» Speed   : \`${latency} ms\`\n` +
-                  `» Radar   : [ ACTIVE 🟢 ]\n` +
-                  `» Master  : \`Rahul Master\`\n` +
-                  `────────────────────────────────\n` +
-                  `⚡ *ULTRA-SPEED MODULE* ${b3}`,
+            // Style 2: Elegant Single Line Border
+            () => `⚡ *RAHUL-AI PING* ⚡\n` +
+                  `─────────────────\n` +
+                  `${b1} Latency : \`${latency} ms\`\n` +
+                  `${b2} Status  : \`Active 🟢\`\n` +
+                  `─────────────────`,
 
-            // Style 3: Dual-Bar Laser Edge Lighting
-            () => `▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓\n` +
-                  `  ${b1} RAHUL-AI LASER SPEED v${uniqueSeed} ${b2}\n` +
-                  `▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓\n` +
-                  ` 🔹 Latency : \`${latency} ms\`\n` +
-                  ` 🔹 Status  : \`Running smoothly\`\n` +
-                  ` 🔹 Owner   : \`Rahul Master\`\n` +
-                  `────────────────────────────────\n` +
-                  `🔮 *SECURE PING SERVER* ${b3}`,
+            // Style 3: Clean Minimalist Compact
+            () => `┌───────────────┐\n` +
+                  `│ ${b1} *SPEED TEST* ${b2} │\n` +
+                  `└───────────────┘\n` +
+                  ` 📌 Response: \`${latency} ms\`\n` +
+                  ` 👑 Owner   : \`Rahul Master\``,
 
-            // Style 4: Minimalist Vault Grid
-            () => `╭──────────────────────────────╮\n` +
-                  `│  ${b1} RAHUL-AI VAULT PING #${uniqueSeed} ${b2} │\n` +
-                  `╰──────────────────────────────╯\n` +
-                  ` 🚀 [ SPEED METRICS ]\n` +
-                  ` • Response : \`${latency} ms\`\n` +
-                  ` • Protocol : \`Encrypted LED\`\n` +
-                  ` • Operator : \`Rahul Master\`\n` +
-                  `────────────────────────────────\n` +
-                  `💎 *RAHUL-AI* ${b3}`
+            // Style 4: Modern Tag Style
+            () => `🚀 *RAHUL-AI SPEED* 🚀\n` +
+                  `• ${b1} **Ping:** \`${latency} ms\`\n` +
+                  `• ${b2} **Mode:** \`Public\`\n` +
+                  `• 🌐 **Status:** \`Connected\``
         ];
 
-        // Randomly pick a completely different style generator function
-        const randomPingLayout = pingStylesBank[Math.floor(Math.random() * pingStylesBank.length)];
-        const finalPingText = randomPingLayout();
+        // Randomly pick a compact layout
+        const randomCompactLayout = compactPingBank[Math.floor(Math.random() * compactPingBank.length)];
+        const finalPingText = randomCompactLayout();
 
         // Edit or send the final response
         return await m.sendMsg(m.jid, finalPingText, {
@@ -166,6 +151,7 @@ async ({
         m.reply(`⚠️ Error: ${error.message || error}`);
     }
 });
+
 
 Sparky({
 		name: "wame",
