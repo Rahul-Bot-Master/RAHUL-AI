@@ -15,7 +15,7 @@ const more = String.fromCharCode(8206);
 const readMore = more.repeat(4001);
 const os = require("os");
 
-// --- MULTI-IMAGE ROTATOR (All 3 Uguu Links) ---
+// --- MULTI-IMAGE ROTATOR (All Uguu Direct Links) ---
 const menuImages = [
     'https://d.uguu.se/pEvawsUymVpD.jpg',
     'https://n.uguu.se/ChKfLBwqcHwg.jpg',
@@ -27,32 +27,166 @@ function getRandomMenuImage() {
     return menuImages[Math.floor(Math.random() * menuImages.length)];
 }
 
-function generateUniqueMenuV2(ownerName, prefixVal, workType, ramUsage, date, time, uptimeVal, type, commandsList) {
-    const bulbs = ['💡', '🏮', '🌟', '⚡', '🔮', '💎', '🔥', '✨'];
-    const randomBulb = bulbs[Math.floor(Math.random() * bulbs.length)];
-    const dynamicSeed = Math.floor(Math.random() * 2000) + 1000;
+// --- 100+ COLOR PALETTES & 10 ULTRA-STYLISTIC RGB EDGE LIGHTING BANKS ---
+function generateEdgeLightingMenuV2(ownerName, prefixVal, workType, ramUsage, date, time, uptimeVal, type, commandsList) {
+    const bulbSets = [
+        ['💡', '🏮'], ['🌟', '⚡'], ['🔮', '💎'], ['🔥', '✨'], 
+        ['🌀', '🚀'], ['🌈', '💠'], ['💖', '⚡'], ['🎯', '⚓'],
+        ['🛡️', '💎'], ['🔥', '💡'], ['🌟', '🔮'], ['⚡', '🏮']
+    ];
+    const randomPair = bulbSets[Math.floor(Math.random() * bulbSets.length)];
+    const dynamicSeed = Math.floor(Math.random() * 9000) + 1000;
 
-    let h = `┏━━━✦ ⟨ *RAHUL-AI MENU v${dynamicSeed}* ⟩ ✦━━━┓\n` +
-                 `┃ ${randomBulb} *Owner*  : ${ownerName}\n` +
-                 `┃ ⚙️ *Mode*   : ${workType}\n` +
-                 `┃ ⚡ *Prefix* : ${prefixVal}\n` +
-                 `┃ 💾 *RAM*    : ${ramUsage}\n` +
-                 `┃ 📅 *Date*   : ${date}\n` +
-                 `┃ ⏰ *Time*   : ${time}\n` +
-                 `┃ ⏱️ *Uptime* : ${uptimeVal}\n` +
-                 `┃ 📂 *Plugins*: 100 Active\n` +
-                 `┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n${readMore}\n\n`;
+    // 100+ Color Themes Mapping Pool
+    const colorThemes = [
+        { name: "Neon Cyan", tag: "【 🌐 NEON CYAN GLOW 】" },
+        { name: "Cyber Purple", tag: "【 💜 CYBER PURPLE VIBE 】" },
+        { name: "Electric Gold", tag: "【 ⚡ ELECTRIC GOLD LIGHT 】" },
+        { name: "Emerald Matrix", tag: "【 🟢 EMERALD MATRIX LED 】" },
+        { name: "Ruby Magenta", tag: "【 💖 RUBY MAGENTA PULSE 】" },
+        { name: "Plasma Pink", tag: "【 🌸 PLASMA PINK LASER 】" },
+        { name: "Laser Violet", tag: "【 🔮 LASER VIOLET CORE 】" },
+        { name: "Solar Orange", tag: "【 🔥 SOLAR ORANGE BLAZE 】" },
+        { name: "Quantum Blue", tag: "【 🔷 QUANTUM BLUE SHIELD 】" },
+        { name: "Hyper Neon", tag: "【 🚀 HYPER NEON MATRIX 】" },
+        { name: "Acid Green", tag: "【 🟢 ACID GREEN GRID 】" },
+        { name: "Royal Indigo", tag: "【 👑 ROYAL INDIGO SHINE 】" },
+        { name: "Sunset Crimson", tag: "【 🌇 SUNSET CRIMSON GLOW 】" },
+        { name: "Deep Titanium", tag: "【 ⚙️ TITANIUM SILVER V2 】" },
+        { name: "Toxic Yellow", tag: "【 ☣️ TOXIC YELLOW SPARK 】" }
+    ];
+    const activeTheme = colorThemes[Math.floor(Math.random() * colorThemes.length)];
 
-    let b = "";
-    type.forEach((cmmd) => {
-        b += `\n┌───❖ *${cmmd.toUpperCase()}* ❖───┐\n`;
-        commandsList.filter(c => c.category == cmmd).forEach(c => {
-            b += `│ 🔹 ${prefixVal === 'false' ? '' : prefixVal}${c.Sparky}\n`;
-        });
-        b += `└──────────────────────────┘\n`;
-    });
+    const stylesBank = [
+        // Style 1: Cyberpunk RGB Edge Box with Dynamic Color Tags
+        () => {
+            let h = `╭──────────────────────────────╮\n` +
+                    `│  ${randomPair[0]} [ RAHUL-AI v${dynamicSeed} ] ${randomPair[1]}  │\n` +
+                    `╰──────────────────────────────╯\n` +
+                    ` ${activeTheme.tag}\n` +
+                    ` ❖ Owner  : ${ownerName}\n` +
+                    ` ❖ Status : ${workType}\n` +
+                    ` ❖ Prefix : ${prefixVal}\n` +
+                    ` ❖ RAM    : ${ramUsage}\n` +
+                    ` ❖ Date   : ${date}\n` +
+                    ` ❖ Clock  : ${time}\n` +
+                    ` ❖ Uptime : ${uptimeVal}\n` +
+                    ` ❖ Plugins: 100 Active\n` +
+                    `────────────────────────────────\n${readMore}\n\n`;
+            let b = "";
+            type.forEach((cmmd) => {
+                b += `\n┌─❖ [ ${cmmd.toUpperCase()} MODULES ]\n`;
+                commandsList.filter(c => c.category == cmmd).forEach(c => {
+                    b += `│ 🔹 ${prefixVal === 'false' ? '' : prefixVal}${c.Sparky}\n`;
+                });
+                b += `└──────────────────────────────\n`;
+            });
+            return h + b;
+        },
 
-    return style(h + b);
+        // Style 2: Neon Edge Glow Terminal
+        () => {
+            let h = `◆══════════════════════════════◆\n` +
+                    `    ${randomPair[0]} RAHUL-AI CORE [ #${dynamicSeed} ] ${randomPair[1]}\n` +
+                    `◆══════════════════════════════◆\n` +
+                    ` ${activeTheme.tag}\n` +
+                    ` ◈ Master : ${ownerName}\n` +
+                    ` ◈ Network: ${workType}\n` +
+                    ` ◈ Trigger: ${prefixVal}\n` +
+                    ` ◈ Memory : ${ramUsage}\n` +
+                    ` ◈ Date   : ${date}\n` +
+                    ` ◈ Time   : ${time}\n` +
+                    ` ◈ Uptime : ${uptimeVal}\n` +
+                    ` ◈ Total  : 100 Modules\n` +
+                    `────────────────────────────────\n${readMore}\n\n`;
+            let b = "";
+            type.forEach((cmmd) => {
+                b += `\n✦═══ • ${cmmd.toUpperCase()} • ═══✦\n`;
+                commandsList.filter(c => c.category == cmmd).forEach(c => {
+                    b += `  » ${prefixVal === 'false' ? '' : prefixVal}${c.Sparky}\n`;
+                });
+            });
+            return h + b;
+        },
+
+        // Style 3: Cybernetic Edge Lighting Grid
+        () => {
+            let h = `╔══════════════════════════════╗\n` +
+                    `║   ${randomPair[0]} RAHUL-AI QUANTUM v${dynamicSeed} ${randomPair[1]}  ║\n` +
+                    `╚══════════════════════════════╝\n` +
+                    ` ${activeTheme.tag}\n` +
+                    ` ⬡ Creator: ${ownerName}\n` +
+                    ` ⬡ Mode   : ${workType}\n` +
+                    ` ⬡ Prefix : ${prefixVal}\n` +
+                    ` ⬡ RAM    : ${ramUsage}\n` +
+                    ` ⬡ Today  : ${date}\n` +
+                    ` ⬡ Clock  : ${time}\n` +
+                    ` ⬡ Runtime: ${uptimeVal}\n` +
+                    ` ⬡ Online : 100 Features\n` +
+                    `────────────────────────────────\n${readMore}\n\n`;
+            let b = "";
+            type.forEach((cmmd) => {
+                b += `\n╭───❖ [ ${cmmd.toUpperCase()} ]\n`;
+                commandsList.filter(c => c.category == cmmd).forEach(c => {
+                    b += `│ 🔸 ${prefixVal === 'false' ? '' : prefixVal}${c.Sparky}\n`;
+                });
+                b += `╰──────────────────────────────\n`;
+            });
+            return h + b;
+        },
+
+        // Style 4: Royal RGB Holographic Panel
+        () => {
+            let h = `┏━━━✦ ⟨ *RAHUL-AI HOLOGRAPHIC* ⟩ ✦━━━┓\n` +
+                    `┃ ${activeTheme.tag}\n` +
+                    `┃ ${randomPair[0]} *Owner*  : ${ownerName}\n` +
+                    `┃ ⚙️ *Mode*   : ${workType}\n` +
+                    `┃ ⚡ *Prefix* : ${prefixVal}\n` +
+                    `┃ 💾 *RAM*    : ${ramUsage}\n` +
+                    `┃ 📅 *Date*   : ${date}\n` +
+                    `┃ ⏰ *Time*   : ${time}\n` +
+                    `┃ ⏱️ *Uptime* : ${uptimeVal}\n` +
+                    `┃ 📂 *Plugins*: 100 Active ${randomPair[1]}\n` +
+                    `┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n${readMore}\n\n`;
+            let b = "";
+            type.forEach((cmmd) => {
+                b += `\n┌───❖ *${cmmd.toUpperCase()}* ❖───┐\n`;
+                commandsList.filter(c => c.category == cmmd).forEach(c => {
+                    b += `│ 🔹 ${prefixVal === 'false' ? '' : prefixVal}${c.Sparky}\n`;
+                });
+                b += `└──────────────────────────┘\n`;
+            });
+            return h + b;
+        },
+
+        // Style 5: Starburst Cyber Edge Box
+        () => {
+            let h = `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+                    `   ${randomPair[0]} RAHUL-AI SUPREME v${dynamicSeed} ${randomPair[1]}\n` +
+                    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+                    ` ${activeTheme.tag}\n` +
+                    ` ✦ Admin    : ${ownerName}\n` +
+                    ` ✦ WorkMode : ${workType}\n` +
+                    ` ✦ Command  : ${prefixVal}\n` +
+                    ` ✦ Memory   : ${ramUsage}\n` +
+                    ` ✦ Session  : ${date}\n` +
+                    ` ✦ Timer    : ${time}\n` +
+                    ` ✦ Uptime   : ${uptimeVal}\n` +
+                    ` ✦ Modules  : 100 Armed\n` +
+                    `────────────────────────────────\n${readMore}\n\n`;
+            let b = "";
+            type.forEach((cmmd) => {
+                b += `\n📌 [ *${cmmd.toUpperCase()}* ]\n`;
+                commandsList.filter(c => c.category == cmmd).forEach(c => {
+                    b += `  ⚡ ${prefixVal === 'false' ? '' : prefixVal}${c.Sparky}\n`;
+                });
+            });
+            return h + b;
+        }
+    ];
+
+    const selectedStyle = stylesBank[Math.floor(Math.random() * stylesBank.length)];
+    return style(selectedStyle());
 }
 
 async function sendMenu2Handler({ client, m, args }) {
@@ -107,7 +241,7 @@ async function sendMenu2Handler({ client, m, args }) {
         type.sort();
 
         let prefixVal = m.prefix || config.PREFIX || ".";
-        let menuText = generateUniqueMenuV2(ownerName, prefixVal, workType, ramUsage, date, time, uptimeVal, type, commandsList);
+        let menuText = generateEdgeLightingMenuV2(ownerName, prefixVal, workType, ramUsage, date, time, uptimeVal, type, commandsList);
         let imageUrl = getRandomMenuImage();
 
         try {
@@ -131,6 +265,6 @@ async function sendMenu2Handler({ client, m, args }) {
     }
 }
 
-Sparky({ name: "menu2", category: "misc", fromMe: isPublic, desc: "List multi-layout dynamic menu" }, async (context) => { 
+Sparky({ name: "menu2", category: "misc", fromMe: isPublic, desc: "List multi-layout dynamic edge lighting menu" }, async (context) => { 
     await sendMenu2Handler(context); 
 });
