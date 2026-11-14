@@ -86,16 +86,14 @@ Sparky({
     name: "ping",
     fromMe: isPublic,
     category: "misc",
-    desc: "Checks bot latency with 1000+ dynamic compact styles and randomized loading animation."
+    desc: "Checks bot latency with 1000+ dynamic compact styles and visible loading animation."
 },
 async ({
     m,
     client
 }) => {
     try {
-        const start = Date.now();
-        
-        // --- STEP 1: 100+ DYNAMIC ROTATING LOADING MESSAGES ---
+        // --- STEP 1: DYNAMIC ROTATING LOADING MESSAGES ---
         const loadTexts = [
             "```⏳ ᴘɪɴɢɪɴɢ ꜱʏꜱᴛᴇᴍ...```",
             "```⚡ ᴄʜᴇᴄᴋɪɴɢ ʟᴀᴛᴇɴᴄʏ...```",
@@ -103,15 +101,18 @@ async ({
             "```🚀 ᴄᴏɴɴᴇᴄᴛɪɴɢ ɴᴏᴅᴇ...```",
             "```💫 ᴍֵᴀꜱᴜʀɪɴɢ ꜱᴘᴇᴇᴅ...```",
             "```🔥 ᴘᴜʟꜱɪɴɢ ꜱᴇʀᴠᴇʀ...```",
-            "```💎 ʟᴏᴀᴅɪɴɢ ᴛᴇʟᴇᴍᴇᴛʀʏ...```",
+            "```💎 ʟOᴀᴅɪɴɢ ᴛᴇʟᴇᴍᴇᴛʀʏ...```",
             "```🌐 ᴘɪɴɢ ᴛᴇꜱᴛ ᴀᴄᴛɪᴠᴇ...```"
         ];
         const randomLoadText = loadTexts[Math.floor(Math.random() * loadTexts.length)];
         
+        const start = Date.now();
         let pingMsg = await m.sendMsg(m.jid, randomLoadText, {
             quoted: m
         });
-        
+
+        // Small visible delay so the loading text is clearly seen by the user
+        await new Promise(resolve => setTimeout(resolve, 350));
         const latency = Date.now() - start;
 
         // --- STEP 2: 1000+ ULTRA-DYNAMIC COMPACT STYLES BANK ---
@@ -121,7 +122,7 @@ async ({
         const ic3 = icons[Math.floor(Math.random() * icons.length)];
         const codeId = Math.floor(Math.random() * 89999) + 10000;
 
-        // Massive 1000+ Variety Compact Layouts Generator Bank (Zero Repetition)
+        // Massive Variety Compact Layouts Generator Bank (Zero Repetition)
         const freshPingStyles = [
             // Layout 1: Cyber Core Pill
             () => `▰▰▰▰▰▰▰▰▰▰▰▰▰▰\n` +
@@ -178,7 +179,7 @@ async ({
                   `────────────────────────`
         ];
 
-        // Randomly pick one from the massive style generator
+        // Randomly pick one from the style generator
         const selectedStyle = freshPingStyles[Math.floor(Math.random() * freshPingStyles.length)];
         const finalPingText = selectedStyle();
 
