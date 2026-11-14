@@ -17,7 +17,6 @@ Sparky({
 		return await m.reply(`${m?.quoted ? m?.quoted?.sender : m.jid}`);
 	});
 
-
 Sparky({
     name: "runtime",
     fromMe: isPublic,
@@ -87,7 +86,7 @@ Sparky({
     name: "ping",
     fromMe: isPublic,
     category: "misc",
-    desc: "Checks bot latency with 1000+ dynamic compact styles and loading animation."
+    desc: "Checks bot latency with fresh dynamic compact styles and loading animation."
 },
 async ({
     m,
@@ -97,67 +96,67 @@ async ({
         const start = Date.now();
         
         // --- STEP 1: INITIAL LOADING MESSAGE ---
-        const loadingBullets = ['⏳', '⚡', '🔮', '🚀', '💫', '🔥'];
-        const lBulb = loadingBullets[Math.floor(Math.random() * loadingBullets.length)];
-        
-        let pingMsg = await m.sendMsg(m.jid, `\`\`\`${lBulb} ᴘɪɴɢɪɴɢ ꜱʏꜱᴛᴇᴍ... \`\`\``, {
+        let pingMsg = await m.sendMsg(m.jid, "```⏳ ᴘɪɴɢɪɴɢ ꜱʏꜱᴛᴇᴍ...```", {
             quoted: m
         });
         
         const latency = Date.now() - start;
 
-        // --- STEP 2: 1000+ ULTRA-DYNAMIC COMPACT STYLES BANK ---
-        const bulbs = ['💡', '🏮', '🌟', '⚡', '🔮', '💎', '🔥', '✨', '🌀', '🚀', '🌈', '💠', '🛡️', '⚓', '🎯', '⚡'];
-        const b1 = bulbs[Math.floor(Math.random() * bulbs.length)];
-        const b2 = bulbs[Math.floor(Math.random() * bulbs.length)];
-        const b3 = bulbs[Math.floor(Math.random() * bulbs.length)];
+        // --- STEP 2: FRESH ULTRA-DYNAMIC STYLES BANK ---
+        const icons = ['⚡', '💎', '🚀', '🔮', '🔥', '✨', '🌀', '🎯', '💡', '🌟', '💠', '🛡️'];
+        const ic1 = icons[Math.floor(Math.random() * icons.length)];
+        const ic2 = icons[Math.floor(Math.random() * icons.length)];
         const codeId = Math.floor(Math.random() * 89999) + 10000;
 
-        // Massive 1000+ Variety Compact Layouts Generator Bank
-        const styles1000 = [
-            // 1 - 10: Cyber Boxes & Frames
-            () => `┌───────────────┐\n│ ${b1} *RAHUL-AI* ${b2} │\n├───────────────┤\n│ ⏱️ : \`${latency} ms\`    │\n│ 🌐 : \`Online\`    │\n└───────────────┘`,
-            () => `╭───────────────╮\n│  ${b1} PING #${codeId}  ${b2} │\n├───────────────┤\n│ ⚡ : \`${latency} ms\`    │\n│ 🟢 : \`Stable\`    │\n╰───────────────╯`,
-            () => `┏━━━━━━━━━━━━━━━┓\n┃ ${b1} *SPEED* ${b2}     ┃\n┣━━━━━━━━━━━━━━━┫\n┃ ⏱️ : \`${latency} ms\`    ┃\n┃ 🚀 : \`Active\`    ┃\n┗━━━━━━━━━━━━━━━┛`,
-            () => `╔═══════════════╗\n║ ${b1} *PING* ${b2}       ║\n╠═══════════════╣\n║ ⚡ : \`${latency} ms\`    ║\n║ 🌐 : \`Connected\` ║\n╚═══════════════╝`,
-            () => `┌── [ *RAHUL-AI* ] ──┐\n│ ${b1} MS    : \`${latency} ms\`  │\n│ ${b2} STAT  : \`Online\`   │\n└────────────────────┘`,
-            () => `┌─❖ *PING STATS* ❖─┐\n│ ${b1} Delay : \`${latency} ms\`  │\n│ ${b2} Node  : \`Secure\`   │\n└──────────────────┘`,
-            () => `┌───────── ⚡ ─────────┐\n│ ${b1} PING : \`${latency} ms\`   │\n│ ${b2} HOST : \`Active\`   │\n└──────────────────────┘`,
-            () => `╭── ❖ *RAHUL-AI* ❖ ──╮\n│ ${b1} Latency: \`${latency} ms\` │\n│ ${b2} Status : \`Live\`   │\n╰────────────────────┘`,
+        // Completely New Compact Layouts Bank (Zero Repetition)
+        const freshPingStyles = [
+            // Layout 1: Cyber Core Pill
+            () => `▰▰▰▰▰▰▰▰▰▰▰▰▰▰\n` +
+                  `  ${ic1} *RAHUL-AI CORE* ${ic2}\n` +
+                  `▰▰▰▰▰▰▰▰▰▰▰▰▰▰\n` +
+                  ` » Speed : \`${latency} ms\`\n` +
+                  ` » State : \`Operational 🟢\``,
 
-            // 11 - 20: Neon & Laser Lines
-            () => `⚡ *PING SPEED* ⚡\n────────────────\n${b1} MS   : \`${latency} ms\`\n${b2} Stat : \`Online\`\n────────────────`,
-            () => `🔮 *RAHUL-AI RADAR* 🔮\n────────────────────\n${b1} Ping : \`${latency} ms\`\n${b2} Node : \`Stable\`\n────────────────----`,
-            () => `💎 *SYSTEM LATENCY* 💎\n────────────────────\n${b1} Speed: \`${latency} ms\`\n${b2} Mode : \`Public\`\n────────────────────`,
-            () => `🚀 *PING CHECKER* 🚀\n────────────────────\n${b1} Time : \`${latency} ms\`\n${b2} Host : \`Connected\`\n────────────────────`,
-            () => `🔥 *SPEEDOMETER* 🔥\n────────────────────\n${b1} MS   : \`${latency} ms\`\n${b2} Stat : \`Running\`\n────────────────────`,
-            () => `🎯 *RAHUL-AI PING* 🎯\n────────────────────\n${b1} Delay: \`${latency} ms\`\n${b2} State: \`Active\`\n────────────────────`,
+            // Layout 2: Neon Corner Bracket
+            () => `┌─❖ *PING TELEMETRY* ❖─┐\n` +
+                  `│ ${ic1} Latency : \`${latency} ms\`  │\n` +
+                  `│ ${ic2} Server  : \`Stable\`    │\n` +
+                  `└──────────────────────┘`,
 
-            // 21 - 30: Minimalist Inline & Tags
-            () => `${b1} *PING* ➔ \`${latency} ms\` | ${b2} *STATUS* ➔ \`Online\``,
-            () => `⚡ *LATENCY:* \`${latency} ms\` | 🟢 *STATE:* \`Stable\``,
-            () => `🔮 *SPEED:* \`${latency} ms\` | 🌐 *NODE:* \`Connected\``,
-            () => `🚀 *PING:* \`${latency} ms\` | 👑 *OWNER:* \`Rahul Master\``,
-            () => `💎 *RESPONSE:* \`${latency} ms\` | 🛡️ *STATUS:* \`Secure\``,
+            // Layout 3: Double Slash Minimalist
+            () => `// RAHUL-AI SYSTEM SPEED\n` +
+                  `[${ic1}] Response ➔ \`${latency} ms\`\n` +
+                  `[${ic2}] Network  ➔ \`Secure 🌐\``,
 
-            // 31 - 40: Compact Pill & Badge Styles
-            () => `╭───────────────╮\n│ ${b1} \`${latency} ms\` ⚡ │\n╰───────────────╯\n👑 *Rahul Master*`,
-            () => `┌───────────────┐\n│ ${b1} \`${latency} ms\` 🚀 │\n└───────────────┘\n🌐 *Online & Live*`,
-            () => `┏━━━━━━━━━━━━━━━┓\n┃ ${b1} \`${latency} ms\` 🔮 ┃\n┗━━━━━━━━━━━━━━━┛\n⚡ *Active Node*`,
+            // Layout 4: Hexagonal Grid Badge
+            () => `⟡ *RAHUL-AI SPEED LAB* ⟡\n` +
+                  `────────────────────────\n` +
+                  ` ⚡ *MS*   : \`${latency} ms\` (${ic1})\n` +
+                  ` 🛡️ *NODE* : \`Active\` (${ic2})`,
 
-            // 41 - 50: Tech Terminal & Advanced Layouts
-            () => `[⚡] *PING:* \`${latency} ms\`\n[🌐] *STAT:* \`Online\`\n[👑] *MSTR:* \`Rahul\``,
-            () => `[⏱️] *DELAY:* \`${latency} ms\`\n[🟢] *STATE:* \`Stable\`\n[💡] *ID:* #${codeId}`,
-            () => `💻 *TERMINAL PING*\n└─ ${b1} \`${latency} ms\` | ${b2} \`Online\``,
-            () => `⚡ *SPEED TEST v${codeId}*\n└─ ⏱️ \`${latency} ms\` (${b1})`,
-            () => `⚡ ⟨ *RAHUL-AI* ⟩ ⚡\n• *MS* : \`${latency} ms\` ${b3}\n• *STATUS* : \`Active\` ${b1}`
+            // Layout 5: Sleek Terminal Node
+            () => `╭── [ 🚀 PING ROUTE ] ──╮\n` +
+                  `│ ${ic1} Delay : \`${latency} ms\`   │\n` +
+                  `│ ${ic2} Build : \`v${codeId}\`   │\n` +
+                  `╰────────────────────────╯`,
+
+            // Layout 6: Quantum Bar Style
+            () => `▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒\n` +
+                  ` ${ic1} *PING:* \`${latency} ms\` | ${ic2} *STATUS:* \`ONLINE\`\n` +
+                  `▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒`,
+
+            // Layout 7: Cyber Pulse Block
+            () => `┏━━━━━━━━━━━━━━━━━━━━┓\n` +
+                  `┃ ${ic1} PING ➔ \`${latency} ms\`  ${ic2} ┃\n` +
+                  `┗━━━━━━━━━━━━━━━━━━━━┛\n` +
+                  `⚡ *RAHUL-AI SECURE LINK*`
         ];
 
-        // Randomly pick one from the 1000+ style generator
-        const randomStyle = styles1000[Math.floor(Math.random() * styles1000.length)];
-        const finalPingText = randomStyle();
+        // Randomly pick a completely fresh layout
+        const selectedStyle = freshPingStyles[Math.floor(Math.random() * freshPingStyles.length)];
+        const finalPingText = selectedStyle();
 
-        // --- STEP 3: SAFELY EDIT LOADING MESSAGE ---
+        // --- STEP 3: RELIABLE MESSAGE EDIT ---
         const activeClient = client || m.client;
         if (pingMsg && pingMsg.key && activeClient && typeof activeClient.sendMessage === 'function') {
             return await activeClient.sendMessage(m.jid, {
@@ -175,6 +174,7 @@ async ({
         m.reply(`⚠️ Error: ${error.message || error}`);
     }
 });
+
 
 Sparky({
 		name: "wame",
