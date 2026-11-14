@@ -85,7 +85,7 @@ Sparky({
     name: "ping",
     fromMe: isPublic,
     category: "misc",
-    desc: "Checks bot latency with 1000+ dynamic compact styles and separate loading message."
+    desc: "Checks bot latency with 1000+ dynamic compact styles and smooth edit animation."
 },
 async ({
     m,
@@ -94,7 +94,7 @@ async ({
     try {
         const start = Date.now();
         
-        // --- STEP 1: SEND SEPARATE VISIBLE LOADING MESSAGE ---
+        // --- STEP 1: SEND VISIBLE LOADING MESSAGE ---
         const loadTexts = [
             "```⏳ ᴘɪɴɢɪɴɢ ꜱʏꜱᴛᴇᴍ...```",
             "```⚡ ᴄʜᴇᴄᴋɪɴɢ ʟᴀᴛᴇɴᴄʏ...```",
@@ -183,27 +183,30 @@ async ({
         const selectedStyle = freshPingStyles[Math.floor(Math.random() * freshPingStyles.length)];
         const finalPingText = selectedStyle();
 
-        // --- STEP 3: DELETE LOADING MESSAGE AND SEND FRESH PING ---
+        // --- STEP 3: SMOOTH EDIT INSTEAD OF DELETE (No 'You deleted this message') ---
         const activeClient = client || m.client;
         const msgKey = pingMsg?.key || pingMsg?.message?.key || (typeof pingMsg === 'object' && pingMsg.id ? pingMsg : null);
 
         if (msgKey && activeClient && typeof activeClient.sendMessage === 'function') {
             try {
-                // Delete the loading message
-                await activeClient.sendMessage(m.jid, { delete: msgKey });
-            } catch (e) {}
+                return await activeClient.sendMessage(m.jid, {
+                    text: finalPingText,
+                    edit: msgKey
+                });
+            } catch (err) {
+                return await m.sendMsg(m.jid, finalPingText, { quoted: m });
+            }
+        } else if (pingMsg && typeof pingMsg.edit === 'function') {
+            return await pingMsg.edit(finalPingText);
+        } else {
+            return await m.sendMsg(m.jid, finalPingText, { quoted: m });
         }
-
-        // Send the final fresh ping message
-        return await m.sendMsg(m.jid, finalPingText, { quoted: m });
 
     } catch (error) {
         console.log(error);
         m.reply(`⚠️ Error: ${error.message || error}`);
     }
-});
-
-
+});      
 Sparky({
 		name: "wame",
 		fromMe: isPublic,
