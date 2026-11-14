@@ -27,166 +27,115 @@ function getRandomMenuImage() {
     return menuImages[Math.floor(Math.random() * menuImages.length)];
 }
 
-// --- 100+ COLOR PALETTES & 10 ULTRA-STYLISTIC RGB EDGE LIGHTING BANKS ---
+// --- COMPLETELY UNIQUE & DIFFERENT LAYOUTS (RGB EDGE LIGHTING & MULTI-COLOR STYLES) ---
 function generateEdgeLightingMenuV2(ownerName, prefixVal, workType, ramUsage, date, time, uptimeVal, type, commandsList) {
-    const bulbSets = [
-        ['💡', '🏮'], ['🌟', '⚡'], ['🔮', '💎'], ['🔥', '✨'], 
-        ['🌀', '🚀'], ['🌈', '💠'], ['💖', '⚡'], ['🎯', '⚓'],
-        ['🛡️', '💎'], ['🔥', '💡'], ['🌟', '🔮'], ['⚡', '🏮']
-    ];
-    const randomPair = bulbSets[Math.floor(Math.random() * bulbSets.length)];
-    const dynamicSeed = Math.floor(Math.random() * 9000) + 1000;
+    const rgbBulbs = ['💡', '🏮', '🌟', '⚡', '🔮', '💎', '🔥', '✨', '🌀', '🚀', '🌈', '💠', '💖', '🎯'];
+    const b1 = rgbBulbs[Math.floor(Math.random() * rgbBulbs.length)];
+    const b2 = rgbBulbs[Math.floor(Math.random() * rgbBulbs.length)];
+    const b3 = rgbBulbs[Math.floor(Math.random() * rgbBulbs.length)];
+    const seed = Math.floor(Math.random() * 8000) + 1000;
 
-    // 100+ Color Themes Mapping Pool
-    const colorThemes = [
-        { name: "Neon Cyan", tag: "【 🌐 NEON CYAN GLOW 】" },
-        { name: "Cyber Purple", tag: "【 💜 CYBER PURPLE VIBE 】" },
-        { name: "Electric Gold", tag: "【 ⚡ ELECTRIC GOLD LIGHT 】" },
-        { name: "Emerald Matrix", tag: "【 🟢 EMERALD MATRIX LED 】" },
-        { name: "Ruby Magenta", tag: "【 💖 RUBY MAGENTA PULSE 】" },
-        { name: "Plasma Pink", tag: "【 🌸 PLASMA PINK LASER 】" },
-        { name: "Laser Violet", tag: "【 🔮 LASER VIOLET CORE 】" },
-        { name: "Solar Orange", tag: "【 🔥 SOLAR ORANGE BLAZE 】" },
-        { name: "Quantum Blue", tag: "【 🔷 QUANTUM BLUE SHIELD 】" },
-        { name: "Hyper Neon", tag: "【 🚀 HYPER NEON MATRIX 】" },
-        { name: "Acid Green", tag: "【 🟢 ACID GREEN GRID 】" },
-        { name: "Royal Indigo", tag: "【 👑 ROYAL INDIGO SHINE 】" },
-        { name: "Sunset Crimson", tag: "【 🌇 SUNSET CRIMSON GLOW 】" },
-        { name: "Deep Titanium", tag: "【 ⚙️ TITANIUM SILVER V2 】" },
-        { name: "Toxic Yellow", tag: "【 ☣️ TOXIC YELLOW SPARK 】" }
-    ];
-    const activeTheme = colorThemes[Math.floor(Math.random() * colorThemes.length)];
-
-    const stylesBank = [
-        // Style 1: Cyberpunk RGB Edge Box with Dynamic Color Tags
+    const uniqueLayouts = [
+        // Layout 1: Cyber-Shield Diamond Style
         () => {
-            let h = `╭──────────────────────────────╮\n` +
-                    `│  ${randomPair[0]} [ RAHUL-AI v${dynamicSeed} ] ${randomPair[1]}  │\n` +
-                    `╰──────────────────────────────╯\n` +
-                    ` ${activeTheme.tag}\n` +
-                    ` ❖ Owner  : ${ownerName}\n` +
-                    ` ❖ Status : ${workType}\n` +
-                    ` ❖ Prefix : ${prefixVal}\n` +
-                    ` ❖ RAM    : ${ramUsage}\n` +
-                    ` ❖ Date   : ${date}\n` +
-                    ` ❖ Clock  : ${time}\n` +
-                    ` ❖ Uptime : ${uptimeVal}\n` +
-                    ` ❖ Plugins: 100 Active\n` +
-                    `────────────────────────────────\n${readMore}\n\n`;
+            let h = `⚡ ⟨⟨ *RAHUL-AI CYBER SHIELD v${seed}* ⟩⟩ ⚡\n` +
+                    `├──────────────────────────────\n` +
+                    `│ ${b1} **Owner**  : ${ownerName}\n` +
+                    `│ ${b2} **Status** : ${workType}\n` +
+                    `│ ⚙️ **Prefix** : ${prefixVal}\n` +
+                    `│ 💾 **RAM**    : ${ramUsage}\n` +
+                    `│ 📅 **Date**   : ${date}\n` +
+                    `│ ⏰ **Time**   : ${time}\n` +
+                    `│ ⏱️ **Uptime** : ${uptimeVal}\n` +
+                    `│ 📂 **Plugins**: 100 Active ${b3}\n` +
+                    `└──────────────────────────────\n${readMore}\n\n`;
             let b = "";
             type.forEach((cmmd) => {
-                b += `\n┌─❖ [ ${cmmd.toUpperCase()} MODULES ]\n`;
-                commandsList.filter(c => c.category == cmmd).forEach(c => {
-                    b += `│ 🔹 ${prefixVal === 'false' ? '' : prefixVal}${c.Sparky}\n`;
-                });
-                b += `└──────────────────────────────\n`;
-            });
-            return h + b;
-        },
-
-        // Style 2: Neon Edge Glow Terminal
-        () => {
-            let h = `◆══════════════════════════════◆\n` +
-                    `    ${randomPair[0]} RAHUL-AI CORE [ #${dynamicSeed} ] ${randomPair[1]}\n` +
-                    `◆══════════════════════════════◆\n` +
-                    ` ${activeTheme.tag}\n` +
-                    ` ◈ Master : ${ownerName}\n` +
-                    ` ◈ Network: ${workType}\n` +
-                    ` ◈ Trigger: ${prefixVal}\n` +
-                    ` ◈ Memory : ${ramUsage}\n` +
-                    ` ◈ Date   : ${date}\n` +
-                    ` ◈ Time   : ${time}\n` +
-                    ` ◈ Uptime : ${uptimeVal}\n` +
-                    ` ◈ Total  : 100 Modules\n` +
-                    `────────────────────────────────\n${readMore}\n\n`;
-            let b = "";
-            type.forEach((cmmd) => {
-                b += `\n✦═══ • ${cmmd.toUpperCase()} • ═══✦\n`;
-                commandsList.filter(c => c.category == cmmd).forEach(c => {
-                    b += `  » ${prefixVal === 'false' ? '' : prefixVal}${c.Sparky}\n`;
-                });
-            });
-            return h + b;
-        },
-
-        // Style 3: Cybernetic Edge Lighting Grid
-        () => {
-            let h = `╔══════════════════════════════╗\n` +
-                    `║   ${randomPair[0]} RAHUL-AI QUANTUM v${dynamicSeed} ${randomPair[1]}  ║\n` +
-                    `╚══════════════════════════════╝\n` +
-                    ` ${activeTheme.tag}\n` +
-                    ` ⬡ Creator: ${ownerName}\n` +
-                    ` ⬡ Mode   : ${workType}\n` +
-                    ` ⬡ Prefix : ${prefixVal}\n` +
-                    ` ⬡ RAM    : ${ramUsage}\n` +
-                    ` ⬡ Today  : ${date}\n` +
-                    ` ⬡ Clock  : ${time}\n` +
-                    ` ⬡ Runtime: ${uptimeVal}\n` +
-                    ` ⬡ Online : 100 Features\n` +
-                    `────────────────────────────────\n${readMore}\n\n`;
-            let b = "";
-            type.forEach((cmmd) => {
-                b += `\n╭───❖ [ ${cmmd.toUpperCase()} ]\n`;
-                commandsList.filter(c => c.category == cmmd).forEach(c => {
-                    b += `│ 🔸 ${prefixVal === 'false' ? '' : prefixVal}${c.Sparky}\n`;
-                });
-                b += `╰──────────────────────────────\n`;
-            });
-            return h + b;
-        },
-
-        // Style 4: Royal RGB Holographic Panel
-        () => {
-            let h = `┏━━━✦ ⟨ *RAHUL-AI HOLOGRAPHIC* ⟩ ✦━━━┓\n` +
-                    `┃ ${activeTheme.tag}\n` +
-                    `┃ ${randomPair[0]} *Owner*  : ${ownerName}\n` +
-                    `┃ ⚙️ *Mode*   : ${workType}\n` +
-                    `┃ ⚡ *Prefix* : ${prefixVal}\n` +
-                    `┃ 💾 *RAM*    : ${ramUsage}\n` +
-                    `┃ 📅 *Date*   : ${date}\n` +
-                    `┃ ⏰ *Time*   : ${time}\n` +
-                    `┃ ⏱️ *Uptime* : ${uptimeVal}\n` +
-                    `┃ 📂 *Plugins*: 100 Active ${randomPair[1]}\n` +
-                    `┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n${readMore}\n\n`;
-            let b = "";
-            type.forEach((cmmd) => {
-                b += `\n┌───❖ *${cmmd.toUpperCase()}* ❖───┐\n`;
-                commandsList.filter(c => c.category == cmmd).forEach(c => {
-                    b += `│ 🔹 ${prefixVal === 'false' ? '' : prefixVal}${c.Sparky}\n`;
-                });
-                b += `└──────────────────────────┘\n`;
-            });
-            return h + b;
-        },
-
-        // Style 5: Starburst Cyber Edge Box
-        () => {
-            let h = `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
-                    `   ${randomPair[0]} RAHUL-AI SUPREME v${dynamicSeed} ${randomPair[1]}\n` +
-                    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
-                    ` ${activeTheme.tag}\n` +
-                    ` ✦ Admin    : ${ownerName}\n` +
-                    ` ✦ WorkMode : ${workType}\n` +
-                    ` ✦ Command  : ${prefixVal}\n` +
-                    ` ✦ Memory   : ${ramUsage}\n` +
-                    ` ✦ Session  : ${date}\n` +
-                    ` ✦ Timer    : ${time}\n` +
-                    ` ✦ Uptime   : ${uptimeVal}\n` +
-                    ` ✦ Modules  : 100 Armed\n` +
-                    `────────────────────────────────\n${readMore}\n\n`;
-            let b = "";
-            type.forEach((cmmd) => {
-                b += `\n📌 [ *${cmmd.toUpperCase()}* ]\n`;
+                b += `\n🎯 *[ ${cmmd.toUpperCase()} ZONE ]*\n`;
                 commandsList.filter(c => c.category == cmmd).forEach(c => {
                     b += `  ⚡ ${prefixVal === 'false' ? '' : prefixVal}${c.Sparky}\n`;
+                });
+            });
+            return h + b;
+        },
+
+        // Layout 2: Neon RGB Hexagon Frame Style
+        () => {
+            let h = `╔══════════════════════════════╗\n` +
+                    `║   ${b1} RAHUL-AI NEON MATRIX #${seed} ${b2}   ║\n` +
+                    `╚══════════════════════════════╝\n` +
+                    ` 🌟 *Operator Info & Stats* 🌟\n` +
+                    `» Creator : ${ownerName}\n` +
+                    `» Mode    : ${workType}\n` +
+                    `» Trigger : ${prefixVal}\n` +
+                    `» Memory  : ${ramUsage}\n` +
+                    `» Today   : ${date}\n` +
+                    `» Clock   : ${time}\n` +
+                    `» Runtime : ${uptimeVal}\n` +
+                    `» Modules : 100 Loaded ${b3}\n` +
+                    `────────────────────────────────\n${readMore}\n\n`;
+            let b = "";
+            type.forEach((cmmd) => {
+                b += `\n✦---⟨ ${cmmd.toUpperCase()} MODULES ⟩---✦\n`;
+                commandsList.filter(c => c.category == cmmd).forEach(c => {
+                    b += `  🔥 ${prefixVal === 'false' ? '' : prefixVal}${c.Sparky}\n`;
+                });
+            });
+            return h + b;
+        },
+
+        // Layout 3: Dual-Bar Laser Edge Lighting Style
+        () => {
+            let h = `▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓\n` +
+                    `  ${b1} RAHUL-AI LASER v${seed} ${b2}\n` +
+                    `▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓\n` +
+                    ` 🔹 Master  : ${ownerName}\n` +
+                    ` 🔹 Network : ${workType}\n` +
+                    ` 🔹 Prefix  : ${prefixVal}\n` +
+                    ` 🔹 RAM Use : ${ramUsage}\n` +
+                    ` 🔹 Date    : ${date}\n` +
+                    ` 🔹 Time    : ${time}\n` +
+                    ` 🔹 Uptime  : ${uptimeVal}\n` +
+                    ` 🔹 Plugins : 100 Secured ${b3}\n` +
+                    `────────────────────────────────\n${readMore}\n\n`;
+            let b = "";
+            type.forEach((cmmd) => {
+                b += `\n🔮 *${cmmd.toUpperCase()} SECTION* 🔮\n`;
+                commandsList.filter(c => c.category == cmmd).forEach(c => {
+                    b += `  👉 ${prefixVal === 'false' ? '' : prefixVal}${c.Sparky}\n`;
+                });
+            });
+            return h + b;
+        },
+
+        // Layout 4: Minimalist Cyber Vault Style
+        () => {
+            let h = `╭──────────────────────────────╮\n` +
+                    `│  ${b1} RAHUL-AI VAULT #${seed} ${b2}    │\n` +
+                    `╰──────────────────────────────╯\n` +
+                    ` 🚀 [ SYSTEM TELEMETRY ]\n` +
+                    ` • User   : ${ownerName}\n` +
+                    ` • Work   : ${workType}\n` +
+                    ` • Prefix : ${prefixVal}\n` +
+                    ` • Memory : ${ramUsage}\n` +
+                    ` • Date   : ${date}\n` +
+                    ` • Clock  : ${time}\n` +
+                    ` • Uptime : ${uptimeVal}\n` +
+                    ` • Total  : 100 Commands ${b3}\n` +
+                    `────────────────────────────────\n${readMore}\n\n`;
+            let b = "";
+            type.forEach((cmmd) => {
+                b += `\n⚙️ *[ ${cmmd.toUpperCase()} ]*\n`;
+                commandsList.filter(c => c.category == cmmd).forEach(c => {
+                    b += `  💎 ${prefixVal === 'false' ? '' : prefixVal}${c.Sparky}\n`;
                 });
             });
             return h + b;
         }
     ];
 
-    const selectedStyle = stylesBank[Math.floor(Math.random() * stylesBank.length)];
-    return style(selectedStyle());
+    const chosenLayout = uniqueLayouts[Math.floor(Math.random() * uniqueLayouts.length)];
+    return style(chosenLayout());
 }
 
 async function sendMenu2Handler({ client, m, args }) {
