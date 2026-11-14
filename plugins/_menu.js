@@ -97,94 +97,24 @@ async function sendMenuHandler(client, m, args) {
         });
 
         let menuText = style(header + body);
-        let menuType = config.MENU_TYPE ? config.MENU_TYPE.toLowerCase() : "image";
-        let imageUrl = 'https://n.uguu.se/STdFjZFjkGat.jpg'; // Updated with your new Uguu direct image link
+        let imageUrl = 'https://d.uguu.se/pEvawsUymVpD.jpg'; // Updated with your new direct image link
 
-        switch (menuType) {
-            case 'big': {
+        // Guaranteed Image Sending (similar to menu2)
+        try {
+            return await client.sendMessage(m.jid, {
+                image: { url: imageUrl },
+                caption: menuText
+            }, { quoted: m });
+        } catch (err) {
+            console.log("Image URL send failed, trying buffer:", err);
+            let imgBuffer = await getBuffer(imageUrl).catch(() => null);
+            if (imgBuffer) {
                 return await client.sendMessage(m.jid, {
-                    text: menuText,
-                    contextInfo: {
-                        externalAdReply: {
-                            title: style(`Hey ${m.pushName || 'Swedar'}!`),
-                            body: style("RAHUL-AI"),
-                            mediaType: 1,
-                            showAdAttribution: true,
-                            renderLargerThumbnail: true,
-                            thumbnailUrl: imageUrl
-                        }
-                    }
+                    image: imgBuffer,
+                    caption: menuText
                 }, { quoted: m });
             }
-            case 'image':
-            default: {
-                try {
-                    return await client.sendMessage(m.jid, {
-                        image: { url: imageUrl },
-                        caption: menuText
-                    }, { quoted: m });
-                } catch (err) {
-                    console.log("Image URL send failed, trying buffer:", err);
-                    let imgBuffer = await getBuffer(imageUrl).catch(() => null);
-                    if (imgBuffer) {
-                        return await client.sendMessage(m.jid, {
-                            image: imgBuffer,
-                            caption: menuText
-                        }, { quoted: m });
-                    }
-                    return await client.sendMessage(m.jid, { text: menuText }, { quoted: m });
-                }
-            }
-            case 'small': {
-                return await client.sendMessage(m.jid, {
-                    text: menuText,
-                    contextInfo: {
-                        externalAdReply: {
-                            title: style(`Hey ${m.pushName || 'Swedar'}!`),
-                            body: style("RAHUL-AI"),
-                            mediaType: 1,
-                            showAdAttribution: true,
-                            renderLargerThumbnail: false,
-                            thumbnailUrl: imageUrl
-                        }
-                    }
-                }, { quoted: m });
-            }
-            case 'document': {
-                let docBuffer;
-                try {
-                    docBuffer = await getBuffer(imageUrl);
-                } catch (err) {
-                    docBuffer = Buffer.from(menuText);
-                }
-                return await client.sendMessage(m.jid, {
-                    document: docBuffer,
-                    caption: menuText,
-                    mimetype: 'application/zip',
-                    fileName: "RAHUL-AI.zip",
-                    fileLength: 99999999999,
-                    contextInfo: {
-                        externalAdReply: {
-                            title: style(`Hey ${m.pushName || 'Swedar'}!`),
-                            body: style("RAHUL-AI"),
-                            mediaType: 1,
-                            showAdAttribution: true,
-                            renderLargerThumbnail: true,
-                            thumbnailUrl: imageUrl
-                        }
-                    }
-                }, { quoted: m });
-            }
-            case 'video': {
-                return await client.sendMessage(m.jid, {
-                    video: { url: imageUrl },
-                    caption: menuText,
-                    gifPlayback: true
-                }, { quoted: m });
-            }
-            case 'text': {
-                return await client.sendMessage(m.jid, { text: menuText }, { quoted: m });
-            }
+            return await client.sendMessage(m.jid, { text: menuText }, { quoted: m });
         }
 
     } catch (e) {
@@ -195,24 +125,6 @@ async function sendMenuHandler(client, m, args) {
 
 // --- REGISTER SINGLE MENU COMMAND ---
 Sparky({ name: "menu", category: "misc", fromMe: isPublic, desc: "List all available commands" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args); });
-
-// --- SETVAR / SETMENU COMMAND (Changes menu type dynamically) ---
-Sparky({
-  name: "setvar",
-  category: "misc",
-  fromMe: isPublic,
-  desc: "Change menu style type (big, small, image, document, video, text)"
-}, async ({ m, args }) => {
-  const type = (args || "").toLowerCase().trim();
-  const validTypes = ["big", "small", "image", "document", "video", "text"];
-  
-  if (!validTypes.includes(type)) {
-    return await m.reply(`❌ Invalid menu type!\nVapra: _.setvar big_, _.setvar small_, _.setvar image_, _.setvar document_, _.setvar video_, or _.setvar text_`);
-  }
-  
-  config.MENU_TYPE = type;
-  return await m.reply(`✅ Menu type successfully changed to: *${type}*`);
-});
 
 // --- AUTODL ON/OFF COMMAND ---
 Sparky({
