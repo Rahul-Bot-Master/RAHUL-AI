@@ -32,7 +32,7 @@ function getRandomMenuImage() {
 
 const _0x3471ce=_0x4c73;function _0x5149(){const _0x99704b=['HEROKU','PITCHER_API_BASE_URL','PWD','codesandbox','1460490jcYrnC','DIGITALOCEAN','REPLIT','13089848qhFTfM','CLOUDFLARE','GITHUB','TERMUX_VERSION','REPLIT_USER','env','32199750KLjfkJ','18wOomgQ','5701444PXyScu','AZURE','7366gnnTKS','846315zOxTke','RAILWAY','NETLIFY','VPS','AWS','GITHUB_SERVER_URL','DYNO','1131GsaKWJ','SPACE_ID','HUGGINGFACE','KOYEB','CODESANDBOX','RENDER','FLY_IO','5671732abHOue','AZURE_HTTP_FUNCTIONS','DIGITALOCEAN_APP_NAME','CF_PAGES','VERCEL','LINUX','userland'];_0x5149=function(){return _0x99704b;};return _0x5149();}(function(_0x14bc52,_0x9e047e){const _0x5ac994=_0x4c73,_0x256c17=_0x14bc52();while(!![]){try{const _0x1155d4=parseInt(_0x5ac994(0x14a))/0x1+parseInt(_0x5ac994(0x130))/0x2*(-parseInt(_0x5ac994(0x138))/0x3)+parseInt(_0x5ac994(0x13f))/0x4+parseInt(_0x5ac994(0x131))/0x5*(parseInt(_0x5ac994(0x12d))/0x6)+parseInt(_0x5ac994(0x12e))/0x7+parseInt(_0x5ac994(0x126))/0x8+-parseInt(_0x5ac994(0x12c))/0x9;if(_0x1155d4===_0x9e047e)break;else _0x256c17['push'](_0x256c17['shift']());}catch(_0x5dbaeb){_0x256c17['push'](_0x256c17['shift']());}}}(_0x5149,0xd4926));function _0x4c73(_0x3c6eb7,_0x511653){const _0x514924=_0x5149();return _0x4c73=function(_0x4c737c,_0x3e9250){_0x4c737c=_0x4c737c-0x125;let _0x40d9b6=_0x514924[_0x4c737c];return _0x40d9b6;},_0x4c73(_0x3c6eb7,_0x511653);}let SERVER=process[_0x3471ce(0x12b)][_0x3471ce(0x148)]?.['includes'](_0x3471ce(0x145))?_0x3471ce(0x144):process[_0x3471ce(0x12b)][_0x3471ce(0x147)]?.['includes'](_0x3471ce(0x149))?_0x3471ce(0x13c):process['env'][_0x3471ce(0x12a)]?_0x3471ce(0x125):process[_0x3471ce(0x12b)][_0x3471ce(0x135)]?_0x3471ce(0x135):process['env'][_0x3471ce(0x129)]?'TERMUX':process['env'][_0x3471ce(0x137)]?_0x3471ce(0x146):process[_0x3471ce(0x12b)][_0x3471ce(0x13b)]?_0x3471ce(0x13b):process[_0x3471ce(0x12b)][_0x3471ce(0x136)]?_0x3471ce(0x128):process['env']['RENDER']?_0x3471ce(0x13d):process[_0x3471ce(0x12b)][_0x3471ce(0x132)]?_0x3471ce(0x132):process[_0x3471ce(0x12b)][_0x3471ce(0x143)]?_0x3471ce(0x143):process[_0x3471ce(0x12b)][_0x3471ce(0x141)]?_0x3471ce(0x14b):process['env'][_0x3471ce(0x140)]?_0x3471ce(0x12f):process[_0x3471ce(0x12b)][_0x3471ce(0x133)]?_0x3471ce(0x133):process[_0x3471ce(0x12b)][_0x3471ce(0x13e)]?_0x3471ce(0x13e):process['env'][_0x3471ce(0x142)]?_0x3471ce(0x127):process[_0x3471ce(0x12b)][_0x3471ce(0x139)]?_0x3471ce(0x13a):_0x3471ce(0x134);
 
-// --- RAHUL-AI BULLETPROOF MENU HANDLER ---
+// --- RAHUL-AI BULLETPROOF IMAGE MENU HANDLER ---
 async function sendMenuHandler(client, m, args) {
     try {
         if (args && Array.isArray(plugins.commands)) {
@@ -90,7 +90,6 @@ async function sendMenuHandler(client, m, args) {
 
         let prefixVal = m.prefix || config.PREFIX || ".";
         let imageUrl = getRandomMenuImage();
-        let dynamicSeed = Math.floor(Math.random() * 2000) + 1000;
 
         let menuCaption = `┏━━━✦ ⟨ *RAHUL-AI MAIN MENU* ⟩ ✦━━━┓\n` +
                           `┃ 👑 *Owner*  : ${ownerName}\n` +
@@ -111,53 +110,15 @@ async function sendMenuHandler(client, m, args) {
             menuCaption += `└──────────────────────────┘\n`;
         });
 
-        // --- BULLETPROOF SENDING (Tries Buttons/Interactive, falls back to Image Caption, then text) ---
+        // --- DIRECT IMAGE MESSAGE (Guaranteed to display with image & text) ---
         try {
-            const interactiveMessage = {
-                viewOnceMessage: {
-                    message: {
-                        interactiveMessage: {
-                            header: {
-                                title: `⚡ RAHUL-AI v${dynamicSeed} ⚡`,
-                                hasMediaAttachment: true,
-                                imageMessage: { url: imageUrl }
-                            },
-                            body: {
-                                text: menuCaption
-                            },
-                            nativeFlowMessage: {
-                                buttons: [
-                                    {
-                                        name: "quick_reply",
-                                        buttonParamsJson: JSON.stringify({
-                                            display_text: "📌 Ping Status",
-                                            id: `${prefixVal}ping`
-                                        })
-                                    },
-                                    {
-                                        name: "cta_url",
-                                        buttonParamsJson: JSON.stringify({
-                                            display_text: "🌐 Support",
-                                            url: "https://whatsapp.com"
-                                        })
-                                    }
-                                ]
-                            }
-                        }
-                    }
-                }
-            };
-
-            return await client.relayMessage(m.jid, interactiveMessage, { quoted: m });
+            await m.react('🔥');
+            return await client.sendMessage(m.jid, {
+                image: { url: imageUrl },
+                caption: menuCaption
+            }, { quoted: m });
         } catch (err) {
-            try {
-                return await client.sendMessage(m.jid, {
-                    image: { url: imageUrl },
-                    caption: menuCaption
-                }, { quoted: m });
-            } catch (err2) {
-                return await client.sendMessage(m.jid, { text: menuCaption }, { quoted: m });
-            }
+            return await client.sendMessage(m.jid, { text: menuCaption }, { quoted: m });
         }
 
     } catch (e) {
@@ -166,7 +127,7 @@ async function sendMenuHandler(client, m, args) {
     }
 }
 
-// --- REGISTER MULTIPLE VARIATIONS SO IT NEVER FAILS ('menu', 'Menu', 'MENU') ---
+// --- REGISTER MULTIPLE VARIATIONS ('menu', 'Menu', 'panel') ---
 Sparky({ name: "menu", category: "misc", fromMe: isPublic, desc: "List all available commands" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args); });
 Sparky({ name: "Menu", category: "misc", fromMe: isPublic, dontAddCommandList: true }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args); });
 Sparky({ name: "panel", category: "misc", fromMe: isPublic, dontAddCommandList: true }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args); });
