@@ -110,7 +110,7 @@ async function sendMenuHandler(client, m, args) {
             menuCaption += `└──────────────────────────┘\n`;
         });
 
-        // --- DIRECT IMAGE MESSAGE (Guaranteed to display with image & text) ---
+        // --- DIRECT IMAGE + CAPTION SENDER (Guaranteed to display everything instantly) ---
         try {
             await m.react('🔥');
             return await client.sendMessage(m.jid, {
@@ -118,6 +118,7 @@ async function sendMenuHandler(client, m, args) {
                 caption: menuCaption
             }, { quoted: m });
         } catch (err) {
+            console.log("Image Menu Error:", err);
             return await client.sendMessage(m.jid, { text: menuCaption }, { quoted: m });
         }
 
