@@ -39,6 +39,7 @@ function generateAutoChangingMenu(ownerName, prefixVal, workType, uptimeVal, dat
     const dynamicSeed = Math.floor(Math.random() * 2000) + 1000;
 
     const stylesBank = [
+        // Style 1: Cyber Grid Box
         () => {
             let h = `╭──────────────────────────────╮\n` +
                     `│  ${randomBulb} [ ⚡ RAHUL-AI v${dynamicSeed} ⚡ ]  │\n` +
@@ -61,6 +62,101 @@ function generateAutoChangingMenu(ownerName, prefixVal, workType, uptimeVal, dat
                 b += `└──────────────────────────────\n`;
             });
             return h + b;
+        },
+
+        // Style 2: Diamond Glow Panel
+        () => {
+            let h = `◆══════════════════════════════◆\n` +
+                    `    ${randomBulb} RAHUL-AI CORE [ #${dynamicSeed} ]\n` +
+                    `◆══════════════════════════════◆\n` +
+                    ` ◈ Master : ${ownerName}\n` +
+                    ` ◈ Mode   : ${workType}\n` +
+                    ` ◈ Prefix : ${prefixVal}\n` +
+                    ` ◈ Node   : ${SERVER}\n` +
+                    ` ◈ Date   : ${date}\n` +
+                    ` ◈ Time   : ${time}\n` +
+                    ` ◈ Uptime : ${uptimeVal}\n` +
+                    ` ◈ Total  : 100 Plugins\n` +
+                    `────────────────────────────────\n${readMore}\n\n`;
+            let b = "";
+            type.forEach((cmmd) => {
+                b += `\n✦═══ • ${cmmd.toUpperCase()} • ═══✦\n`;
+                commandsList.filter(c => c.category == cmmd).forEach(c => {
+                    b += `  » ${prefixVal === 'false' ? '' : prefixVal}${c.Sparky}\n`;
+                });
+            });
+            return h + b;
+        },
+
+        // Style 3: Minimalist Neon Border
+        () => {
+            let h = `================================\n` +
+                    `     ${randomBulb} RAHUL-AI v${dynamicSeed}\n` +
+                    `================================\n` +
+                    ` • User   : ${ownerName}\n` +
+                    ` • Mode   : ${workType}\n` +
+                    ` • Prefix : ${prefixVal}\n` +
+                    ` • Server : ${SERVER}\n` +
+                    ` • Date   : ${date}\n` +
+                    ` • Time   : ${time}\n` +
+                    ` • Uptime : ${uptimeVal}\n` +
+                    ` • Total  : 100 Commands\n` +
+                    `================================\n${readMore}\n\n`;
+            let b = "";
+            type.forEach((cmmd) => {
+                b += `\n>>> SECTION: ${cmmd.toUpperCase()} <<<\n`;
+                commandsList.filter(c => c.category == cmmd).forEach(c => {
+                    b += `    - ${prefixVal === 'false' ? '' : prefixVal}${c.Sparky}\n`;
+                });
+            });
+            return h + b;
+        },
+
+        // Style 4: Royal Crown Elite Box
+        () => {
+            let h = `╔══════════════════════════════╗\n` +
+                    `║   👑 RAHUL-AI v${dynamicSeed} 👑       ║\n` +
+                    `╚══════════════════════════════╝\n` +
+                    ` ❖ Owner  : ${ownerName}\n` +
+                    ` ❖ Mode   : ${workType}\n` +
+                    ` ❖ Prefix : ${prefixVal}\n` +
+                    ` ❖ Host   : ${SERVER}\n` +
+                    ` ❖ Date   : ${date}\n` +
+                    ` ❖ Time   : ${time}\n` +
+                    ` ❖ Uptime : ${uptimeVal}\n` +
+                    ` ❖ Plugins: 100 Secured\n` +
+                    `────────────────────────────────\n${readMore}\n\n`;
+            let b = "";
+            type.forEach((cmmd) => {
+                b += `\n🌟 ⟨ *${cmmd.toUpperCase()}* ⟩ 🌟\n`;
+                commandsList.filter(c => c.category == cmmd).forEach(c => {
+                    b += `  ⚡ ${prefixVal === 'false' ? '' : prefixVal}${c.Sparky}\n`;
+                });
+            });
+            return h + b;
+        },
+
+        // Style 5: Holographic Panel
+        () => {
+            let h = `┏━━━✦ ⟨ *RAHUL-AI MAIN MENU* ⟩ ✦━━━┓\n` +
+                    `┃ 👑 *Owner*  : ${ownerName}\n` +
+                    `┃ ⚙️ *Mode*   : ${workType}\n` +
+                    `┃ ⚡ *Prefix* : ${prefixVal}\n` +
+                    `┃ 🌐 *Server* : ${SERVER}\n` +
+                    `┃ 📅 *Date*   : ${date}\n` +
+                    `┃ ⏰ *Time*   : ${time}\n` +
+                    `┃ ⏱️ *Uptime* : ${uptimeVal}\n` +
+                    `┃ 📂 *Plugins*: 100 Active\n` +
+                    `┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n${readMore}\n\n`;
+            let b = "";
+            type.forEach((cmmd) => {
+                b += `\n┌───❖ *${cmmd.toUpperCase()}* ❖───┐\n`;
+                commandsList.filter(c => c.category == cmmd).forEach(c => {
+                    b += `│ 🔹 ${prefixVal === 'false' ? '' : prefixVal}${c.Sparky}\n`;
+                });
+                b += `└──────────────────────────┘\n`;
+            });
+            return h + b;
         }
     ];
 
@@ -68,7 +164,7 @@ function generateAutoChangingMenu(ownerName, prefixVal, workType, uptimeVal, dat
     return randomStyle();
 }
 
-// --- BULLETPROOF MENU HANDLER WITH CARD / BUTTON SUPPORT ---
+// --- BULLETPROOF MENU HANDLER (WITH WHATSAPP INTERACTIVE CAROUSEL / BUTTONS) ---
 async function sendMenuHandler(client, m, args) {
     try {
         if (args && Array.isArray(plugins.commands)) {
@@ -128,25 +224,77 @@ async function sendMenuHandler(client, m, args) {
         let menuText = generateAutoChangingMenu(ownerName, prefixVal, workType, uptimeVal, date, time, cmnd, type, commandsList);
         let imageUrl = getRandomMenuImage();
 
-        // --- CARD / BUTTON MESSAGE FORMAT (JAWA VIDEO MADHE DISAT AHE) ---
+        // --- WHATSAPP INTERACTIVE CAROUSEL / BUTTON CARD MESSAGE FORMAT ---
         try {
-            // Baileys Interactive / Carousel / Button format simulation
-            return await client.sendMessage(m.jid, {
-                image: { url: imageUrl },
-                caption: menuText,
-                footer: "⚡ RAHUL-AI CARD MENU",
-                buttons: [
-                    { buttonId: `${prefixVal}ping`, buttonText: { displayText: '🏓 Ping' }, type: 1 },
-                    { buttonId: `${prefixVal}owner`, buttonText: { displayText: '👑 Owner' }, type: 1 }
-                ],
-                headerType: 4
-            }, { quoted: m });
-        } catch (err) {
-            console.log("Interactive Button Message failed, falling back to standard image:", err);
-            return await client.sendMessage(m.jid, {
-                image: { url: imageUrl },
-                caption: menuText
-            }, { quoted: m });
+            const interactiveMessage = {
+                viewOnceMessage: {
+                    message: {
+                        interactiveMessage: {
+                            header: {
+                                title: "⚡ RAHUL-AI DASHBOARD ⚡",
+                                hasMediaAttachment: true,
+                                imageMessage: {
+                                    url: imageUrl
+                                }
+                            },
+                            body: {
+                                text: menuText
+                            },
+                            nativeFlowMessage: {
+                                buttons: [
+                                    {
+                                        name: "quick_reply",
+                                        buttonParamsJson: JSON.stringify({
+                                            display_text: "📌 Ping / Status",
+                                            id: `${prefixVal}ping`
+                                        })
+                                    },
+                                    {
+                                        name: "quick_reply",
+                                        buttonParamsJson: JSON.stringify({
+                                            display_text: "📂 All Plugins",
+                                            id: `${prefixVal}list`
+                                        })
+                                    },
+                                    {
+                                        name: "cta_url",
+                                        buttonParamsJson: JSON.stringify({
+                                            display_text: "🌐 Support Group",
+                                            url: "https://whatsapp.com"
+                                        })
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            };
+
+            return await client.relayMessage(m.jid, interactiveMessage, { quoted: m });
+        } catch (cardErr) {
+            console.log("Card / Interactive buttons failed, falling back to standard Image Message with caption:", cardErr);
+            
+            try {
+                return await client.sendMessage(m.jid, {
+                    image: { url: imageUrl },
+                    caption: menuText,
+                    footer: "⚡ RAHUL-AI Bot Menu",
+                    buttons: [
+                        { buttonId: `${prefixVal}ping`, buttonText: { displayText: '📌 Ping' }, type: 1 },
+                        { buttonId: `${prefixVal}menu`, buttonText: { displayText: '📜 Menu' }, type: 1 }
+                    ],
+                    headerType: 4
+                }, { quoted: m });
+            } catch (err2) {
+                let imgBuffer = await getBuffer(imageUrl).catch(() => null);
+                if (imgBuffer) {
+                    return await client.sendMessage(m.jid, {
+                        image: imgBuffer,
+                        caption: menuText
+                    }, { quoted: m });
+                }
+                return await client.sendMessage(m.jid, { text: menuText }, { quoted: m });
+            }
         }
 
     } catch (e) {
@@ -157,3 +305,93 @@ async function sendMenuHandler(client, m, args) {
 
 // --- REGISTER SINGLE MENU COMMAND ---
 Sparky({ name: "menu", category: "misc", fromMe: isPublic, desc: "List all available commands" }, async ({ client, m, args }) => { await sendMenuHandler(client, m, args); });
+
+// --- SETVAR COMMAND ---
+Sparky({
+  name: "setvar",
+  category: "misc",
+  fromMe: isPublic,
+  desc: "Change menu style type"
+}, async ({ m, args }) => {
+  const type = (args || "").toLowerCase().trim();
+  const validTypes = ["big", "small", "image", "document", "video", "text"];
+  
+  if (!validTypes.includes(type)) {
+    return await m.reply(`❌ Invalid menu type!\nVapra: _.setvar big_, _.setvar small_, _.setvar image_, _.setvar document_, _.setvar video_, or _.setvar text_`);
+  }
+  
+  config.MENU_TYPE = type;
+  return await m.reply(`✅ Menu type successfully changed to: *${type}*`);
+});
+
+// --- AUTODL ON/OFF COMMAND ---
+Sparky({
+  name: "autodl",
+  fromMe: isPublic,
+  category: "youtube",
+  desc: "Toggle auto YouTube download on or off"
+}, async ({ m, args }) => {
+  const status = (args || "").toLowerCase().trim();
+  if (status === "on") {
+    autoDownloadEnabled = true;
+    return await m.reply("✅ Auto-Download successfully ON kela ahe!");
+  } else if (status === "off") {
+    autoDownloadEnabled = false;
+    return await m.reply("✅ Auto-Download successfully OFF kela ahe!");
+  } else {
+    return await m.reply(`*Auto-Download Status:* ${autoDownloadEnabled ? "ON 🟢" : "OFF 🔴"}\nVapra: _.autodl on_ kinva _.autodl off_`);
+  }
+});
+
+// --- AUTOMATIC YOUTUBE DOWNLOAD LISTENER ---
+Sparky({
+  on: "text",
+  dontAddCommandList: true
+}, async ({ m, client }) => {
+  try {
+    if (!autoDownloadEnabled) return;
+
+    const remoteJid = m.jid || m.key?.remoteJid || "";
+    if (remoteJid.includes("status@broadcast") || remoteJid === "status@broadcast") return;
+
+    const rawText = m.body || m.text || (m.message && (m.message.conversation || m.message.extendedTextMessage?.text)) || "";
+    if (!rawText) return;
+
+    const urlRegex = /(https?:\[^\s]+|https?:\/\/[^\s]+)/g;
+    const matchUrls = rawText.match(urlRegex);
+    
+    if (matchUrls) {
+      const ytUrl = matchUrls.find(word => word.includes("youtube.com") || word.includes("youtu.be"));
+      if (ytUrl) {
+        try { await m.react('⬇️'); } catch (e) {}
+        
+        try {
+          const videoUrl = await ytv(ytUrl);
+          await client.sendMessage(m.jid, { video: { url: videoUrl }, mimetype: "video/mp4" }, { quoted: m });
+        } catch (err) {
+          console.log("AutoDL Video Error:", err);
+        }
+
+        try {
+          const audioRes = await yta(ytUrl);
+          const audioUrl = typeof audioRes === 'object' ? (audioRes.dl_url || audioRes.url || audioRes.audio) : audioRes;
+          
+          if (audioUrl) {
+            const audioBuffer = await getBuffer(audioUrl);
+            await client.sendMessage(m.jid, { 
+              audio: audioBuffer, 
+              mimetype: "audio/mpeg", 
+              ptt: false 
+            }, { quoted: m });
+          }
+        } catch (err) {
+          console.log("AutoDL Audio Error:", err);
+        }
+
+        try { await m.react('✅'); } catch (e) {}
+      }
+    }
+  } catch (error) {
+    console.log("AutoDL Listener Error:", error);
+  }
+});
